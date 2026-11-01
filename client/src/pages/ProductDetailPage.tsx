@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { canOrderOnline, type MenuItem } from "../../../shared/catalog";
 import { getCategoryForProduct, getProductShowcaseImages } from "../../../shared/gourmetRoutes";
-import { handleImageError, ProductCard, QtyStepper } from "../storefront/components/ProductCard";
+import { BrandSeal, handleImageError, ProductCard, QtyStepper } from "../storefront/components/ProductCard";
 import { Breadcrumbs, SectionHeading, StoreLayout } from "../storefront/components/StoreLayout";
 import {
   categoryLabel,
@@ -22,9 +22,9 @@ import { useStore } from "../storefront/StoreContext";
 import NotFound from "./NotFound";
 
 export default function ProductDetailPage({ productId }: { productId: string }) {
-  const { itemById } = useStore();
+  const { itemById, catalogReady } = useStore();
   const item = itemById.get(productId);
-  if (!item) return <NotFound />;
+  if (!item) return catalogReady ? <NotFound /> : <StoreLayout><div className="cg-container cg-pdp" aria-busy="true" /></StoreLayout>;
   return <ProductView key={item.id} item={item} />;
 }
 
@@ -102,6 +102,7 @@ function ProductView({ item }: { item: MenuItem }) {
               onError={(e) => handleImageError(e, item)}
             />
             {badge && <span className="cg-card__badge">{badge}</span>}
+            <BrandSeal size="lg" />
           </div>
           {images.length > 1 && (
             <div className="cg-pdp__thumbs" role="group" aria-label={t("Imágenes del producto", "Product images")}>

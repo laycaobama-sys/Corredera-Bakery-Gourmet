@@ -40,6 +40,8 @@ type StoreContextValue = {
   setLang: (lang: Lang) => void;
   items: MenuItem[];
   itemById: Map<string, MenuItem>;
+  /** False only while the live catalog is still on its way (static build without embedded data). */
+  catalogReady: boolean;
   settings: SiteSettings;
   cart: Record<string, number>;
   cartLines: { item: MenuItem; qty: number }[];
@@ -62,6 +64,17 @@ type StoreContextValue = {
 };
 
 const StoreContext = createContext<StoreContextValue | null>(null);
+
+/** Live catalog and CMS settings the server embeds in the HTML (absent on the static fallback build). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- shapes are the API's own responses
+const BOOT: { at: number; catalog: any; settings: any } | null = (() => {
+  try {
+    const el = document.getElementById("cbg-boot");
+    return el?.textContent ? JSON.parse(el.textContent) : null;
+  } catch {
+    return null;
+  }
+})();
 
 function initialLang(): Lang {
   try {
@@ -98,16 +111,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [legalTab, setLegalTab] = useState<LegalTabId | null>(null);
 
-  const catalogQuery = trpc.catalog.listPublic.useQuery(undefined, {
-    staleTime: 5 * 60_000,
+  // The page arrives with the live catalog and settings embedded, so nothing waits on the API.
+  // Changes published from the admin panel reach open pages within two minutes (and on returning to the tab).
+  const liveQuery = {
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
     retry: 1,
-    refetchOnWindowFocus: false,
-  });
-  const settingsQuery = trpc.catalog.siteSettings.useQuery(undefined, {
-    staleTime: 5 * 60_000,
-    retry: 1,
-    refetchOnWindowFocus: false,
-  });
+    initialDataUpdatedAt: BOOT?.at,
+  } as const;
+  const catalogQuery = trpc.catalog.listPublic.useQuery(undefined, { ...liveQuery, initialData: BOOT?.catalog });
+  const settingsQuery = trpc.catalog.siteSettings.useQuery(undefined, { ...liveQuery, initialData: BOOT?.settings });
   const recordEvent = trpc.order.recordEvent.useMutation();
 
   const items = useMemo<MenuItem[]>(() => {
@@ -211,6 +226,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setLang: setLangState,
     items,
     itemById,
+    catalogReady: catalogQuery.isFetched || catalogQuery.isError || Boolean(BOOT),
     settings,
     cart,
     cartLines,

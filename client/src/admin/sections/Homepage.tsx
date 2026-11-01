@@ -37,7 +37,7 @@ function LinkPicker({ value, onChange }: { value: string; onChange: (v: string) 
 
 const blankSlide = (): HeroSlide => ({
   id: `slide-${Date.now().toString(36)}`,
-  imageUrl: "/assets/jamon-hero-end.jpg",
+  imageUrl: "/assets/home/hero-loncheado.jpg",
   titleEs: "Nuevo destacado",
   titleEn: "New highlight",
   textEs: "Describe aquí la novedad, el producto o la promoción.",
@@ -45,6 +45,7 @@ const blankSlide = (): HeroSlide => ({
   ctaEs: "Descubrir",
   ctaEn: "Discover",
   href: "/tienda",
+  videoUrl: "",
   visible: true,
 });
 
@@ -144,7 +145,17 @@ export function HomepageSection() {
                 </div>
               </div>
               <div className="adm-slide__body">
-                <ImageUpload value={s.imageUrl} onChange={(url) => setSlide(i, { imageUrl: url })} aspect="16 / 10" label="Imagen (horizontal)" />
+                <div className="adm-stack">
+                  <ImageUpload value={s.imageUrl} onChange={(url) => setSlide(i, { imageUrl: url })} aspect="16 / 10" label="Imagen (horizontal)" />
+                  <ImageUpload
+                    kind="video"
+                    value={s.videoUrl}
+                    onChange={(url) => setSlide(i, { videoUrl: url })}
+                    onClear={() => setSlide(i, { videoUrl: "" })}
+                    aspect="16 / 10"
+                    label="Vídeo opcional (se reproduce sobre la imagen)"
+                  />
+                </div>
                 <div className="adm-form">
                   <Field label="Título">
                     <Input value={s.titleEs} onChange={(e) => setSlide(i, { titleEs: e.target.value })} maxLength={90} />

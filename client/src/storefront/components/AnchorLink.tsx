@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export function scrollToId(id: string, behavior: ScrollBehavior = "smooth") {
   const el = document.getElementById(id);
@@ -39,6 +39,22 @@ export function AnchorLink({
     >
       {children}
     </a>
+  );
+}
+
+/** Internal link that accepts any CMS href: a route ("/tienda") or a home section ("/#visitanos"). */
+export function SmartLink({ href, children, className }: { href: string; children: ReactNode; className?: string }) {
+  if (href.startsWith("/#")) {
+    return (
+      <AnchorLink to={href.slice(2)} className={className}>
+        {children}
+      </AnchorLink>
+    );
+  }
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
   );
 }
 

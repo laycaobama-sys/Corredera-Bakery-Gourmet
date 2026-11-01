@@ -8,6 +8,7 @@ import { ScrollManager } from "./AnchorLink";
 import { CartDrawer } from "./CartDrawer";
 import { Footer, TrustStrip } from "./Footer";
 import { Header } from "./Header";
+import { RevealOnScroll } from "./Reveal";
 import { SearchDialog } from "./SearchDialog";
 
 export function StoreLayout({ children, trust = true }: { children: ReactNode; trust?: boolean }) {
@@ -17,6 +18,7 @@ export function StoreLayout({ children, trust = true }: { children: ReactNode; t
   return (
     <div className="cg">
       <ScrollManager />
+      <RevealOnScroll />
       <Header />
       <main id="contenido" tabIndex={-1}>
         {children}

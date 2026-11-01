@@ -291,8 +291,114 @@ export const heroSlideSchema = z.object({
   ctaEs: safeText(2, 40, "Botón (ES)"),
   ctaEn: safeText(2, 40, "Botón (EN)"),
   href: safeInternalHref("Enlace del botón"),
+  /** Optional MP4/WebM uploaded from the panel; plays over the image. */
+  videoUrl: z
+    .string()
+    .trim()
+    .max(512)
+    .refine((v) => v === "" || (/^\/assets\/[a-zA-Z0-9/_.-]+\.(mp4|webm)$/.test(v) && !v.includes("..")), "El vídeo debe ser un MP4 o WebM subido desde el panel")
+    .default(""),
   visible: z.boolean().default(true),
 });
+
+const pageTileSchema = z.object({
+  titleEs: safeText(2, 60, "Título del bloque (ES)"),
+  titleEn: safeText(2, 60, "Título del bloque (EN)"),
+  textEs: safeText(2, 120, "Texto del bloque (ES)"),
+  textEn: safeText(2, 120, "Texto del bloque (EN)"),
+  imageUrl: safeImagePath("Imagen del bloque"),
+  href: safeInternalHref("Enlace del bloque"),
+});
+
+/** Every photo and editorial text of the storefront that is not a product. */
+export const pagesSchema = z.object({
+  homeTiles: z.array(pageTileSchema).length(3),
+  whyImageUrl: safeImagePath("Imagen de «¿Por qué Corredera?»"),
+  carvingImageUrl: safeImagePath("Imagen del servicio de corte"),
+  carvingTitleEs: safeText(5, 140, "Título del servicio de corte (ES)"),
+  carvingTitleEn: safeText(5, 140, "Título del servicio de corte (EN)"),
+  carvingTextEs: safeText(10, 500, "Texto del servicio de corte (ES)"),
+  carvingTextEn: safeText(10, 500, "Texto del servicio de corte (EN)"),
+  aboutImageUrl: safeImagePath("Imagen de «Somos Corredera»"),
+  aboutTitleEs: safeText(3, 80, "Título de «Somos Corredera» (ES)"),
+  aboutTitleEn: safeText(3, 80, "Título de «Somos Corredera» (EN)"),
+  aboutText1Es: safeText(10, 700, "Primer párrafo (ES)"),
+  aboutText1En: safeText(10, 700, "Primer párrafo (EN)"),
+  aboutText2Es: optionalSafeText(700, "Segundo párrafo (ES)"),
+  aboutText2En: optionalSafeText(700, "Segundo párrafo (EN)"),
+  departmentImages: z.array(z.object({ slug: z.string().trim().min(1).max(40), imageUrl: safeImagePath("Imagen de la categoría") })).max(12),
+  cartaPosterUrl: safeImagePath("Cartel de la carta"),
+  cartaTitleEs: safeText(3, 80, "Título de la carta (ES)"),
+  cartaTitleEn: safeText(3, 80, "Título de la carta (EN)"),
+  cartaIntroEs: safeText(10, 500, "Introducción de la carta (ES)"),
+  cartaIntroEn: safeText(10, 500, "Introducción de la carta (EN)"),
+});
+
+export type PagesContent = z.infer<typeof pagesSchema>;
+
+export const DEFAULT_PAGES: PagesContent = {
+  homeTiles: [
+    {
+      titleEs: "Tienda gourmet",
+      titleEn: "Gourmet shop",
+      textEs: "Ibéricos, quesos y aceites seleccionados",
+      textEn: "Selected Iberian ham, cheeses and oils",
+      imageUrl: "/assets/products/em3.jpg",
+      href: "/tienda",
+    },
+    {
+      titleEs: "Servicio de corte",
+      titleEn: "Carving service",
+      textEs: "Gratis con tu jamón entero",
+      textEn: "Free with your whole ham",
+      imageUrl: "/assets/products/sj2.jpg",
+      href: "/#servicio-corte",
+    },
+    {
+      titleEs: "Carta & Café",
+      titleEn: "Menu & Café",
+      textEs: "Desayunos, café y obrador en tienda",
+      textEn: "Breakfast, coffee and bakery in store",
+      imageUrl: "/assets/corredera-bakery-interior.jpg",
+      href: "/bakery-cafe",
+    },
+  ],
+  whyImageUrl: "/assets/products/je1.jpg",
+  carvingImageUrl: "/assets/home/carving-bg.jpg",
+  carvingTitleEs: "Tu jamón, cortado a cuchillo y envasado al vacío. Gratis.",
+  carvingTitleEn: "Your ham, hand-carved and vacuum packed. Free.",
+  carvingTextEs:
+    "Al encargar cualquiera de nuestros jamones enteros te regalamos el corte profesional a cuchillo y el envasado al vacío en sobres. Toda la pieza, lista para servir y sin esfuerzo.",
+  carvingTextEn:
+    "When you order any of our whole hams we include professional hand-carving and vacuum packing at no cost. The whole piece, ready to serve, effortlessly.",
+  aboutImageUrl: "/assets/corredera-bakery-interior.jpg",
+  aboutTitleEs: "Somos Corredera",
+  aboutTitleEn: "We are Corredera",
+  aboutText1Es:
+    "En pleno centro de Madrid, en Calle de la Puebla, 15, Corredera Gourmet nace para acercar a cada cliente lo mejor de la despensa española: jamones ibéricos de las casas más reconocidas, embutidos de bellota, quesos de autor y aceites de oliva virgen extra.",
+  aboutText1En:
+    "In the heart of Madrid, at Calle de la Puebla, 15, Corredera Gourmet was born to bring the best of the Spanish pantry to every customer: Iberian hams from the most renowned houses, acorn-fed charcuterie, artisan cheeses and extra virgin olive oils.",
+  aboutText2Es:
+    "Cortamos a cuchillo, envasamos al vacío y preparamos cada encargo como si fuera para nuestra propia mesa. Y para empezar el día, nuestro obrador y cafetería te esperan con café recién hecho y bollería artesana.",
+  aboutText2En:
+    "We hand-carve, vacuum-pack and prepare every order as if it were for our own table. And to start your day, our bakery and café await with fresh coffee and artisan pastries.",
+  departmentImages: [
+    { slug: "jamones", imageUrl: "/assets/products/je1.jpg" },
+    { slug: "jamon-cortado", imageUrl: "/assets/products/sj2.jpg" },
+    { slug: "sobres-jamon", imageUrl: "/assets/products/sj3.jpg" },
+    { slug: "embutidos", imageUrl: "/assets/products/em3.jpg" },
+    { slug: "sobres-embutidos", imageUrl: "/assets/products/se1.jpg" },
+    { slug: "quesos", imageUrl: "/assets/products/q5.jpg" },
+    { slug: "aceites", imageUrl: "/assets/products/ao2.jpg" },
+  ],
+  cartaPosterUrl: "/assets/carta-cartel.jpg",
+  cartaTitleEs: "Carta Bakery & Café",
+  cartaTitleEn: "Bakery & Café menu",
+  cartaIntroEs:
+    "Empieza el día en Corredera: café recién hecho, bollería de obrador, bocadillos y tartas artesanas. Para tomar en nuestro local de Calle de la Puebla, 15.",
+  cartaIntroEn:
+    "Start your day at Corredera: fresh coffee, bakery pastries, sandwiches and artisan cakes. To enjoy at our shop on Calle de la Puebla, 15.",
+};
 
 export const storefrontSchema = z.object({
   announcements: z.array(announcementSchema).min(1, "Debe haber al menos un aviso").max(5),
@@ -319,7 +425,7 @@ export const DEFAULT_STOREFRONT: z.infer<typeof storefrontSchema> = {
   heroSlides: [
     {
       id: "jamones",
-      imageUrl: "/assets/jamon-hero-start.jpg",
+      imageUrl: "/assets/home/hero-jamon.jpg",
       titleEs: "Jamones 5 Jotas y Joselito",
       titleEn: "5 Jotas & Joselito hams",
       textEs: "Corte a cuchillo y envasado al vacío gratis al encargar tu pieza entera",
@@ -327,11 +433,12 @@ export const DEFAULT_STOREFRONT: z.infer<typeof storefrontSchema> = {
       ctaEs: "Elegir jamón",
       ctaEn: "Choose a ham",
       href: "/gourmet/jamones",
+      videoUrl: "",
       visible: true,
     },
     {
       id: "loncheados",
-      imageUrl: "/assets/jamon-hero-end.jpg",
+      imageUrl: "/assets/home/hero-loncheado.jpg",
       titleEs: "Loncheados de 100 g",
       titleEn: "100 g sliced packs",
       textEs: "Ibéricos cortados a mano y envasados al vacío, listos para servir",
@@ -339,11 +446,12 @@ export const DEFAULT_STOREFRONT: z.infer<typeof storefrontSchema> = {
       ctaEs: "Comprar loncheados",
       ctaEn: "Shop sliced packs",
       href: "/gourmet/sobres-jamon",
+      videoUrl: "",
       visible: true,
     },
     {
       id: "quesos",
-      imageUrl: "/assets/photos/quesos-artesanos.jpg",
+      imageUrl: "/assets/home/hero-quesos.jpg",
       titleEs: "Nuestra cava de quesos",
       titleEn: "Our cheese cellar",
       textEs: "Payoyo, Pecorino trufado, Comté y curados de autor al corte",
@@ -351,6 +459,7 @@ export const DEFAULT_STOREFRONT: z.infer<typeof storefrontSchema> = {
       ctaEs: "Descubrir quesos",
       ctaEn: "Discover cheeses",
       href: "/gourmet/quesos",
+      videoUrl: "",
       visible: true,
     },
   ],
@@ -420,6 +529,7 @@ export const siteSettingsSchema = z.object({
     visit: true,
   }),
   storefront: storefrontSchema.default(DEFAULT_STOREFRONT),
+  pages: pagesSchema.default(DEFAULT_PAGES),
 });
 
 export type SiteSettings = z.infer<typeof siteSettingsSchema>;
@@ -452,7 +562,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
       "Hola Corredera Bakery & Gourmet, quisiera información y reservar un encargo de vuestra campaña especial.",
     whatsappPrefillEn:
       "Hello Corredera Bakery & Gourmet, I would like information to pre-order from your seasonal special campaign.",
-    imageUrl: "/assets/jamon-hero-end.jpg",
+    imageUrl: "/assets/home/hero-loncheado.jpg",
   },
   hero: {
     toplineEs: "Encargos Gourmet por WhatsApp: +34 640 34 19 32 · Calle de la Puebla, 15 (Madrid)",
@@ -948,6 +1058,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     visit: true,
   },
   storefront: DEFAULT_STOREFRONT,
+  pages: DEFAULT_PAGES,
 };
 
 export const SEASONAL_CAMPAIGN_PRESETS: Record<
@@ -973,7 +1084,7 @@ export const SEASONAL_CAMPAIGN_PRESETS: Record<
         "Hola Corredera, quisiera reservar un encargo de vuestra Campaña Especial de Navidad (cesta gourmet / bandeja de ibéricos / pastelería).",
       whatsappPrefillEn:
         "Hello Corredera, I would like to place a Christmas Special pre-order (gourmet gift basket / Iberian ham tray / pastry pack).",
-      imageUrl: "/assets/jamon-hero-end.jpg",
+      imageUrl: "/assets/home/hero-loncheado.jpg",
     },
   },
   reyes: {

@@ -186,12 +186,12 @@ export const galleryImages = [
 ];
 
 /**
- * Cartel oficial de Desayunos y Ofertas del Día (/assets/IMG_3810.jpeg)
+ * Cartel oficial de Desayunos y Ofertas del Día (/assets/carta-cartel.jpg, editable desde el panel)
  * Extraído íntegramente con la actualización de precio en Croissant + Café (3,75 €)
  * e incluyendo la promoción de Perrito Caliente + Refresco (5,99 €) del local.
  */
 export const BREAKFAST_POSTER_DATA = {
-  posterImageUrl: "/assets/IMG_3810.jpeg",
+  posterImageUrl: "/assets/carta-cartel.jpg",
   mainHighlight: {
     id: "d8",
     titleEs: "Bocadillo Especial + Refresco",

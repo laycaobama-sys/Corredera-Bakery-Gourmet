@@ -6,6 +6,7 @@ import {
   isValidProductRoute,
 } from "../../shared/gourmetRoutes";
 import { CLIENT_PUBLIC_DIR, DIST_PUBLIC_DIR } from "./paths";
+import { buildLlmsTxt, buildSitemapXml } from "./seoRender";
 
 export interface RouteSeoResolution {
   statusCode: 200 | 404;
@@ -77,17 +78,18 @@ export function registerSeoStaticRoutes(app: Express) {
       .send(fs.readFileSync(filePath, "utf-8"));
   });
 
-  app.get("/sitemap.xml", (_req: Request, res: Response) => {
-    const filePath = resolvePublicFilePath("sitemap.xml");
-    if (!fs.existsSync(filePath)) {
-      res.status(404).type("text/plain").send("Not found");
-      return;
+  // Generated from the live catalog so products added in the admin panel are indexed automatically.
+  app.get("/sitemap.xml", async (_req: Request, res: Response) => {
+    try {
+      res
+        .status(200)
+        .setHeader("Content-Type", "application/xml; charset=utf-8")
+        .setHeader("Cache-Control", "public, max-age=3600")
+        .send(await buildSitemapXml());
+    } catch {
+      const filePath = resolvePublicFilePath("sitemap.xml");
+      res.status(200).type("application/xml").send(fs.readFileSync(filePath, "utf-8"));
     }
-    res
-      .status(200)
-      .setHeader("Content-Type", "application/xml; charset=utf-8")
-      .setHeader("Cache-Control", "public, max-age=3600")
-      .send(fs.readFileSync(filePath, "utf-8"));
   });
 
   app.get("/site.webmanifest", (_req: Request, res: Response) => {
@@ -103,16 +105,17 @@ export function registerSeoStaticRoutes(app: Express) {
       .send(fs.readFileSync(filePath, "utf-8"));
   });
 
-  app.get("/llms.txt", (_req: Request, res: Response) => {
-    const filePath = resolvePublicFilePath("llms.txt");
-    if (!fs.existsSync(filePath)) {
-      res.status(404).type("text/plain").send("Not found");
-      return;
+  // AI assistants read this summary; it is rebuilt from the catalog and CMS on every request.
+  app.get("/llms.txt", async (_req: Request, res: Response) => {
+    try {
+      res
+        .status(200)
+        .setHeader("Content-Type", "text/plain; charset=utf-8")
+        .setHeader("Cache-Control", "public, max-age=3600")
+        .send(await buildLlmsTxt());
+    } catch {
+      const filePath = resolvePublicFilePath("llms.txt");
+      res.status(200).type("text/plain").send(fs.readFileSync(filePath, "utf-8"));
     }
-    res
-      .status(200)
-      .setHeader("Content-Type", "text/plain; charset=utf-8")
-      .setHeader("Cache-Control", "public, max-age=3600")
-      .send(fs.readFileSync(filePath, "utf-8"));
   });
 }

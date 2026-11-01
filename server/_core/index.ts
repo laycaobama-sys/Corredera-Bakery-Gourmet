@@ -1,10 +1,10 @@
 import "dotenv/config";
+import compression from "compression";
 import express from "express";
 import { createServer } from "http";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { getCatalogStorageDiagnostics } from "../catalogRepository";
 import { registerOAuthRoutes } from "./oauth";
-import { publicPlatformScript } from "./publicConfig";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { registerStorageProxy } from "./storageProxy";
@@ -15,6 +15,8 @@ export function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
+  // gzip HTML, JS, CSS, JSON and SVG (images and video are already compressed)
+  app.use(compression({ threshold: 1024 }));
   app.use((_req, res, next) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "SAMEORIGIN");
@@ -78,9 +80,7 @@ export function createApp() {
       res.status(503).json({ status: "degraded" });
     }
   });
-  app.get("/api/platform/config.js", (_req, res) => {
-    res.set("Cache-Control", "no-store").type("application/javascript").send(publicPlatformScript());
-  });
+
 
   registerOAuthRoutes(app);
   registerStorageProxy(app);

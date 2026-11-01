@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "./_core/dataFs";
 import path from "path";
 import {
   DEFAULT_SITE_SETTINGS,
@@ -180,6 +180,7 @@ export function getSiteSettings(): ManagedSiteSettings {
         ...(parsed.sectionVisibility ?? {}),
       },
       storefront: parsed.storefront ?? DEFAULT_SITE_SETTINGS.storefront,
+      pages: { ...DEFAULT_SITE_SETTINGS.pages, ...(parsed.pages ?? {}) },
     });
 
     if (!validated.success) {

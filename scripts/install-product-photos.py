@@ -41,6 +41,9 @@ for pid in sorted(os.listdir(RAW)):
         im = im.crop((0, (h - nh) // 2, w, (h - nh) // 2 + nh))
     im = im.resize((1000, 800), Image.LANCZOS)
     im.save(target, "JPEG", quality=86, optimize=True, progressive=True)
+    small = im.copy()
+    small.thumbnail((480, 384))
+    small.save(os.path.join(DEST, f"{pid}-480.jpg"), "JPEG", quality=80, optimize=True, progressive=True)
     installed += 1
     print(f"{pid}: {os.path.getsize(target) // 1024} KB")
 

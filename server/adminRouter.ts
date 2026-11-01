@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import fs from "fs";
+import fs from "./_core/dataFs";
 import path from "path";
 import { z } from "zod";
 import {

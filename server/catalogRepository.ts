@@ -1,5 +1,5 @@
 import { asc, desc, eq } from "drizzle-orm";
-import fs from "fs";
+import fs from "./_core/dataFs";
 import path from "path";
 import {
   adminAuditLogs,

@@ -19,28 +19,30 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { FEATURED_IDS, type MenuItem } from "../../../shared/catalog";
 import type { HeroSlide } from "../../../shared/siteSettingsSchema";
-import { AnchorLink } from "../storefront/components/AnchorLink";
+import { AnchorLink, SmartLink } from "../storefront/components/AnchorLink";
 import { ProductCard } from "../storefront/components/ProductCard";
 import { SectionHeading, StoreLayout } from "../storefront/components/StoreLayout";
-import { isShopItem, NAV_DEPARTMENTS, type ShopCategoryId } from "../storefront/data";
+import { departmentsWithImages, heroSrcSet, isShopItem, type ShopCategoryId } from "../storefront/data";
 import { usePageMeta, useT } from "../storefront/hooks";
 import { useStore } from "../storefront/StoreContext";
 
 /* ---------------------------------------------------------------- Hero */
 
-type Slide = HeroSlide & { video?: { desktop: string; mobile: string } };
+type Slide = HeroSlide;
 
-/** The signature ham video plays behind the default first slide while it keeps its original image. */
-const HAM_VIDEO = { desktop: "/assets/jamon-hero.mp4", mobile: "/assets/jamon-hero-mobile.mp4" };
+/** Optional slide video (uploaded from the panel). It loads after the page is idle so it never delays the first paint. */
 function HeroVideo({ slide, active }: { slide: Slide; active: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!slide.video) return;
+    if (!slide.videoUrl) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    setSrc(window.matchMedia("(max-width: 720px)").matches ? slide.video.mobile : slide.video.desktop);
-  }, [slide.video]);
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (conn?.saveData) return;
+    const id = window.setTimeout(() => setSrc(slide.videoUrl), 1500);
+    return () => window.clearTimeout(id);
+  }, [slide.videoUrl]);
 
   useEffect(() => {
     const v = ref.current;
@@ -50,7 +52,7 @@ function HeroVideo({ slide, active }: { slide: Slide; active: boolean }) {
   }, [active, src]);
 
   if (!src) return null;
-  return <video ref={ref} className="cg-hero__video" src={src} poster={slide.imageUrl} muted loop playsInline autoPlay preload="metadata" aria-hidden="true" />;
+  return <video ref={ref} className="cg-hero__video" src={src} poster={slide.imageUrl} muted loop playsInline autoPlay preload="none" aria-hidden="true" />;
 }
 
 function Hero() {
@@ -61,8 +63,7 @@ function Hero() {
 
   const SLIDES = useMemo<Slide[]>(() => {
     const visible = settings.storefront.heroSlides.filter((s) => s.visible);
-    const list = visible.length > 0 ? visible : settings.storefront.heroSlides.slice(0, 1);
-    return list.map((s) => (s.imageUrl === "/assets/jamon-hero-start.jpg" ? { ...s, video: HAM_VIDEO } : s));
+    return visible.length > 0 ? visible : settings.storefront.heroSlides.slice(0, 1);
   }, [settings.storefront.heroSlides]);
   const current = index % SLIDES.length;
 
@@ -74,27 +75,12 @@ function Hero() {
 
   const go = (dir: number) => setIndex((i) => (i + dir + SLIDES.length) % SLIDES.length);
 
-  const tiles = [
-    {
-      href: "/tienda",
-      title: t("Tienda gourmet", "Gourmet shop"),
-      text: t("Ibéricos, quesos y aceites seleccionados", "Selected Iberian ham, cheeses and oils"),
-      image: "/assets/products/em3.jpg",
-    },
-    {
-      anchor: "servicio-corte",
-      title: t("Servicio de corte", "Carving service"),
-      text: t("Gratis con tu jamón entero", "Free with your whole ham"),
-      image: "/assets/products/sj2.jpg",
-    },
-    {
-      href: "/bakery-cafe",
-      title: t("Carta & Café", "Menu & Café"),
-      text: t("Desayunos, café y obrador en tienda", "Breakfast, coffee and bakery in store"),
-      image: "/assets/corredera-bakery-interior.jpg",
-    },
-  ];
-
+  const tiles = settings.pages.homeTiles.map((tile) => ({
+    href: tile.href,
+    title: lang === "en" ? tile.titleEn : tile.titleEs,
+    text: lang === "en" ? tile.textEn : tile.textEs,
+    image: tile.imageUrl,
+  }));
   return (
     <section className="cg-hero" aria-roledescription="carousel" aria-label={t("Destacados", "Highlights")}>
       <div className="cg-container cg-hero__grid">
@@ -109,8 +95,8 @@ function Hero() {
               aria-hidden={i !== current}
               inert={i !== current}
             >
-              <img src={slide.imageUrl} alt="" className="cg-hero__img" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : "auto"} />
-              {slide.video && <HeroVideo slide={slide} active={i === current} />}
+              <img src={slide.imageUrl} srcSet={heroSrcSet(slide.imageUrl)} sizes="(max-width: 1024px) 100vw, 70vw" alt="" className="cg-hero__img" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : "auto"} decoding="async" />
+              {slide.videoUrl && <HeroVideo slide={slide} active={i === current} />}
               <div className="cg-hero__caption">
                 {i === 0 ? (
                   <h1 className="cg-hero__title">{lang === "en" ? slide.titleEn : slide.titleEs}</h1>
@@ -118,15 +104,9 @@ function Hero() {
                   <p className="cg-hero__title">{lang === "en" ? slide.titleEn : slide.titleEs}</p>
                 )}
                 <p className="cg-hero__text">{lang === "en" ? slide.textEn : slide.textEs}</p>
-                {slide.href.startsWith("/#") ? (
-                  <AnchorLink to={slide.href.slice(2)} className="cg-btn cg-btn--primary">
-                    {lang === "en" ? slide.ctaEn : slide.ctaEs}
-                  </AnchorLink>
-                ) : (
-                  <Link href={slide.href} className="cg-btn cg-btn--primary">
-                    {lang === "en" ? slide.ctaEn : slide.ctaEs}
-                  </Link>
-                )}
+                <SmartLink href={slide.href} className="cg-btn cg-btn--primary">
+                  {lang === "en" ? slide.ctaEn : slide.ctaEs}
+                </SmartLink>
               </div>
             </div>
           ))}
@@ -157,14 +137,10 @@ function Hero() {
                 <ArrowRight className="cg-tile__arrow" size={18} aria-hidden="true" />
               </>
             );
-            return tile.anchor ? (
-              <AnchorLink key={tile.title} to={tile.anchor} className="cg-tile">
+            return (
+              <SmartLink key={tile.title} href={tile.href} className="cg-tile">
                 {inner}
-              </AnchorLink>
-            ) : (
-              <Link key={tile.title} href={tile.href!} className="cg-tile">
-                {inner}
-              </Link>
+              </SmartLink>
             );
           })}
         </div>
@@ -274,6 +250,7 @@ function BestSellers() {
 /* ---------------------------------------------------------------- Why Corredera */
 
 function WhyCorredera() {
+  const { settings } = useStore();
   const t = useT();
   const pillars = [
     {
@@ -328,7 +305,7 @@ function WhyCorredera() {
             ))}
           </div>
           <div className="cg-why__media">
-            <img src="/assets/products/je1.jpg" alt={t("Jamón ibérico de bellota entero", "Whole acorn-fed Iberian ham")} loading="lazy" width={1000} height={800} />
+            <img src={settings.pages.whyImageUrl} alt={t("Jamón ibérico de bellota entero", "Whole acorn-fed Iberian ham")} loading="lazy" decoding="async" width={1000} height={800} />
           </div>
           <div className="cg-why__col">
             {pillars.slice(2).map(({ icon: Icon, title, text }) => (
@@ -348,7 +325,7 @@ function WhyCorredera() {
 /* ---------------------------------------------------------------- Carving service */
 
 function CarvingService() {
-  const { whatsappHref, track } = useStore();
+  const { whatsappHref, track, settings, lang } = useStore();
   const t = useT();
   const steps = [
     { icon: Scissors, title: t("Elige tu pieza", "Choose your ham"), text: t("5 Jotas, Joselito, Extremadura o Cebo de Campo.", "5 Jotas, Joselito, Extremadura or Cebo de Campo.") },
@@ -357,17 +334,12 @@ function CarvingService() {
   ];
   return (
     <section id="servicio-corte" className="cg-feature" aria-labelledby="servicio-corte-title">
-      <img src="/assets/jamon-hero-start.jpg" alt="" className="cg-feature__bg" loading="lazy" />
+      <img src={settings.pages.carvingImageUrl} srcSet={heroSrcSet(settings.pages.carvingImageUrl)} sizes="100vw" alt="" className="cg-feature__bg" loading="lazy" decoding="async" />
       <div className="cg-container cg-feature__inner">
         <div className="cg-feature__card">
           <p className="cg-eyebrow cg-eyebrow--light">{t("Servicio exclusivo", "Exclusive service")}</p>
-          <h2 id="servicio-corte-title">{t("Tu jamón, cortado a cuchillo y envasado al vacío. Gratis.", "Your ham, hand-carved and vacuum packed. Free.")}</h2>
-          <p>
-            {t(
-              "Al encargar cualquiera de nuestros jamones enteros te regalamos el corte profesional a cuchillo y el envasado al vacío en sobres. Toda la pieza, lista para servir y sin esfuerzo.",
-              "When you order any of our whole hams we include professional hand-carving and vacuum packing at no cost. The whole piece, ready to serve, effortlessly.",
-            )}
-          </p>
+          <h2 id="servicio-corte-title">{lang === "en" ? settings.pages.carvingTitleEn : settings.pages.carvingTitleEs}</h2>
+          <p>{lang === "en" ? settings.pages.carvingTextEn : settings.pages.carvingTextEs}</p>
           <ol className="cg-steps">
             {steps.map(({ icon: Icon, title, text }, i) => (
               <li key={title}>
@@ -404,7 +376,7 @@ function CarvingService() {
 /* ---------------------------------------------------------------- Departments */
 
 function Departments() {
-  const { lang } = useStore();
+  const { lang, settings } = useStore();
   const t = useT();
   return (
     <section className="cg-section" aria-labelledby="nuestros-productos">
@@ -417,7 +389,7 @@ function Departments() {
           )}
         />
         <div className="cg-depts">
-          {NAV_DEPARTMENTS.map((d, i) => (
+          {departmentsWithImages(settings.pages.departmentImages).map((d, i) => (
             <Link key={d.slug} href={d.href} className={`cg-dept${i === 0 ? " cg-dept--wide" : ""}`}>
               <img src={d.image} alt="" loading="lazy" decoding="async" />
               <span className="cg-dept__label">
@@ -502,31 +474,24 @@ function HowToOrder() {
 /* ---------------------------------------------------------------- About */
 
 function About() {
+  const { settings, lang } = useStore();
   const t = useT();
+  const p = settings.pages;
+  const text2 = lang === "en" ? p.aboutText2En : p.aboutText2Es;
   return (
     <section id="nosotros" className="cg-section" aria-labelledby="nosotros-title">
       <div className="cg-container cg-story">
         <div className="cg-story__card">
           <p className="cg-eyebrow">{t("Sobre nosotros", "About us")}</p>
-          <h2 id="nosotros-title">{t("Somos Corredera", "We are Corredera")}</h2>
-          <p>
-            {t(
-              "En pleno centro de Madrid, en Calle de la Puebla, 15, Corredera Gourmet nace para acercar a cada cliente lo mejor de la despensa española: jamones ibéricos de las casas más reconocidas, embutidos de bellota, quesos de autor y aceites de oliva virgen extra.",
-              "In the heart of Madrid, at Calle de la Puebla, 15, Corredera Gourmet was born to bring the best of the Spanish pantry to every customer: Iberian hams from the most renowned houses, acorn-fed charcuterie, artisan cheeses and extra virgin olive oils.",
-            )}
-          </p>
-          <p>
-            {t(
-              "Cortamos a cuchillo, envasamos al vacío y preparamos cada encargo como si fuera para nuestra propia mesa. Y para empezar el día, nuestro obrador y cafetería te esperan con café recién hecho y bollería artesana.",
-              "We hand-carve, vacuum-pack and prepare every order as if it were for our own table. And to start your day, our bakery and café await with fresh coffee and artisan pastries.",
-            )}
-          </p>
+          <h2 id="nosotros-title">{lang === "en" ? p.aboutTitleEn : p.aboutTitleEs}</h2>
+          <p>{lang === "en" ? p.aboutText1En : p.aboutText1Es}</p>
+          {text2 && <p>{text2}</p>}
           <Link href="/tienda" className="cg-link-arrow">
             {t("Descubrir la selección", "Discover the selection")}
           </Link>
         </div>
         <div className="cg-story__media">
-          <img src="/assets/corredera-bakery-interior.jpg" alt={t("Interior de Corredera en Calle de la Puebla, 15", "Inside Corredera at Calle de la Puebla, 15")} loading="lazy" width={640} height={480} />
+          <img src={p.aboutImageUrl} alt={t("Corredera Gourmet en Calle de la Puebla, 15", "Corredera Gourmet at Calle de la Puebla, 15")} loading="lazy" decoding="async" width={640} height={480} />
         </div>
       </div>
     </section>
@@ -680,7 +645,7 @@ export default function Home() {
   );
 
   return (
-    <StoreLayout>
+    <StoreLayout trust={false}>
       <Hero />
       <InfoBar />
       <BestSellers />

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import fs from "fs";
+import fs from "./_core/dataFs";
 import path from "path";
 import { SERVER_DATA_DIR } from "./_core/paths";
 import { recordAuditAction } from "./catalogRepository";

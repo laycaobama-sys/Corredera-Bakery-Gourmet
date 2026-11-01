@@ -4,6 +4,7 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  Image as ImageIcon,
   LayoutDashboard,
   Lock,
   LogOut,
@@ -26,6 +27,7 @@ import { CustomersSection } from "./sections/Customers";
 import { DashboardSection } from "./sections/Dashboard";
 import { HomepageSection } from "./sections/Homepage";
 import { OrdersSection } from "./sections/Orders";
+import { PagesContentSection } from "./sections/PagesContent";
 import { ProductsSection } from "./sections/Products";
 import { SecuritySection } from "./sections/Security";
 import { StoreInfoSection } from "./sections/StoreInfo";
@@ -40,6 +42,7 @@ export const SECTIONS = [
   { id: "analitica", label: "Analítica web", icon: BarChart3, group: "Negocio" },
   { id: "productos", label: "Productos y precios", icon: Package, group: "Catálogo y web" },
   { id: "portada", label: "Portada y avisos", icon: MonitorSmartphone, group: "Catálogo y web" },
+  { id: "contenido", label: "Fotos y textos de la web", icon: ImageIcon, group: "Catálogo y web" },
   { id: "eventos", label: "Eventos y campañas", icon: Megaphone, group: "Catálogo y web" },
   { id: "tienda", label: "Tienda, horarios y envíos", icon: Store, group: "Catálogo y web" },
   { id: "seguridad", label: "Seguridad y actividad", icon: ShieldCheck, group: "Cuenta" },
@@ -78,7 +81,7 @@ function LoginScreen({ onSuccess, notConfigured }: { onSuccess: () => void; notC
   return (
     <div className="adm-login">
       <div className="adm-login__art" aria-hidden="true">
-        <img src="/assets/jamon-hero-start.jpg" alt="" />
+        <img src="/assets/home/hero-jamon.jpg" alt="" />
         <div className="adm-login__quote">
           <img src="/assets/brand/corredera-logo-light.png" alt="" />
           <p>Panel de gestión</p>
@@ -241,6 +244,7 @@ export default function AdminApp({ section = "" }: { section?: string }) {
           {current.id === "analitica" && <AnalyticsSection />}
           {current.id === "productos" && <ProductsSection />}
           {current.id === "portada" && <HomepageSection />}
+          {current.id === "contenido" && <PagesContentSection />}
           {current.id === "eventos" && <CampaignSection />}
           {current.id === "tienda" && <StoreInfoSection />}
           {current.id === "seguridad" && <SecuritySection onPasswordChanged={(t) => storeToken(t)} />}

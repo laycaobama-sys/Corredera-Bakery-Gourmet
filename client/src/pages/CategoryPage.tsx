@@ -4,7 +4,7 @@ import { Link } from "wouter";
 import { GOURMET_CATEGORY_PAGES, getGourmetCategoryBySlug } from "../../../shared/gourmetRoutes";
 import { ProductListing } from "../storefront/components/ProductListing";
 import { Breadcrumbs, SectionHeading, StoreLayout } from "../storefront/components/StoreLayout";
-import { NAV_DEPARTMENTS } from "../storefront/data";
+import { departmentsWithImages } from "../storefront/data";
 import { usePageMeta, useT } from "../storefront/hooks";
 import { useStore } from "../storefront/StoreContext";
 import CartaPage from "./CartaPage";
@@ -16,8 +16,9 @@ export default function CategoryPage({ slug }: { slug: string }) {
 }
 
 function GourmetCategory({ slug }: { slug: string }) {
-  const { items, lang } = useStore();
+  const { items, lang, settings } = useStore();
   const t = useT();
+  const departments = departmentsWithImages(settings.pages.departmentImages);
   const config = getGourmetCategoryBySlug(slug);
   const es = lang === "es";
 
@@ -30,7 +31,7 @@ function GourmetCategory({ slug }: { slug: string }) {
 
   if (!config || !config.isGourmetPrimary) return <NotFound />;
 
-  const dept = NAV_DEPARTMENTS.find((d) => d.slug === slug);
+  const dept = departments.find((d) => d.slug === slug);
   const related = GOURMET_CATEGORY_PAGES.filter((c) => config.relatedSlugs.includes(c.slug) && c.isGourmetPrimary);
   const showCuttingNotice = slug === "jamones" || slug === "jamon-cortado";
 
@@ -110,7 +111,7 @@ function GourmetCategory({ slug }: { slug: string }) {
             <SectionHeading title={t("También te puede interesar", "You may also like")} />
             <div className="cg-related">
               {related.map((c) => {
-                const d = NAV_DEPARTMENTS.find((x) => x.slug === c.slug);
+                const d = departments.find((x) => x.slug === c.slug);
                 return (
                   <Link key={c.slug} href={c.path} className="cg-dept">
                     <img src={d?.image ?? c.cardImage} alt="" loading="lazy" />

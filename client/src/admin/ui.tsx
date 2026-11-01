@@ -324,6 +324,8 @@ export function Confirm({
 /* ------------------------------------------------------------------ image upload */
 
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp"] as const;
+const ACCEPTED_VIDEO = ["video/mp4", "video/webm"] as const;
+type MediaMime = (typeof ACCEPTED)[number] | (typeof ACCEPTED_VIDEO)[number];
 
 function readAsDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -334,42 +336,48 @@ function readAsDataUrl(file: File) {
   });
 }
 
-/** Image picker with drag & drop that uploads to the server and returns the public URL. */
+/** Image (or video) picker with drag & drop that uploads to the server and returns the public URL. */
 export function ImageUpload({
   value,
   onChange,
   aspect = "5 / 4",
   label = "Imagen",
+  kind = "image",
+  onClear,
 }: {
   value: string;
   onChange: (url: string) => void;
   aspect?: string;
   label?: string;
+  kind?: "image" | "video";
+  onClear?: () => void;
 }) {
   const upload = trpc.admin.uploadProductImage.useMutation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
+  const accepted: readonly string[] = kind === "video" ? ACCEPTED_VIDEO : ACCEPTED;
+  const maxBytes = kind === "video" ? 15 * 1024 * 1024 : 5 * 1024 * 1024;
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
-    if (!ACCEPTED.includes(file.type as (typeof ACCEPTED)[number])) {
-      toast.error("Formato no válido. Usa JPG, PNG o WebP.");
+    if (!accepted.includes(file.type)) {
+      toast.error(kind === "video" ? "Formato no válido. Usa MP4 o WebM." : "Formato no válido. Usa JPG, PNG o WebP.");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("La imagen supera 5 MB. Redúcela antes de subirla.");
+    if (file.size > maxBytes) {
+      toast.error(kind === "video" ? "El vídeo supera 15 MB. Usa uno más corto o comprimido." : "La imagen supera 5 MB. Redúcela antes de subirla.");
       return;
     }
     try {
       const base64Data = await readAsDataUrl(file);
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-100) || "imagen.jpg";
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-100) || (kind === "video" ? "video.mp4" : "imagen.jpg");
       const res = await upload.mutateAsync({
         fileName: safeName,
-        mimeType: file.type as (typeof ACCEPTED)[number],
+        mimeType: file.type as MediaMime,
         base64Data,
       });
       onChange(res.imageUrl);
-      toast.success("Imagen subida");
+      toast.success(kind === "video" ? "Vídeo subido" : "Imagen subida");
     } catch (err) {
       toast.error(errorMessage(err));
     }
@@ -396,10 +404,12 @@ export function ImageUpload({
         tabIndex={0}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && inputRef.current?.click()}
       >
-        {value ? <img src={value} alt="" /> : (
+        {value ? (
+          kind === "video" ? <video src={value} muted loop autoPlay playsInline /> : <img src={value} alt="" />
+        ) : (
           <span className="adm-upload__placeholder">
             <ImagePlus size={28} strokeWidth={1.25} />
-            Arrastra una foto o haz clic
+            {kind === "video" ? "Arrastra un vídeo MP4 o haz clic" : "Arrastra una foto o haz clic"}
           </span>
         )}
         {upload.isPending && (
@@ -410,14 +420,19 @@ export function ImageUpload({
       </div>
       <div className="adm-upload__actions">
         <Button size="sm" icon={<Upload size={14} />} onClick={() => inputRef.current?.click()} loading={upload.isPending}>
-          {value ? "Cambiar foto" : "Subir foto"}
+          {value ? (kind === "video" ? "Cambiar vídeo" : "Cambiar foto") : kind === "video" ? "Subir vídeo" : "Subir foto"}
         </Button>
-        <span className="adm-field__hint">JPG, PNG o WebP · máx. 5 MB</span>
+        {value && onClear && (
+          <Button size="sm" variant="ghost" onClick={onClear}>
+            Quitar
+          </Button>
+        )}
+        <span className="adm-field__hint">{kind === "video" ? "MP4 o WebM · máx. 15 MB" : "JPG, PNG o WebP · máx. 5 MB"}</span>
       </div>
       <input
         ref={inputRef}
         type="file"
-        accept={ACCEPTED.join(",")}
+        accept={accepted.join(",")}
         hidden
         onChange={(e) => {
           void handleFile(e.target.files?.[0]);

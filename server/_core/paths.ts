@@ -4,17 +4,20 @@ import path from "node:path";
 /**
  * Resolves the canonical project root directory reliably in both development
  * (`tsx watch server/_core/index.ts`) and bundled production (`node dist/index.js`).
+ * On Cloudflare there is no project folder: the paths below are only storage keys.
  */
 export function resolveProjectRoot(): string {
+  const here = import.meta.dirname;
   const candidates = [
     process.cwd(),
-    path.resolve(import.meta.dirname, ".."),
-    path.resolve(import.meta.dirname, "../.."),
+    ...(here ? [path.resolve(here, ".."), path.resolve(here, "../..")] : []),
   ];
 
   for (const dir of candidates) {
-    if (fs.existsSync(path.join(dir, "package.json"))) {
-      return dir;
+    try {
+      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+    } catch {
+      // no file system (Cloudflare Workers)
     }
   }
 

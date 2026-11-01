@@ -72,13 +72,8 @@ export default function CartaPage() {
       <section className="cg-container cg-carta-hero">
         <div>
           <p className="cg-eyebrow">{t("Obrador & cafetería", "Bakery & café")}</p>
-          <h1>{t("Carta Bakery & Café", "Bakery & Café menu")}</h1>
-          <p>
-            {t(
-              "Empieza el día en Corredera: café recién hecho, bollería de obrador, bocadillos y tartas artesanas. Para tomar en nuestro local de Calle de la Puebla, 15.",
-              "Start your day at Corredera: fresh coffee, bakery pastries, sandwiches and artisan cakes. To enjoy at our shop on Calle de la Puebla, 15.",
-            )}
-          </p>
+          <h1>{es ? settings.pages.cartaTitleEs : settings.pages.cartaTitleEn}</h1>
+          <p>{es ? settings.pages.cartaIntroEs : settings.pages.cartaIntroEn}</p>
           <ul className="cg-carta-hours">
             <li>{es ? s.bakeryWeekdaysEs : s.bakeryWeekdaysEn}</li>
             <li>{es ? s.bakeryWeekendEs : s.bakeryWeekendEn}</li>
@@ -95,7 +90,7 @@ export default function CartaPage() {
           </p>
         </div>
         <figure className="cg-carta-poster">
-          <img src={BREAKFAST_POSTER_DATA.posterImageUrl} alt={t("Cartel de desayunos y ofertas del día", "Daily breakfast and offers poster")} loading="eager" />
+          <img src={settings.pages.cartaPosterUrl} alt={t("Cartel de desayunos y ofertas del día", "Daily breakfast and offers poster")} loading="eager" decoding="async" />
           <figcaption>{es ? BREAKFAST_POSTER_DATA.includedDrinksEs : BREAKFAST_POSTER_DATA.includedDrinksEn}</figcaption>
         </figure>
       </section>

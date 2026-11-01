@@ -1,40 +1,17 @@
 import { trpc } from "@/lib/trpc";
-import { COOKIE_NAME, UNAUTHED_ERR_MSG } from '@shared/const';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink, TRPCClientError } from "@trpc/client";
+import { httpBatchLink } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
-import { startLogin } from "./const";
 import "./index.css";
 
-const queryClient = new QueryClient();
-
-const redirectToLoginIfUnauthorized = (error: unknown) => {
-  if (!(error instanceof TRPCClientError)) return;
-  if (typeof window === "undefined") return;
-
-  const isUnauthorized = error.message === UNAUTHED_ERR_MSG;
-
-  if (!isUnauthorized) return;
-
-  startLogin();
-};
-
-queryClient.getQueryCache().subscribe(event => {
-  if (event.type === "updated" && event.action.type === "error") {
-    const error = event.query.state.error;
-    redirectToLoginIfUnauthorized(error);
-    console.warn("[API Query Notice]", error);
-  }
-});
-
-queryClient.getMutationCache().subscribe(event => {
-  if (event.type === "updated" && event.action.type === "error") {
-    const error = event.mutation.state.error;
-    redirectToLoginIfUnauthorized(error);
-    console.warn("[API Mutation Notice]", error);
-  }
+// A failed request is retried once at most: the storefront always has local data to show meanwhile.
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: 1, refetchOnWindowFocus: false },
+    mutations: { retry: false },
+  },
 });
 
 const trpcClient = trpc.createClient({
@@ -43,30 +20,14 @@ const trpcClient = trpc.createClient({
       url: "/api/trpc",
       transformer: superjson,
       headers() {
-        const headersOut: Record<string, string> = {};
-        // Preview auto-login fallback: when the browser blocks iframe cookies
-        // (Safari ITP / private browsing / WebView), the runtime mirrors the
-        // session into sessionStorage so we can forward it as a Bearer token
-        // or x-admin-session header.
+        // Fallback when the browser blocks the admin session cookie (Safari ITP, private mode).
         try {
           const adminToken = sessionStorage.getItem("corredera-admin-token");
-          if (adminToken) {
-            headersOut["x-admin-session"] = adminToken;
-          }
-
-          const raw = sessionStorage.getItem("manus-cookie");
-          if (raw) {
-            const prefix = `${COOKIE_NAME}=`;
-            const pair = raw.split(";").find(s => s.trim().startsWith(prefix));
-            const token = pair?.trim().slice(prefix.length);
-            if (token) {
-              headersOut.Authorization = `Bearer ${token}`;
-            }
-          }
+          if (adminToken) return { "x-admin-session": adminToken };
         } catch {
           // sessionStorage unavailable
         }
-        return headersOut;
+        return {};
       },
       fetch(input, init) {
         return globalThis.fetch(input, {

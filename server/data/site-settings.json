@@ -12,7 +12,7 @@
     "ctaTextEn": "Pre-order via WhatsApp",
     "whatsappPrefillEs": "Hola Corredera Bakery & Gourmet, quisiera información y reservar un encargo de vuestra campaña especial.",
     "whatsappPrefillEn": "Hello Corredera Bakery & Gourmet, I would like information to pre-order from your seasonal special campaign.",
-    "imageUrl": "/assets/jamon-hero-end.jpg"
+    "imageUrl": "/assets/home/hero-loncheado.jpg"
   },
   "hero": {
     "toplineEs": "Encargos Gourmet por WhatsApp: +34 640 34 19 32 · Calle de la Puebla, 15 (Madrid)",
@@ -482,7 +482,140 @@
     "story": true,
     "visit": true
   },
-  "version": 1,
-  "updatedAt": "2026-10-30T21:09:01.355Z",
-  "updatedBy": "system-default"
+  "storefront": {
+    "announcements": [
+      {
+        "textEs": "Corte a cuchillo y envasado al vacío gratis en jamones enteros",
+        "textEn": "Free hand-carving & vacuum packing on whole hams"
+      },
+      {
+        "textEs": "Recogida en Calle de la Puebla, 15 · Madrid o envío a domicilio",
+        "textEn": "Pickup at Calle de la Puebla, 15 · Madrid or home delivery"
+      },
+      {
+        "textEs": "Encargos y consultas por WhatsApp +34 640 34 19 32",
+        "textEn": "Orders & enquiries on WhatsApp +34 640 34 19 32"
+      }
+    ],
+    "heroSlides": [
+      {
+        "id": "jamones",
+        "imageUrl": "/assets/home/hero-jamon.jpg",
+        "titleEs": "Jamones 5 Jotas y Joselito",
+        "titleEn": "5 Jotas & Joselito hams",
+        "textEs": "Corte a cuchillo y envasado al vacío gratis al encargar tu pieza entera",
+        "textEn": "Free hand-carving and vacuum packing when you order a whole ham",
+        "ctaEs": "Elegir jamón",
+        "ctaEn": "Choose a ham",
+        "href": "/gourmet/jamones",
+        "videoUrl": "",
+        "visible": true
+      },
+      {
+        "id": "loncheados",
+        "imageUrl": "/assets/home/hero-loncheado.jpg",
+        "titleEs": "Loncheados de 100 g",
+        "titleEn": "100 g sliced packs",
+        "textEs": "Ibéricos cortados a mano y envasados al vacío, listos para servir",
+        "textEn": "Hand-sliced Iberian ham, vacuum packed and ready to serve",
+        "ctaEs": "Comprar loncheados",
+        "ctaEn": "Shop sliced packs",
+        "href": "/gourmet/sobres-jamon",
+        "videoUrl": "",
+        "visible": true
+      },
+      {
+        "id": "quesos",
+        "imageUrl": "/assets/home/hero-quesos.jpg",
+        "titleEs": "Nuestra cava de quesos",
+        "titleEn": "Our cheese cellar",
+        "textEs": "Payoyo, Pecorino trufado, Comté y curados de autor al corte",
+        "textEn": "Payoyo, truffled Pecorino, Comté and artisan cheeses cut to order",
+        "ctaEs": "Descubrir quesos",
+        "ctaEn": "Discover cheeses",
+        "href": "/gourmet/quesos",
+        "videoUrl": "",
+        "visible": true
+      }
+    ]
+  },
+  "pages": {
+    "homeTiles": [
+      {
+        "titleEs": "Tienda gourmet",
+        "titleEn": "Gourmet shop",
+        "textEs": "Ibéricos, quesos y aceites seleccionados",
+        "textEn": "Selected Iberian ham, cheeses and oils",
+        "imageUrl": "/assets/products/em3.jpg",
+        "href": "/tienda"
+      },
+      {
+        "titleEs": "Servicio de corte",
+        "titleEn": "Carving service",
+        "textEs": "Gratis con tu jamón entero",
+        "textEn": "Free with your whole ham",
+        "imageUrl": "/assets/products/sj2.jpg",
+        "href": "/#servicio-corte"
+      },
+      {
+        "titleEs": "Carta & Café",
+        "titleEn": "Menu & Café",
+        "textEs": "Desayunos, café y obrador en tienda",
+        "textEn": "Breakfast, coffee and bakery in store",
+        "imageUrl": "/assets/corredera-bakery-interior.jpg",
+        "href": "/bakery-cafe"
+      }
+    ],
+    "whyImageUrl": "/assets/products/je1.jpg",
+    "carvingImageUrl": "/assets/home/carving-bg.jpg",
+    "carvingTitleEs": "Tu jamón, cortado a cuchillo y envasado al vacío. Gratis.",
+    "carvingTitleEn": "Your ham, hand-carved and vacuum packed. Free.",
+    "carvingTextEs": "Al encargar cualquiera de nuestros jamones enteros te regalamos el corte profesional a cuchillo y el envasado al vacío en sobres. Toda la pieza, lista para servir y sin esfuerzo.",
+    "carvingTextEn": "When you order any of our whole hams we include professional hand-carving and vacuum packing at no cost. The whole piece, ready to serve, effortlessly.",
+    "aboutImageUrl": "/assets/corredera-bakery-interior.jpg",
+    "aboutTitleEs": "Somos Corredera",
+    "aboutTitleEn": "We are Corredera",
+    "aboutText1Es": "En pleno centro de Madrid, en Calle de la Puebla, 15, Corredera Gourmet nace para acercar a cada cliente lo mejor de la despensa española: jamones ibéricos de las casas más reconocidas, embutidos de bellota, quesos de autor y aceites de oliva virgen extra.",
+    "aboutText1En": "In the heart of Madrid, at Calle de la Puebla, 15, Corredera Gourmet was born to bring the best of the Spanish pantry to every customer: Iberian hams from the most renowned houses, acorn-fed charcuterie, artisan cheeses and extra virgin olive oils.",
+    "aboutText2Es": "Cortamos a cuchillo, envasamos al vacío y preparamos cada encargo como si fuera para nuestra propia mesa. Y para empezar el día, nuestro obrador y cafetería te esperan con café recién hecho y bollería artesana.",
+    "aboutText2En": "We hand-carve, vacuum-pack and prepare every order as if it were for our own table. And to start your day, our bakery and café await with fresh coffee and artisan pastries.",
+    "departmentImages": [
+      {
+        "slug": "jamones",
+        "imageUrl": "/assets/products/je1.jpg"
+      },
+      {
+        "slug": "jamon-cortado",
+        "imageUrl": "/assets/products/sj2.jpg"
+      },
+      {
+        "slug": "sobres-jamon",
+        "imageUrl": "/assets/products/sj3.jpg"
+      },
+      {
+        "slug": "embutidos",
+        "imageUrl": "/assets/products/em3.jpg"
+      },
+      {
+        "slug": "sobres-embutidos",
+        "imageUrl": "/assets/products/se1.jpg"
+      },
+      {
+        "slug": "quesos",
+        "imageUrl": "/assets/products/q5.jpg"
+      },
+      {
+        "slug": "aceites",
+        "imageUrl": "/assets/products/ao2.jpg"
+      }
+    ],
+    "cartaPosterUrl": "/assets/carta-cartel.jpg",
+    "cartaTitleEs": "Carta Bakery & Café",
+    "cartaTitleEn": "Bakery & Café menu",
+    "cartaIntroEs": "Empieza el día en Corredera: café recién hecho, bollería de obrador, bocadillos y tartas artesanas. Para tomar en nuestro local de Calle de la Puebla, 15.",
+    "cartaIntroEn": "Start your day at Corredera: fresh coffee, bakery pastries, sandwiches and artisan cakes. To enjoy at our shop on Calle de la Puebla, 15."
+  },
+  "version": 3,
+  "updatedAt": "2026-11-01T22:00:46.926Z",
+  "updatedBy": "owner-admin"
 }

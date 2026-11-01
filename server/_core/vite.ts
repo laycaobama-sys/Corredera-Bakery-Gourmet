@@ -5,7 +5,8 @@ import { nanoid } from "nanoid";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
-import { resolveHtmlRouteSeoStatus } from "./seoMiddleware";
+import { PUBLIC_UPLOADS_DIR } from "./paths";
+import { renderHtmlPage } from "./htmlPage";
 
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
@@ -24,7 +25,6 @@ export async function setupVite(app: Express, server: Server) {
   app.use(vite.middlewares);
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
-    const seoStatus = resolveHtmlRouteSeoStatus(req.path || url);
 
     try {
       const clientTemplate = path.resolve(
@@ -40,12 +40,13 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
       );
-      const page = await vite.transformIndexHtml(url, template);
+      const rendered = await renderHtmlPage(template, url);
+      const page = await vite.transformIndexHtml(url, rendered.html);
       res
-        .status(seoStatus.statusCode)
+        .status(rendered.status)
         .set({
           "Content-Type": "text/html; charset=utf-8",
-          "X-Robots-Tag": seoStatus.robotsHeader,
+          "X-Robots-Tag": rendered.robots,
         })
         .end(page);
     } catch (e) {
@@ -66,14 +67,44 @@ export function serveStatic(app: Express) {
     );
   }
 
-  app.use(express.static(distPath));
+  // Photos uploaded from the admin panel live in UPLOAD_DIR (a persistent volume in production).
+  app.use("/assets/uploads", express.static(PUBLIC_UPLOADS_DIR, { maxAge: "30d", immutable: true, index: false }));
 
-  // fall through to index.html if the file doesn't exist, preserving accurate HTTP 200 vs 404 status
-  app.use("*", (req, res) => {
-    const seoStatus = resolveHtmlRouteSeoStatus(req.path || req.originalUrl);
+  app.use(
+    express.static(distPath, {
+      index: false,
+      setHeaders(res, filePath) {
+        const rel = path.relative(distPath, filePath).replace(/\\/g, "/");
+        if (rel.startsWith("static/")) {
+          // Content-hashed build output never changes
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        } else if (/^assets\//.test(rel)) {
+          // Photos and video: cache a day, then revalidate (the owner can replace them)
+          res.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+        } else {
+          res.setHeader("Cache-Control", "no-cache");
+        }
+      },
+    })
+  );
+
+  // fall through to index.html if the file doesn't exist, preserving accurate HTTP 200 vs 404 status.
+  // Each page gets its own title, description, JSON-LD and text snapshot for crawlers and AI assistants.
+  const indexPath = path.resolve(distPath, "index.html");
+  app.use("*", async (req, res) => {
+    let template: string;
+    try {
+      template = await fs.promises.readFile(indexPath, "utf-8");
+    } catch {
+      res.status(500).type("text/plain").send("Build not found");
+      return;
+    }
+    const rendered = await renderHtmlPage(template, req.originalUrl);
     res
-      .status(seoStatus.statusCode)
-      .setHeader("X-Robots-Tag", seoStatus.robotsHeader)
-      .sendFile(path.resolve(distPath, "index.html"));
+      .status(rendered.status)
+      .setHeader("X-Robots-Tag", rendered.robots)
+      .setHeader("Cache-Control", "no-cache")
+      .type("html")
+      .send(rendered.html);
   });
 }

@@ -60,6 +60,48 @@ Secciones del panel (`client/src/admin/`):
 
 La analítica es propia y anónima (sin cookies ni servicios externos, sin guardar IPs).
 
+## Contenido editable y SEO
+
+- **Fotos y textos de la web** (panel): cartel y textos de la carta, bloques junto al carrusel, «¿Por qué Corredera?», servicio de corte, «Somos Corredera» y fotos de categorías. El carrusel admite foto y vídeo opcional (MP4/WebM).
+- Las páginas abiertas recogen los cambios del panel en menos de un minuto (y al volver a la pestaña).
+- El servidor genera para cada URL su título, descripción, canonical, Open Graph, datos estructurados (Product, ItemList, BreadcrumbList, FAQPage, Menu) y un resumen de texto, para Google y asistentes de IA. `/sitemap.xml` y `/llms.txt` se generan en vivo desde el catálogo; `robots.txt` permite a GPTBot, ClaudeBot, PerplexityBot y Google-Extended.
+
+## Despliegue en Cloudflare (recomendado)
+
+Todo funciona en Cloudflare Workers: la web, el panel, los pedidos, la analítica y las fotos subidas desde el panel.
+Los datos se guardan en un Durable Object con SQLite (`worker/index.ts`), incluido en el plan gratuito.
+La primera vez se cargan el catálogo y los textos de `server/data/catalog-store.json` y `site-settings.json`.
+
+**Opción A: desde el panel de Cloudflare (Workers Builds, se despliega solo con cada push)**
+
+1. Cloudflare → *Workers & Pages* → *Create* → *Import a repository* → este repositorio de GitHub.
+2. Build command: `pnpm build:cloudflare` · Deploy command: `npx wrangler deploy` · Root: `/`.
+3. En *Settings → Variables and Secrets* añade el secreto `ADMIN_INITIAL_PASSWORD` (mínimo 12 caracteres):
+   será la contraseña del dueño en `/admin`. Después puede cambiarla desde *Seguridad*, y el secreto ya no se usa.
+4. *Settings → Domains & Routes*: añade el dominio (p. ej. `correderagourmet.com`).
+
+**Opción B: desde el ordenador**
+
+```bash
+pnpm install
+pnpm exec wrangler login
+pnpm exec wrangler secret put ADMIN_INITIAL_PASSWORD
+pnpm deploy:cloudflare
+```
+
+`pnpm dev:cloudflare` prueba la versión de Cloudflare en local (`http://127.0.0.1:8787`).
+En Cloudflare deja **Rocket Loader desactivado**. Las páginas se guardan en la caché de Cloudflare 60 s y las fotos subidas un año.
+Si el dominio no es `correderagourmet.com`, añade la variable `PUBLIC_SITE_URL`.
+
+## Despliegue en un servidor Node (alternativa)
+
+Railway, Render, Fly.io, un VPS o Docker con Node.js 20+.
+
+1. `pnpm install && pnpm build`, y arrancar con `pnpm start` (puerto `PORT`).
+2. Volumen persistente para `DATA_DIR` (catálogo, ajustes, pedidos, analítica, clave) y `UPLOAD_DIR` (fotos subidas desde el panel).
+3. `PUBLIC_SITE_URL=https://tu-dominio` si el dominio no es `correderagourmet.com`.
+4. En el servidor: `pnpm admin:password` para crear la clave del propietario.
+
 ## Fotos de producto
 
 Las fotos de estudio de la tienda se generaron con Google Flow mediante la herramienta local `srzGoogleFlowMCP/` (no incluida en el repositorio):

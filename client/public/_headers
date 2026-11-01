@@ -1,18 +1,14 @@
-# Cloudflare & CDN Static Asset Headers — Corredera Bakery & Gourmet
-/assets/index-*
+# Cloudflare static asset headers — Corredera Bakery & Gourmet
+# Pages are served by the Worker (worker/index.ts), which adds the security headers.
+
+# Content-hashed JS, CSS and fonts never change
+/static/*
   Cache-Control: public, max-age=31536000, immutable
 
-/assets/jamon-hero*
-  Cache-Control: public, max-age=604800
-  Accept-Ranges: bytes
+# Photos and video: one day, then revalidate (the owner can replace them)
+/assets/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
-/assets/uploads/*
-  Cache-Control: public, max-age=86400
-
-/admin*
-  X-Robots-Tag: noindex, nofollow, noarchive
-  Cache-Control: no-store, no-cache, must-revalidate
-
-/api/*
-  X-Robots-Tag: noindex, nofollow, noarchive
-  Cache-Control: no-store
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

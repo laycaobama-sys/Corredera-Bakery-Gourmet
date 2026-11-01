@@ -1,7 +1,7 @@
 import { parse as parseCookieHeader } from "cookie";
 import crypto from "crypto";
 import type { Request } from "express";
-import fs from "fs";
+import fs from "./_core/dataFs";
 import { jwtVerify, SignJWT } from "jose";
 import path from "path";
 import type { User } from "../drizzle/schema";

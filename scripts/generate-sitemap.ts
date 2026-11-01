@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { menuItems } from "../shared/catalog";
 import { GOURMET_CATEGORY_PAGES } from "../shared/gourmetRoutes";
+import { buildLlmsTxt } from "../server/_core/seoRender";
 
 const BASE = "https://correderagourmet.com";
 const today = new Date().toISOString().slice(0, 10);
@@ -56,3 +57,8 @@ const xml = [
 const out = path.resolve(import.meta.dirname, "..", "client", "public", "sitemap.xml");
 fs.writeFileSync(out, xml, "utf-8");
 console.log(`sitemap.xml: ${entries.length} URLs`);
+
+// Static fallback of the AI summary (the server serves a live version at /llms.txt).
+const llms = path.resolve(import.meta.dirname, "..", "client", "public", "llms.txt");
+fs.writeFileSync(llms, await buildLlmsTxt(), "utf-8");
+console.log("llms.txt actualizado");

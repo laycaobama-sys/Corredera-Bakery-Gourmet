@@ -132,9 +132,11 @@ describe("Independent QA Lead Acceptance Battery (11 Areas)", () => {
       "/assets/brand/corredera-logo-light.png",
       "/assets/brand/favicon-512.png",
       "/assets/corredera-bakery-interior.jpg",
-      "/assets/jamon-hero-start.jpg",
-      "/assets/jamon-hero-end.jpg",
-      "/assets/photos/quesos-artesanos.jpg",
+      "/assets/home/hero-jamon.jpg",
+      "/assets/home/hero-loncheado.jpg",
+      "/assets/home/hero-quesos.jpg",
+      "/assets/home/carving-bg.jpg",
+      "/assets/carta-cartel.jpg",
       "/assets/products/je1.jpg",
     ];
     for (const asset of criticalAssets) {
@@ -228,7 +230,7 @@ describe("Independent QA Lead Acceptance Battery (11 Areas)", () => {
     const html = fs.readFileSync(htmlPath, "utf-8");
 
     // Preloads the image actually rendered as the first hero slide and the header logo
-    expect(html).toContain('href="/assets/jamon-hero-start.jpg" fetchpriority="high"');
+    expect(html).toContain('href="/assets/home/hero-jamon.jpg" imagesrcset=');
     expect(html).toContain('href="/assets/brand/corredera-lockup.png" fetchpriority="high"');
 
     // Only the first hero slide is eager; the rest of the home media is lazy-loaded

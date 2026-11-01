@@ -1,7 +1,7 @@
 import { ChevronDown, Menu, Search, ShoppingBag } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { NAV_DEPARTMENTS } from "../data";
+import { departmentsWithImages } from "../data";
 import { useEscape, useT } from "../hooks";
 import { useStore } from "../StoreContext";
 import { MenuDrawer } from "./MenuDrawer";
@@ -45,13 +45,13 @@ function AnnouncementBar() {
 }
 
 function MegaMenu({ onNavigate }: { onNavigate: () => void }) {
-  const { lang } = useStore();
+  const { lang, settings } = useStore();
   const t = useT();
   return (
     <div className="cg-mega" role="region" aria-label={t("Departamentos de la tienda", "Shop departments")}>
       <div className="cg-container cg-mega__inner">
         <div className="cg-mega__grid">
-          {NAV_DEPARTMENTS.map((dep) => (
+          {departmentsWithImages(settings.pages.departmentImages).map((dep) => (
             <Link key={dep.slug} href={dep.href} className="cg-mega__item" onClick={onNavigate}>
               <span className="cg-mega__thumb">
                 <img src={dep.image} alt="" loading="lazy" decoding="async" width={160} height={128} />
@@ -68,7 +68,7 @@ function MegaMenu({ onNavigate }: { onNavigate: () => void }) {
           </Link>
         </div>
         <aside className="cg-mega__promo">
-          <img src="/assets/products/je1.jpg" alt="" loading="lazy" width={320} height={256} />
+          <img src={settings.pages.whyImageUrl} alt="" loading="lazy" width={320} height={256} />
           <p className="cg-eyebrow">{t("Servicio Corredera", "Corredera service")}</p>
           <p className="cg-mega__promo-title">
             {t("Tu jamón entero, cortado a cuchillo y envasado al vacío. Gratis.", "Your whole ham, hand-carved and vacuum packed. Free.")}

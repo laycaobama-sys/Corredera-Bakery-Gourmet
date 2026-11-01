@@ -108,6 +108,17 @@ export const NAV_DEPARTMENTS = [
   },
 ] as const;
 
+/** Bundled home images ship a light 800px variant; uploaded images are used as they are. */
+export function heroSrcSet(url: string) {
+  return /^\/assets\/home\/[a-z0-9-]+\.jpg$/.test(url) ? `${url.replace(/\.jpg$/, "-800.jpg")} 800w, ${url} 1376w` : undefined;
+}
+
+/** Navigation departments with the photo chosen in the admin panel. */
+export function departmentsWithImages(overrides: { slug: string; imageUrl: string }[]) {
+  const map = new Map(overrides.map((d) => [d.slug, d.imageUrl]));
+  return NAV_DEPARTMENTS.map((d) => ({ ...d, image: map.get(d.slug) ?? d.image }));
+}
+
 export function itemName(item: MenuItem, lang: Lang) {
   return lang === "en" ? item.nameEn || item.name : item.name;
 }

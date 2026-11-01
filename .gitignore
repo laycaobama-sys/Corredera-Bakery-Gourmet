@@ -24,3 +24,7 @@ _legacy_backup_*/
 _flow_output/
 srzGoogleFlowMCP/
 .claude/
+
+# Cloudflare local dev state and secrets
+.wrangler/
+.dev.vars*

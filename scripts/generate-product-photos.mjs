@@ -1,24 +1,33 @@
 /**
- * Generates clean studio product photos with Google Flow (srzGoogleFlowMCP) for every id in
- * scripts/product-photo-prompts.json. Already generated ids are skipped, so it can be resumed.
+ * Generates photos with Google Flow (srzGoogleFlowMCP) for every id in a prompts file
+ * (default scripts/product-photo-prompts.json). Already generated ids are skipped, so it can be resumed.
  *
- *   node scripts/generate-product-photos.mjs [id ...]
+ *   node scripts/generate-product-photos.mjs [--prompts scripts/home-photo-prompts.json] [--out raw-home] [id ...]
  *
- * Raw results: _flow_output/raw/<id>/. Run scripts/install-product-photos.py afterwards.
+ * Raw results: _flow_output/<out>/<id>/. Run scripts/install-product-photos.py afterwards for products.
+ * The aspect ratio comes from the Flow agent defaults (Ajustes > Configuración del agente).
  */
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { parseArgs } from "node:util";
 
 const root = path.resolve(import.meta.dirname, "..");
 const flowDir = path.join(root, "srzGoogleFlowMCP");
-const prompts = JSON.parse(fs.readFileSync(path.join(root, "scripts", "product-photo-prompts.json"), "utf8"));
+const { values, positionals } = parseArgs({
+  allowPositionals: true,
+  options: {
+    prompts: { type: "string", default: "scripts/product-photo-prompts.json" },
+    out: { type: "string", default: "raw" },
+  },
+});
+const prompts = JSON.parse(fs.readFileSync(path.join(root, values.prompts), "utf8"));
 const style = prompts._style;
-const ids = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(prompts).filter((k) => !k.startsWith("_"));
+const ids = positionals.length ? positionals : Object.keys(prompts).filter((k) => !k.startsWith("_"));
 
 let ok = 0;
 for (const id of ids) {
-  const outDir = path.join(root, "_flow_output", "raw", id);
+  const outDir = path.join(root, "_flow_output", values.out, id);
   const done = fs.existsSync(outDir) && fs.readdirSync(outDir).some((f) => /\.(jpe?g|png)$/i.test(f) && !f.startsWith("thumb"));
   if (done) {
     console.log(`= ${id} (ya generada)`);

@@ -26,18 +26,35 @@ export function ProductImage({
   sizes?: string;
 }) {
   const { lang } = useStore();
+  const src = itemImage(item);
+  // Bundled product photos ship a 480px variant for grids; uploaded photos are used as they are.
+  const srcSet = /^\/assets\/products\/[A-Za-z0-9_-]+\.jpg$/.test(src) ? `${src.replace(/\.jpg$/, "-480.jpg")} 480w, ${src} 1000w` : undefined;
   return (
     <img
-      src={itemImage(item)}
+      src={src}
+      srcSet={srcSet}
+      sizes={srcSet ? (sizes ?? "(max-width: 720px) 50vw, 300px") : undefined}
       alt={itemName(item, lang)}
       className={className}
       loading={eager ? "eager" : "lazy"}
       decoding="async"
       width={800}
       height={640}
-      sizes={sizes}
       onError={(e) => handleImageError(e, item)}
     />
+  );
+}
+
+/** Corredera Gourmet seal shown on every product photo, including ones the owner uploads later. */
+export function BrandSeal({ size = "sm" }: { size?: "sm" | "lg" }) {
+  return (
+    <span className={`cg-seal cg-seal--${size}`} aria-hidden="true">
+      <img src="/assets/brand/corredera-emblem.png" alt="" width={371} height={439} loading="lazy" />
+      <span>
+        <strong>Corredera</strong>
+        <small>Gourmet</small>
+      </span>
+    </span>
   );
 }
 
@@ -85,8 +102,9 @@ export function ProductCard({ item, eager = false }: { item: MenuItem; eager?: b
   return (
     <article className="cg-card">
       <Link href={href} className="cg-card__media" aria-label={itemName(item, lang)}>
-        <ProductImage item={item} eager={eager} />
+        <ProductImage item={item} eager={eager} sizes="(max-width: 720px) 50vw, (max-width: 1024px) 33vw, 25vw" />
         {badge && <span className="cg-card__badge">{badge}</span>}
+        <BrandSeal />
       </Link>
       <div className="cg-card__body">
         <h3 className="cg-card__title">

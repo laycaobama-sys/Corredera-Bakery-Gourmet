@@ -547,7 +547,7 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
       "Whole cakes and Sweet/Salty Packs for 5 or 15 people available for WhatsApp pre-order",
     ],
     bannerImage: "/assets/corredera-bakery-interior.jpg",
-    cardImage: "/assets/IMG_3810.jpeg",
+    cardImage: "/assets/carta-cartel.jpg",
     cardBadgeEs: "Carta de Local",
     cardBadgeEn: "In-Store Menu",
     seoTitleEs: "Carta de Cafetería, Desayunos y Obrador en Madrid | Corredera Bakery & Gourmet",
