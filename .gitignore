@@ -1,0 +1,26 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+.manus-logs/
+
+# Private data: owner password, orders, analytics and backups never leave the server
+ACCESO_ADMIN.txt
+server/data/admin-owner-lock.json
+server/data/admin-audit-log.json
+server/data/site-settings-history.json
+server/data/analytics-store.json
+server/data/orders-store.json
+server/data/backups/
+server/data/*.tmp
+client/public/assets/uploads/
+
+# Local working folders (old files, raw image generation, image tool with personal session)
+_legacy_backup_*/
+_flow_output/
+srzGoogleFlowMCP/
+.claude/

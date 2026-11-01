@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <script>
+      (function() {
+        try {
+          var _origFetch = typeof window !== 'undefined' && window.fetch ? window.fetch.bind(window) : null;
+          var _currentFetch = _origFetch;
+          var descriptor = {
+            configurable: true,
+            enumerable: true,
+            get: function() {
+              return _currentFetch;
+            },
+            set: function(val) {
+              _currentFetch = val;
+            }
+          };
+          if (typeof window !== 'undefined') {
+            Object.defineProperty(window, 'fetch', descriptor);
+            if (typeof Window !== 'undefined' && Window.prototype) {
+              try {
+                Object.defineProperty(Window.prototype, 'fetch', descriptor);
+              } catch (_) {}
+            }
+          }
+        } catch (_) {}
+
+        if (typeof window !== 'undefined') {
+          window.addEventListener('error', function(e) {
+            var fn = e && e.filename ? e.filename : '';
+            var msg = e && e.message ? e.message : '';
+            var stk = e && e.error && e.error.stack ? e.error.stack : '';
+            if (
+              fn.indexOf('chrome-extension://') !== -1 ||
+              msg.indexOf('chrome-extension://') !== -1 ||
+              stk.indexOf('chrome-extension://') !== -1
+            ) {
+              if (e.preventDefault) e.preventDefault();
+              if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+              return true;
+            }
+          }, true);
+        }
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+    <meta name="theme-color" content="#2b0f11" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <title>Corredera Bakery &amp; Gourmet | Ibéricos y gourmet en Madrid</title>
+    <meta
+      name="description"
+      content="Jamones ibéricos 5 Jotas y Joselito con corte a cuchillo gratis, loncheados, embutidos, quesos y aceites AOVE. Tienda gourmet en Calle de la Puebla 15, Madrid."
+    />
+    <meta name="author" content="Corredera Bakery &amp; Gourmet · Vallejo Lorenzo S.L." />
+    <meta name="geo.region" content="ES-MD" />
+    <meta name="geo.placename" content="Madrid" />
+
+    <!-- Canonical & Internationalization (hreflang) -->
+    <link rel="canonical" href="https://correderagourmet.com/" />
+    <link rel="alternate" hreflang="es" href="https://correderagourmet.com/" />
+    <link rel="alternate" hreflang="en" href="https://correderagourmet.com/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://correderagourmet.com/" />
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:site_name" content="Corredera Bakery &amp; Gourmet" />
+    <meta property="og:title" content="Corredera Gourmet · Jamones ibéricos, embutidos, quesos y aceites en Madrid" />
+    <meta
+      property="og:description"
+      content="Jamones 5 Jotas y Joselito con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos de bellota, quesos y aceites AOVE en Calle de la Puebla 15, Madrid."
+    />
+    <meta property="og:url" content="https://correderagourmet.com/" />
+    <meta property="og:image" content="https://correderagourmet.com/assets/jamon-hero-start.jpg" />
+    <meta property="og:image:secure_url" content="https://correderagourmet.com/assets/jamon-hero-start.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta
+      property="og:image:alt"
+      content="Jamón ibérico de bellota en jamonero · Corredera Gourmet, Calle de la Puebla 15, Madrid"
+    />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Corredera Gourmet · Jamones ibéricos, embutidos, quesos y aceites en Madrid" />
+    <meta
+      name="twitter:description"
+      content="Jamones 5 Jotas y Joselito con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos de bellota, quesos y aceites AOVE en Calle de la Puebla 15, Madrid."
+    />
+    <meta name="twitter:image" content="https://correderagourmet.com/assets/jamon-hero-start.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="Jamón ibérico de bellota en jamonero · Corredera Gourmet, Calle de la Puebla 15, Madrid"
+    />
+
+    <!-- Icons, Manifest & Preloads -->
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/brand/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/brand/favicon-512.png" />
+    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" as="image" href="/assets/brand/corredera-lockup.png" fetchpriority="high" />
+    <link rel="preload" as="image" href="/assets/jamon-hero-start.jpg" fetchpriority="high" />
+
+    <!-- Schema.org Structured Data (Verified Data Only — Separated Bakery & Gourmet Entities under Vallejo Lorenzo S.L.) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://correderagourmet.com/#website",
+            "url": "https://correderagourmet.com/",
+            "name": "Corredera Bakery & Gourmet",
+            "description": "Jamones ibéricos 5 Jotas y Joselito, sobres de 100 g envasados al vacío, embutidos ibéricos, quesos seleccionados, aceites AOVE, desayunos, cafetería y obrador artesanal en Calle de la Puebla 15, Madrid.",
+            "inLanguage": ["es-ES", "en-US"],
+            "publisher": {
+              "@id": "https://correderagourmet.com/#organization"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://correderagourmet.com/#organization",
+            "name": "Corredera Bakery & Gourmet",
+            "legalName": "Vallejo Lorenzo S.L.",
+            "url": "https://correderagourmet.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://correderagourmet.com/assets/brand/corredera-logo.png"
+            },
+            "email": "info@correderagourmet.com",
+            "telephone": "+34919471449",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Calle de la Puebla, 15",
+              "addressLocality": "Madrid",
+              "postalCode": "28004",
+              "addressRegion": "Madrid",
+              "addressCountry": "ES"
+            },
+            "sameAs": [
+              "https://www.instagram.com/correderagourmet",
+              "https://www.tiktok.com/@correderagourmet"
+            ],
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "telephone": "+34640341932",
+                "contactType": "customer service and reservations",
+                "url": "https://wa.me/34640341932",
+                "availableLanguage": ["es", "en"]
+              },
+              {
+                "@type": "ContactPoint",
+                "telephone": "+34919471449",
+                "contactType": "customer service",
+                "availableLanguage": ["es", "en"]
+              }
+            ]
+          },
+          {
+            "@type": ["Bakery", "CafeOrCoffeeShop"],
+            "@id": "https://correderagourmet.com/#bakery",
+            "name": "Corredera Bakery",
+            "description": "Obrador artesanal y cafetería en Calle de la Puebla 15, Madrid. Promoción Croissant + Café por 3,75 €, Brunch completo por 11,99 €, bollería recién horneada, tartas artesanas, bocadillos de jamón ibérico y Sweet & Salty Packs.",
+            "url": "https://correderagourmet.com/bakery-cafe",
+            "image": "https://correderagourmet.com/assets/corredera-bakery-interior.jpg",
+            "logo": "https://correderagourmet.com/assets/brand/corredera-logo.png",
+            "parentOrganization": {
+              "@id": "https://correderagourmet.com/#organization"
+            },
+            "telephone": "+34919471449",
+            "email": "info@correderagourmet.com",
+            "priceRange": "€",
+            "currenciesAccepted": "EUR",
+            "servesCuisine": ["Panadería artesanal", "Bollería", "Cafetería", "Desayunos", "Pastelería"],
+            "hasMap": "https://maps.app.goo.gl/CLJfpGTwYuojACUz6",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Calle de la Puebla, 15",
+              "addressLocality": "Madrid",
+              "postalCode": "28004",
+              "addressRegion": "Madrid",
+              "addressCountry": "ES"
+            },
+            "openingHoursSpecification": [
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+                "opens": "08:00",
+                "closes": "21:00"
+              },
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Friday", "Saturday"],
+                "opens": "08:00",
+                "closes": "23:00"
+              },
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Sunday"],
+                "opens": "09:00",
+                "closes": "21:00"
+              }
+            ],
+            "sameAs": [
+              "https://www.instagram.com/correderagourmet",
+              "https://www.tiktok.com/@correderagourmet"
+            ],
+            "hasMenu": {
+              "@type": "Menu",
+              "name": "Carta Corredera Bakery",
+              "url": "https://correderagourmet.com/bakery-cafe",
+              "hasMenuSection": [
+                {
+                  "@type": "MenuSection",
+                  "name": "Desayunos y Ofertas del Día",
+                  "hasMenuItem": [
+                    {
+                      "@type": "MenuItem",
+                      "name": "Promoción Croissant + Café",
+                      "description": "Croissant de mantequilla recién horneado con café solo, cortado o con leche.",
+                      "offers": { "@type": "Offer", "price": "3.75", "priceCurrency": "EUR" }
+                    },
+                    {
+                      "@type": "MenuItem",
+                      "name": "Brunch Completo · Oferta del Día",
+                      "description": "Café + tostada + zumo de naranja natural + bollería.",
+                      "offers": { "@type": "Offer", "price": "11.99", "priceCurrency": "EUR" }
+                    },
+                    {
+                      "@type": "MenuItem",
+                      "name": "Promoción Bocadillo Especial + Refresco",
+                      "description": "Bocadillo especial de la casa a elegir + refresco frío incluido.",
+                      "offers": { "@type": "Offer", "price": "8.99", "priceCurrency": "EUR" }
+                    }
+                  ]
+                },
+                {
+                  "@type": "MenuSection",
+                  "name": "Bollería, Tartas y Packs",
+                  "hasMenuItem": [
+                    {
+                      "@type": "MenuItem",
+                      "name": "Croissant de Mantequilla",
+                      "description": "Croissant de mantequilla horneado a diario.",
+                      "offers": { "@type": "Offer", "price": "2.00", "priceCurrency": "EUR" }
+                    },
+                    {
+                      "@type": "MenuItem",
+                      "name": "Sweet Pack · 12 unidades",
+                      "description": "Caja para compartir de palmeritas y hojaldres de mantequilla.",
+                      "offers": { "@type": "Offer", "price": "10.90", "priceCurrency": "EUR" }
+                    },
+                    {
+                      "@type": "MenuItem",
+                      "name": "Tarta de Queso Artesana (Cheesecake)",
+                      "description": "Tarta de queso horneada lentamente en obrador, venta al peso.",
+                      "offers": { "@type": "Offer", "price": "29.99", "priceCurrency": "EUR" }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "@type": ["Store", "FoodEstablishment"],
+            "@id": "https://correderagourmet.com/#gourmet",
+            "name": "Corredera Gourmet",
+            "description": "Tienda gourmet, charcutería ibérica y degustación en Calle de la Puebla 15, Madrid. Jamones enteros 5 Jotas y Joselito con corte y envasado al vacío gratis, sobres de 100 g, embutidos ibéricos, selección de quesos, aceites AOVE y encargos a domicilio.",
+            "url": "https://correderagourmet.com/tienda",
+            "image": "https://correderagourmet.com/assets/jamon-hero-start.jpg",
+            "logo": "https://correderagourmet.com/assets/brand/corredera-logo.png",
+            "parentOrganization": {
+              "@id": "https://correderagourmet.com/#organization"
+            },
+            "telephone": "+34919471449",
+            "email": "info@correderagourmet.com",
+            "priceRange": "€€",
+            "currenciesAccepted": "EUR",
+            "servesCuisine": ["Jamones Ibéricos", "Embutidos de Bellota", "Quesos Seleccionados", "Aceite de Oliva Virgen Extra", "Vinos y Vermut"],
+            "hasMap": "https://maps.app.goo.gl/CLJfpGTwYuojACUz6",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Calle de la Puebla, 15",
+              "addressLocality": "Madrid",
+              "postalCode": "28004",
+              "addressRegion": "Madrid",
+              "addressCountry": "ES"
+            },
+            "openingHoursSpecification": [
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                "opens": "09:00",
+                "closes": "21:00"
+              }
+            ],
+            "sameAs": [
+              "https://www.instagram.com/correderagourmet",
+              "https://www.tiktok.com/@correderagourmet"
+            ],
+            "hasMenu": {
+              "@type": "Menu",
+              "name": "Catálogo Corredera Gourmet",
+              "url": "https://correderagourmet.com/tienda",
+              "hasMenuSection": [
+                {
+                  "@type": "MenuSection",
+                  "name": "Jamones Ibéricos Enteros con Servicio de Corte Gratuito",
+                  "hasMenuItem": [
+                    {
+                      "@type": "MenuItem",
+                      "name": "Jamón 5 Jotas · Pieza Entera",
+                      "description": "Pieza de 7 a 8 kg aprox. Incluye gratis servicio de corte y envasado al vacío al encargar la pieza.",
+                      "offers": { "@type": "Offer", "price": "625.00", "priceCurrency": "EUR" }
+                    },
+                    {
+                      "@type": "MenuItem",
+                      "name": "Jamón Joselito · Pieza Entera",
+                      "description": "Pieza de 7,5 a 8 kg aprox. Incluye gratis servicio de corte y envasado al vacío al encargar la pieza.",
+                      "offers": { "@type": "Offer", "price": "670.00", "priceCurrency": "EUR" }
+                    },
+                    {
+                      "@type": "MenuItem",
+                      "name": "Jamón de Extremadura · Pieza Entera",
+                      "description": "Pieza de 7 a 9 kg aprox. Incluye gratis servicio de corte y envasado al vacío al encargar la pieza.",
+                      "offers": { "@type": "Offer", "price": "440.00", "priceCurrency": "EUR" }
+                    }
+                  ]
+                },
+                {
+                  "@type": "MenuSection",
+                  "name": "Sobres 100 g al Vacío, Quesos y Aceites AOVE",
+                  "hasMenuItem": [
+                    {
+                      "@type": "MenuItem",
+                      "name": "Sobre Joselito Cortado a Máquina (100 g)",
+                      "description": "Sobre de 100 gramos de jamón Joselito envasado al vacío.",
+                      "offers": { "@type": "Offer", "price": "24.49", "priceCurrency": "EUR" }
+                    },
+                    {
+                      "@type": "MenuItem",
+                      "name": "Pecorino Trufado",
+                      "description": "Queso de oveja con trufa negra al corte por kilo.",
+                      "offers": { "@type": "Offer", "price": "49.99", "priceCurrency": "EUR" }
+                    },
+                    {
+                      "@type": "MenuItem",
+                      "name": "Aceite de Oliva Ecológico en Lata",
+                      "description": "Aceite de oliva virgen extra ecológico en lata protectora.",
+                      "offers": { "@type": "Offer", "price": "14.99", "priceCurrency": "EUR" }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="/api/platform/config.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

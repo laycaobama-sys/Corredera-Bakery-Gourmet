@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.env
+.env.*
+.manus-logs
+*.manus-starter-*
+ACCESO_ADMIN.txt
+_legacy_backup_*
+_flow_output
+srzGoogleFlowMCP
+.claude
