@@ -2,7 +2,7 @@
 // Build: `pnpm build:cloudflare` · Deploy: `pnpm deploy:cloudflare` (or connect the GitHub repo in Workers Builds).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "corredera-gourmet",
+  "name": "corredera-bakery-gourmet",
   "main": "worker/index.ts",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],

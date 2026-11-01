@@ -28,3 +28,9 @@ srzGoogleFlowMCP/
 # Cloudflare local dev state and secrets
 .wrangler/
 .dev.vars*
+
+# This project uses pnpm only (pnpm-lock.yaml); other lockfiles make Cloudflare pick the wrong installer
+bun.lock
+bun.lockb
+package-lock.json
+yarn.lock
