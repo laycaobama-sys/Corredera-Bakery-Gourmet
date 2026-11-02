@@ -2046,3 +2046,57 @@
     display: none;
   }
 }
+
+/* Store health checklist (summary) */
+.adm-health {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.adm-health--ok {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--a-success);
+  font-weight: 500;
+}
+
+.adm-health__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.adm-health__item.is-warn {
+  background: var(--a-warning-50);
+  color: var(--a-warning);
+}
+
+.adm-health__item.is-info {
+  background: var(--a-info-50);
+  color: var(--a-info);
+}
+
+.adm-health__item span {
+  color: var(--a-ink);
+}
+
+.adm-health__item .adm-link {
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .adm-health__item {
+    grid-template-columns: auto 1fr;
+  }
+
+  .adm-health__item .adm-link {
+    grid-column: 2;
+  }
+}

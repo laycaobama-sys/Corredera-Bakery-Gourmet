@@ -2003,10 +2003,30 @@ summary:focus-visible,
 
 .cg-bakery__list li {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   border-bottom: 1px dotted var(--cg-line);
-  padding-bottom: 6px;
+  padding-bottom: 8px;
+}
+
+.cg-bakery__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cg-bakery__item img {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  background: var(--cg-cream);
+}
+
+.cg-bakery__item:hover span {
+  color: var(--cg-burgundy);
 }
 
 .cg-bakery__list strong {
@@ -3424,8 +3444,40 @@ summary:focus-visible,
 }
 
 .cg-carta__item {
-  padding: 12px 0;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  column-gap: 16px;
+  align-items: start;
+  padding: 14px 0;
   border-bottom: 1px solid #f0e9df;
+}
+
+.cg-carta__item > :not(.cg-carta__thumb) {
+  grid-column: 2;
+}
+
+.cg-carta__thumb {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--cg-cream);
+}
+
+.cg-carta__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.cg-carta__item:hover .cg-carta__thumb img {
+  transform: scale(1.06);
+}
+
+.cg-carta__row h3 a:hover {
+  color: var(--cg-burgundy);
 }
 
 .cg-carta__row {
@@ -3457,7 +3509,7 @@ summary:focus-visible,
   color: var(--cg-muted);
   line-height: 1.5;
   margin-top: 2px !important;
-  max-width: 92%;
+  max-width: 100%;
 }
 
 .cg-carta__add {
@@ -4185,6 +4237,11 @@ summary:focus-visible,
 }
 
 @media (max-width: 480px) {
+  .cg-carta__item {
+    grid-template-columns: 60px minmax(0, 1fr);
+    column-gap: 12px;
+  }
+
   /* Badges stay on one line on small cards instead of covering the photo */
   .cg-card__badge {
     top: 8px;

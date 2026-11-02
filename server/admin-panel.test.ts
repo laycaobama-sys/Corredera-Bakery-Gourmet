@@ -6,6 +6,7 @@ import type { User } from "../drizzle/schema";
 import {
   clearRateLimitForTests,
   forceSetOwnerPassword,
+  installOwnerPasswordHash,
   setAdminOwnerLockPathForTests,
   verifyAdminAccessToken,
 } from "./adminAuth";
@@ -165,5 +166,33 @@ describe("Owner admin panel: single access, analytics, orders and customers", ()
         storefront: { ...settings.storefront, heroSlides: [{ ...settings.storefront.heroSlides[0], href: "https://evil.example" }] },
       }),
     ).rejects.toThrow();
+  });
+
+  it("flags the initial owner password until the owner replaces it, and only to the signed-in owner", async () => {
+    delete process.env.ADMIN_ACCESS_TOKEN;
+    const salt = "a".repeat(64);
+    const hash = (await import("crypto")).scryptSync("Clave-Inicial-Prueba-2026", salt, 64).toString("hex");
+    installOwnerPasswordHash(salt, hash);
+    expect(verifyAdminAccessToken("Clave-Inicial-Prueba-2026")).toBe(true);
+
+    const anonymous = await appRouter.createCaller({ req: {} as any, res: {} as any, user: null }).admin.authStatus();
+    expect(anonymous.ownerPasswordIsInitial).toBe(false);
+    const admin = appRouter.createCaller({ req: { ip: "127.0.0.1" } as any, res: { cookie: () => undefined } as any, user: owner });
+    expect((await admin.admin.authStatus()).ownerPasswordIsInitial).toBe(true);
+
+    await admin.admin.changePassword({ currentPassword: "Clave-Inicial-Prueba-2026", newPassword: "Clave-Propia-Del-Dueno-1" });
+    expect((await admin.admin.authStatus()).ownerPasswordIsInitial).toBe(false);
+    expect(verifyAdminAccessToken("Clave-Inicial-Prueba-2026")).toBe(false);
+  });
+
+  it("deletes customer orders older than the retention period promised in the privacy policy", async () => {
+    const old = new Date(Date.now() - 200 * 24 * 60 * 60 * 1000).toISOString();
+    const recent = new Date().toISOString();
+    const base = { status: "pending", customerName: "X", customerPhone: "600000000", items: [], totalAmountCents: 0, updatedAt: recent };
+    fs.writeFileSync(path.join(tmpDir, "orders.json"), JSON.stringify([{ ...base, id: "ORD-NEW", createdAt: recent }, { ...base, id: "ORD-OLD", createdAt: old }]));
+    const admin = appRouter.createCaller({ req: { ip: "127.0.0.1" } as any, res: {} as any, user: owner });
+    const ids = (await admin.admin.listOrders()).map((o) => o.id);
+    expect(ids).toContain("ORD-NEW");
+    expect(ids).not.toContain("ORD-OLD");
   });
 });

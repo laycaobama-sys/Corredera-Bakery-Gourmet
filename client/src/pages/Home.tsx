@@ -22,7 +22,7 @@ import type { HeroSlide } from "../../../shared/siteSettingsSchema";
 import { AnchorLink, SmartLink } from "../storefront/components/AnchorLink";
 import { ProductCard } from "../storefront/components/ProductCard";
 import { SectionHeading, StoreLayout } from "../storefront/components/StoreLayout";
-import { departmentsWithImages, heroSrcSet, isShopItem, type ShopCategoryId } from "../storefront/data";
+import { departmentsWithImages, heroSrcSet, isShopItem, itemImage, type ShopCategoryId } from "../storefront/data";
 import { usePageMeta, useT } from "../storefront/hooks";
 import { useStore } from "../storefront/StoreContext";
 
@@ -593,7 +593,10 @@ function BakeryTeaser() {
           <ul className="cg-bakery__list">
             {highlights.map((item) => (
               <li key={item.id}>
-                <span>{lang === "en" ? item.nameEn : item.name.replace(/^Promoción\s+/i, "")}</span>
+                <Link href={`/producto/${item.id}`} className="cg-bakery__item">
+                  <img src={itemImage(item)} alt="" width={56} height={56} loading="lazy" decoding="async" />
+                  <span>{lang === "en" ? item.nameEn : item.name.replace(/^Promoción\s+/i, "")}</span>
+                </Link>
                 <strong>{item.price}</strong>
               </li>
             ))}

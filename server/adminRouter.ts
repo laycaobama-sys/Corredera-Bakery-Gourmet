@@ -17,6 +17,7 @@ import {
   getAdminAuthConfigStatus,
   hashClientIp,
   isWebAdminSetupAllowed,
+  isOwnerPasswordInitial,
   recordFailedLoginAttempt,
   setupInitialOwnerPassword,
   signAdminSessionToken,
@@ -142,6 +143,8 @@ export const adminRouter = router({
           }
         : null,
       authConfig: { ...authConfig, webSetupAllowed: isWebAdminSetupAllowed() },
+      // Only told to the signed-in owner: reminds them to replace the initial password.
+      ownerPasswordIsInitial: Boolean(ctx.user && ctx.user.role === "admin") && isOwnerPasswordInitial(),
       storage,
     };
   }),

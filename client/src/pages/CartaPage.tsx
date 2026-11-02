@@ -1,7 +1,9 @@
 import { Info, MessageCircle, Plus } from "lucide-react";
 import { useMemo } from "react";
 import { BREAKFAST_POSTER_DATA, canOrderOnline, formatPrice, type Category, type MenuItem } from "../../../shared/catalog";
+import { Link } from "wouter";
 import { scrollToId } from "../storefront/components/AnchorLink";
+import { ProductImage } from "../storefront/components/ProductCard";
 import { Breadcrumbs, StoreLayout } from "../storefront/components/StoreLayout";
 import { itemDesc, itemName } from "../storefront/data";
 import { usePageMeta, useT } from "../storefront/hooks";
@@ -121,8 +123,13 @@ export default function CartaPage() {
             <ul>
               {g.items.map((item) => (
                 <li key={item.id} className="cg-carta__item">
+                  <Link href={`/producto/${item.id}`} className="cg-carta__thumb" tabIndex={-1} aria-hidden="true">
+                    <ProductImage item={item} sizes="96px" />
+                  </Link>
                   <div className="cg-carta__row">
-                    <h3>{itemName(item, lang).replace(/^Promoción\s+/i, "")}</h3>
+                    <h3>
+                      <Link href={`/producto/${item.id}`}>{itemName(item, lang).replace(/^Promoción\s+/i, "")}</Link>
+                    </h3>
                     <span className="cg-carta__dots" aria-hidden="true" />
                     <span className="cg-carta__price">{formatPrice(item.price, lang)}</span>
                   </div>

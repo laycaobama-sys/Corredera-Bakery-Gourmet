@@ -28,7 +28,8 @@ export function ProductImage({
   const { lang } = useStore();
   const src = itemImage(item);
   // Bundled product photos ship a 480px variant for grids; uploaded photos are used as they are.
-  const srcSet = /^\/assets\/products\/[A-Za-z0-9_-]+\.jpg$/.test(src) ? `${src.replace(/\.jpg$/, "-480.jpg")} 480w, ${src} 1000w` : undefined;
+  const bundled = src.match(/^(\/assets\/products\/[A-Za-z0-9_-]+)\.jpg(\?v=\w+)?$/);
+  const srcSet = bundled ? `${bundled[1]}-480.jpg${bundled[2] ?? ""} 480w, ${src} 1000w` : undefined;
   return (
     <img
       src={src}

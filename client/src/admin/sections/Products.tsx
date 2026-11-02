@@ -9,6 +9,7 @@ import {
   type ManagedCatalogProduct,
 } from "../../../../shared/catalogAdminSchema";
 import { buildProductDataUri } from "../../../../shared/productVisuals";
+import { PRODUCT_PHOTO_VERSION } from "../../storefront/data";
 import {
   Badge,
   Button,
@@ -175,7 +176,8 @@ function newDraft(mode: Mode): Draft {
 }
 
 function productThumb(p: { imageUrl?: string } & Pick<MenuItem, "id" | "mode" | "category" | "name" | "nameEn" | "price">) {
-  return p.imageUrl || buildProductDataUri(p);
+  if (!p.imageUrl) return buildProductDataUri(p);
+  return p.imageUrl.startsWith("/assets/products/") ? `${p.imageUrl}?v=${PRODUCT_PHOTO_VERSION}` : p.imageUrl;
 }
 
 type ModeFilter = "gourmet" | "bakery" | "all";
@@ -185,9 +187,13 @@ export function ProductsSection() {
   const q = trpc.admin.listAllProducts.useQuery();
   const toggle = trpc.admin.toggleProductActive.useMutation();
   const update = trpc.admin.updateProduct.useMutation();
-  const [mode, setMode] = useState<ModeFilter>("gourmet");
+  const [mode, setMode] = useState<ModeFilter>(() => (new URLSearchParams(window.location.search).get("filtro") ? "all" : "gourmet"));
   const [cat, setCat] = useState("all");
-  const [status, setStatus] = useState<"all" | "active" | "hidden">("all");
+  // The summary links here with ?filtro=consultar or ?filtro=ocultos.
+  const [status, setStatus] = useState<"all" | "active" | "hidden" | "ask">(() => {
+    const f = new URLSearchParams(window.location.search).get("filtro");
+    return f === "consultar" ? "ask" : f === "ocultos" ? "hidden" : "all";
+  });
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState<Draft | null>(null);
 
@@ -201,6 +207,7 @@ export function ProductsSection() {
       if (cat !== "all" && p.category !== cat) return false;
       if (status === "active" && !p.active) return false;
       if (status === "hidden" && p.active) return false;
+      if (status === "ask" && p.price !== "Consultar") return false;
       if (s && !`${p.name} ${p.desc} ${p.id}`.toLowerCase().includes(s)) return false;
       return true;
     });
@@ -278,6 +285,7 @@ export function ProductsSection() {
             <option value="all">Visibles y ocultos</option>
             <option value="active">Solo visibles</option>
             <option value="hidden">Solo ocultos</option>
+            <option value="ask">Precio «Consultar»</option>
           </Select>
           <label className="adm-search adm-search--grow">
             <Search size={16} />

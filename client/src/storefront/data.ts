@@ -154,8 +154,12 @@ export function itemBadge(item: MenuItem, lang: Lang) {
   return lang === "en" ? item.badgeEn || item.badge : item.badge;
 }
 
+/** Raise when bundled product photos are replaced, so browsers fetch the new files instead of cached ones. */
+export const PRODUCT_PHOTO_VERSION = "3";
+
 export function itemImage(item: MenuItem & { imageUrl?: string }) {
-  return menuImageFor(item);
+  const url = menuImageFor(item);
+  return url.startsWith("/assets/products/") ? `${url}?v=${PRODUCT_PHOTO_VERSION}` : url;
 }
 
 export function categoryLabel(item: MenuItem, lang: Lang) {

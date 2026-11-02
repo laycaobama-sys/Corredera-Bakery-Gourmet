@@ -19,7 +19,8 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { toast } from "sonner";
 import { Link, useLocation } from "wouter";
 import "./admin.css";
 import { AnalyticsSection } from "./sections/Analytics";
@@ -141,6 +142,47 @@ export default function AdminApp({ section = "" }: { section?: string }) {
   );
 }
 
+/** Two-note chime made in the browser (no audio file to download). */
+function playChime() {
+  try {
+    const ctx = new AudioContext();
+    [880, 1318.5].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      const start = ctx.currentTime + i * 0.18;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.25, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.55);
+    });
+    window.setTimeout(() => void ctx.close(), 1500);
+  } catch {
+    // audio unavailable
+  }
+}
+
+/** While the panel is open: chime, notice and tab title when a new order arrives, so it never goes unseen. */
+function useNewOrderAlert(pending: number | undefined) {
+  const previous = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (pending === undefined) return;
+    const before = previous.current;
+    previous.current = pending;
+    document.title = pending > 0 ? `(${pending}) Pedidos pendientes · Corredera` : "Panel de gestión · Corredera Gourmet";
+    if (before !== undefined && pending > before) {
+      playChime();
+      toast.success(pending - before === 1 ? "Nuevo pedido recibido" : `${pending - before} pedidos nuevos`, {
+        description: "Confírmalo por WhatsApp desde Pedidos.",
+        duration: 10_000,
+      });
+    }
+  }, [pending]);
+}
+
 function AdminPanel({ section }: { section: string }) {
   const utils = trpc.useUtils();
   const auth = trpc.admin.authStatus.useQuery(undefined, { retry: false, refetchOnWindowFocus: false });
@@ -148,7 +190,8 @@ function AdminPanel({ section }: { section: string }) {
   const [, navigate] = useLocation();
   const [navOpen, setNavOpen] = useState(false);
   const isAdmin = Boolean(auth.data?.isAdmin);
-  const dash = trpc.admin.getAnalyticsDashboard.useQuery(undefined, { enabled: isAdmin, refetchInterval: 60_000 });
+  const dash = trpc.admin.getAnalyticsDashboard.useQuery(undefined, { enabled: isAdmin, refetchInterval: 30_000 });
+  useNewOrderAlert(dash.data?.totals.pendingOrdersCount);
 
   useEffect(() => {
     document.title = "Panel de gestión · Corredera Gourmet";

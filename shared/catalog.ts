@@ -105,85 +105,6 @@ export function normalizeSearchText(input: string): string {
     .trim();
 }
 
-export const galleryImages = [
-  {
-    src: "/manus-storage/async-images/EujPgDIPcbtATsDhasLWVD/image-1.webp",
-    title: "Obrador artesanal y bollería",
-    titleEn: "Artisan bakery & pastries",
-    text: "Croissants de mantequilla, napolitanas, caracoles y dulces recién horneados.",
-    textEn: "Freshly baked butter croissants, chocolate pastries and traditional sweets.",
-  },
-  {
-    src: "/manus-storage/async-images/EujPgDIPcbtATsDhasLWVD/image-2.webp",
-    title: "Jamones ibéricos y corte a cuchillo",
-    titleEn: "Iberian hams & master carving",
-    text: "Piezas enteras 5 Jotas, Joselito y Extremadura, o sobres de 100 g envasados al vacío.",
-    textEn: "Whole 5 Jotas, Joselito and Extremadura hams, or 100g vacuum-sealed packs.",
-  },
-  {
-    src: "/manus-storage/async-images/EujPgDIPcbtATsDhasLWVD/image-3.webp",
-    title: "Cafetería y desayunos del día",
-    titleEn: "Specialty coffee & daily breakfasts",
-    text: "Desayunos completos, brunch, zumo de naranja natural y promociones diarias.",
-    textEn: "Full breakfasts, brunch, freshly squeezed orange juice and daily combos.",
-  },
-  {
-    src: "/manus-storage/async-images/EujPgDIPcbtATsDhasLWVD/image-4.webp",
-    title: "Bodega, vermut y degustación",
-    titleEn: "Wine cellar, vermouth & tasting bar",
-    text: "Copas de vino D.O., vermut de grifo, cervezas y tablas maridadas.",
-    textEn: "D.O. wine glasses, Madrid draft vermouth, beers and paired boards.",
-  },
-  {
-    src: "/manus-storage/async-images/EujPgDIPcbtATsDhasLWVD/image-5.webp",
-    title: "Encargos gourmet y regalos",
-    titleEn: "Gourmet pre-orders & gifts",
-    text: "Piezas de jamón con corte gratuito, aceites AOVE, quesos selectos y cestas a medida.",
-    textEn: "Whole hams with complimentary slicing, EVOO, artisan cheeses and bespoke baskets.",
-  },
-  {
-    src: "/assets/corredera-bakery-interior.jpg",
-    title: "El espacio Corredera en Calle de la Puebla, 15",
-    titleEn: "The Corredera space at Calle de la Puebla, 15",
-    text: "Panadería artesanal, cafetería y charcutería gourmet en el corazón de Madrid.",
-    textEn: "Artisan bakery, coffee shop and gourmet charcuterie in central Madrid.",
-  },
-  {
-    src: "/manus-storage/async-images/0ph7XQEFnMSHaCSLsIo0WO/image-1.webp",
-    title: "Raciones frías y aperitivos",
-    titleEn: "Cold portions & aperitifs",
-    text: "Ensaladillas, hummus mediterráneos y propuestas listas para degustar.",
-    textEn: "Salads, Mediterranean hummus and cold dishes ready to enjoy.",
-  },
-  {
-    src: "/manus-storage/async-images/0ph7XQEFnMSHaCSLsIo0WO/image-2.webp",
-    title: "Gildas, ahumados y conservas",
-    titleEn: "Gildas, smoked fish & preserves",
-    text: "Gildas clásicas, boquerones, sardinas y salmón ahumado seleccionado.",
-    textEn: "Classic gildas, pickled anchovies, sardines and smoked salmon.",
-  },
-  {
-    src: "/manus-storage/async-images/0ph7XQEFnMSHaCSLsIo0WO/image-3.webp",
-    title: "Selección de quesos y tablas",
-    titleEn: "Artisan cheese selection & boards",
-    text: "Quesos nacionales e internacionales al corte por kilo, cuñas y tablas con vino.",
-    textEn: "National and international cheeses by the kilo, wedges and wine boards.",
-  },
-  {
-    src: "/manus-storage/async-images/0ph7XQEFnMSHaCSLsIo0WO/image-4.webp",
-    title: "Tartas artesanas por encargo y al corte",
-    titleEn: "Artisan cakes to order & by weight",
-    text: "Tarta de queso, zanahoria, chocolate y bizcocho casero de naranja.",
-    textEn: "Cheesecake, carrot cake, chocolate cake and homemade orange sponge.",
-  },
-  {
-    src: "/manus-storage/async-images/0ph7XQEFnMSHaCSLsIo0WO/image-5.webp",
-    title: "Bocadillos de jamón ibérico y focaccias",
-    titleEn: "Iberian ham baguettes & focaccias",
-    text: "Bocadillos recién preparados, empanada gallega artesana y promociones con bebida.",
-    textEn: "Freshly prepared baguettes, handmade Galician pie and drink combos.",
-  },
-];
 
 /**
  * Cartel oficial de Desayunos y Ofertas del Día (/assets/carta-cartel.jpg, editable desde el panel)
@@ -2165,7 +2086,6 @@ export const menuItems: MenuItem[] = [
     icon: "ham",
   },
 ];
-
 
 /**
  * Fotografía gastronómica real asignada a cada referencia del catálogo actualizado.

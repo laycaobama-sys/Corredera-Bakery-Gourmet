@@ -25,6 +25,8 @@ interface OwnerLockRecord {
   passwordHash: string;
   jwtSigningSecret: string;
   createdAt: string;
+  /** "seed" while the owner still uses the initial password delivered with the code. */
+  source?: "seed";
 }
 
 const DEFAULT_OWNER_LOCK_PATH = path.join(
@@ -232,11 +234,17 @@ export function installOwnerPasswordHash(salt: string, passwordHash: string, own
     passwordHash,
     jwtSigningSecret: crypto.randomBytes(32).toString("hex"),
     createdAt: new Date().toISOString(),
+    source: "seed",
   };
   fs.mkdirSync(path.dirname(activeOwnerLockPath), { recursive: true });
   const tempPath = `${activeOwnerLockPath}.${process.pid}.${Date.now()}.tmp`;
   fs.writeFileSync(tempPath, JSON.stringify(record, null, 2), { encoding: "utf-8", mode: 0o600 });
   fs.renameSync(tempPath, activeOwnerLockPath);
+}
+
+/** True while the owner has not yet replaced the initial password delivered with the code. */
+export function isOwnerPasswordInitial(): boolean {
+  return readOwnerLockFile()?.source === "seed";
 }
 
 /**

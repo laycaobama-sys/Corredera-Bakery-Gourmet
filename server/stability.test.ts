@@ -9,7 +9,6 @@ import {
   categories,
   filterCatalogItems,
   formatPrice,
-  galleryImages,
   menuImageFor,
   menuImageStatusFor,
   menuItems,
@@ -231,16 +230,6 @@ describe("Corredera catalog, single source of truth, 139 unique visuals & WhatsA
     expect(formatPrice("Consultar", "en")).toBe("Ask price");
     expect(formatPrice("2,50 € / unidad", "en")).toBe("2,50 € / unit");
     expect(formatPrice("3,90 €", "en")).toBe("3,90 €");
-  });
-
-  it("provides bilingual descriptions for all 11 gallery images", () => {
-    expect(galleryImages).toHaveLength(11);
-    for (const img of galleryImages) {
-      expect(img.title.trim().length).toBeGreaterThan(0);
-      expect(img.titleEn.trim().length).toBeGreaterThan(0);
-      expect(img.text.trim().length).toBeGreaterThan(0);
-      expect(img.textEn.trim().length).toBeGreaterThan(0);
-    }
   });
 
   it("generates distinct category-aware SVG markup with explicit illustrative disclaimer for gallery /manus-storage/* paths", () => {

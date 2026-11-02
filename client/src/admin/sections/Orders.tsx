@@ -1,7 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "../../../../server/routers";
-import { Download, MapPin, MessageCircle, Phone, Search, ShoppingBag, Trash2 } from "lucide-react";
+import { Download, MapPin, MessageCircle, Phone, Printer, Search, ShoppingBag, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { MODALITY_LABEL, ORDER_STATUS, ORDER_STATUS_ORDER, waLink, type OrderStatus } from "../shared";
@@ -162,6 +162,40 @@ export function OrdersSection({ initialIds }: { initialIds?: string[] }) {
 
 type Order = inferRouterOutputs<AppRouter>["admin"]["listOrders"][number];
 
+const escapeHtml = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+/** Opens a clean preparation ticket of the order and the print dialog (for the counter or the butcher). */
+function printOrder(order: Order) {
+  // A hidden frame instead of a new window: pop-up blockers never stop it.
+  const frame = document.createElement("iframe");
+  frame.setAttribute("aria-hidden", "true");
+  frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden";
+  document.body.appendChild(frame);
+  const win = frame.contentWindow;
+  if (!win) return;
+  const rows = order.items
+    .map((i) => `<tr><td class="q">${i.quantity}×</td><td>${escapeHtml(i.name)}<br><small>${escapeHtml(i.price)}</small></td><td class="r">${i.subtotalCents > 0 ? eur(i.subtotalCents) : "Al peso"}</td></tr>`)
+    .join("");
+  const line = (label: string, value?: string | null) => (value ? `<p><b>${label}:</b> ${escapeHtml(value)}</p>` : "");
+  win.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Pedido ${escapeHtml(order.id)}</title>
+<style>body{font:14px/1.45 system-ui,sans-serif;color:#111;margin:28px}h1{font:600 22px Georgia,serif;margin:0 0 2px}.m{color:#666;margin:0 0 18px}
+table{width:100%;border-collapse:collapse;margin:14px 0}td{padding:8px 4px;border-bottom:1px solid #ddd;vertical-align:top}.q{width:44px;font-weight:700}.r{text-align:right;white-space:nowrap}
+small{color:#666}.t td{border:0;font-weight:700}.box{border:1px solid #bbb;padding:10px 12px;margin-top:12px}p{margin:4px 0}</style></head><body>
+<h1>Corredera Gourmet · Pedido ${escapeHtml(order.id)}</h1><p class="m">Recibido el ${escapeHtml(fmtDate(order.createdAt))} · Estado: ${escapeHtml(ORDER_STATUS[order.status].label)}</p>
+${line("Cliente", order.customerName)}${line("Teléfono", order.customerPhone || order.customerPhoneMasked)}${line("Entrega", MODALITY_LABEL[order.modality ?? "pickup"])}${line("Dirección", order.deliveryAddress)}${line("Fecha deseada", order.desiredTime)}
+${order.hamCuttingPreference ? `<div class="box"><b>Jamón entero:</b> ${order.hamCuttingPreference === "free_sliced_vacuum" ? "cortar a cuchillo y envasar al vacío" : "entregar la pieza entera"}</div>` : ""}
+<table>${rows}<tr class="t"><td></td><td>Total estimado</td><td class="r">${order.totalAmountCents > 0 ? eur(order.totalAmountCents) : "A confirmar"}${order.hasVariableItems ? " + al peso" : ""}</td></tr></table>
+${order.customerNotes ? `<div class="box"><b>Notas del cliente:</b> ${escapeHtml(order.customerNotes)}</div>` : ""}
+${order.internalNote ? `<div class="box"><b>Nota interna:</b> ${escapeHtml(order.internalNote)}</div>` : ""}
+</body></html>`);
+  win.document.close();
+  window.setTimeout(() => {
+    win.focus();
+    win.print();
+    window.setTimeout(() => frame.remove(), 1000);
+  }, 150);
+}
+
 function OrderDrawer({ order, onClose, onChanged }: { order: Order | null; onClose: () => void; onChanged: () => void }) {
   const setStatus = trpc.admin.updateOrderStatus.useMutation();
   const setNote = trpc.admin.updateOrderNote.useMutation();
@@ -197,6 +231,9 @@ function OrderDrawer({ order, onClose, onChanged }: { order: Order | null; onClo
             Eliminar
           </Button>
           <div className="adm-spacer" />
+          <Button variant="secondary" icon={<Printer size={16} />} onClick={() => printOrder(order)}>
+            Imprimir
+          </Button>
           {wa && (
             <a className="adm-btn adm-btn--success adm-btn--md" href={wa} target="_blank" rel="noreferrer">
               <MessageCircle size={16} /> Escribir por WhatsApp

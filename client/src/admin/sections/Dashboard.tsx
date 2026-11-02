@@ -1,5 +1,5 @@
 import { trpc } from "@/lib/trpc";
-import { ArrowRight, Euro, Eye, MousePointerClick, ShoppingBag, Users } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle2, Euro, Eye, Info, MousePointerClick, ShoppingBag, Users } from "lucide-react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Link } from "wouter";
 import { MODALITY_LABEL, ORDER_STATUS, type OrderStatus } from "../shared";
@@ -58,6 +58,59 @@ export function Funnel({ steps }: { steps: { step: string; value: number }[] }) 
   );
 }
 
+type Check = { tone: "warn" | "info"; text: string; href: string; action: string };
+
+/** Things the owner should look at, computed from the live data (shown first on the summary). */
+function StoreHealth({ pendingOrders }: { pendingOrders: number }) {
+  const auth = trpc.admin.authStatus.useQuery(undefined, { retry: false, refetchOnWindowFocus: false });
+  const products = trpc.admin.listAllProducts.useQuery();
+  const settings = trpc.catalog.siteSettings.useQuery();
+  if (!products.data || !settings.data) return null;
+
+  const s = settings.data;
+  const visible = products.data.filter((p) => p.active);
+  const askPrice = visible.filter((p) => p.price === "Consultar").length;
+  const hidden = products.data.length - visible.length;
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const emailDomain = s.contact.contactEmail.split("@")[1] ?? "";
+
+  const checks: Check[] = [];
+  if (auth.data?.ownerPasswordIsInitial)
+    checks.push({ tone: "warn", text: "Sigues usando la contraseña inicial. Cámbiala por una tuya.", href: "/admin/seguridad", action: "Cambiar contraseña" });
+  if (pendingOrders > 0)
+    checks.push({ tone: "warn", text: `${pendingOrders} ${pendingOrders === 1 ? "pedido espera" : "pedidos esperan"} confirmación por WhatsApp.`, href: "/admin/pedidos", action: "Ver pedidos" });
+  if (s.legal.nif.includes("PENDIENTE") || s.legal.registryInfo.includes("PENDIENTE"))
+    checks.push({ tone: "warn", text: "Faltan el NIF o los datos del Registro Mercantil (obligatorios en el aviso legal).", href: "/admin/tienda", action: "Completar datos legales" });
+  if (emailDomain === "correderagourmet.com" && !host.endsWith("correderagourmet.com"))
+    checks.push({ tone: "warn", text: `El email de contacto (${s.contact.contactEmail}) es del dominio antiguo: puede que no recibas correos.`, href: "/admin/tienda", action: "Cambiar email" });
+  if (askPrice > 0)
+    checks.push({ tone: "info", text: `${askPrice} productos muestran «Consultar». Si tienes su precio, ponlo: se vende más.`, href: "/admin/productos?filtro=consultar", action: "Ver productos" });
+  if (hidden > 0)
+    checks.push({ tone: "info", text: `${hidden} productos están ocultos en la web.`, href: "/admin/productos?filtro=ocultos", action: "Revisar" });
+
+  return (
+    <Card title="Estado de la tienda" subtitle={checks.length ? "Lo que conviene revisar" : undefined}>
+      {checks.length === 0 ? (
+        <p className="adm-health adm-health--ok">
+          <CheckCircle2 size={18} /> Todo en orden: datos legales completos, contraseña propia y ningún pedido pendiente.
+        </p>
+      ) : (
+        <ul className="adm-health">
+          {checks.map((c) => (
+            <li key={c.text} className={`adm-health__item is-${c.tone}`}>
+              {c.tone === "warn" ? <AlertTriangle size={18} /> : <Info size={18} />}
+              <span>{c.text}</span>
+              <Link href={c.href} className="adm-link">
+                {c.action} <ArrowRight size={14} />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
+  );
+}
+
 export function DashboardSection() {
   const q = trpc.admin.getAnalyticsDashboard.useQuery(undefined, { refetchInterval: 60_000 });
   if (q.isLoading || !q.data) return <Loading />;
@@ -71,6 +124,8 @@ export function DashboardSection() {
         title="Resumen del negocio"
         subtitle={`Datos actualizados ${fmtDate(d.updatedAt)} · se refrescan cada minuto`}
       />
+
+      <StoreHealth pendingOrders={d.totals.pendingOrdersCount} />
 
       <div className="adm-kpis">
         <Kpi label="Visitas (30 días)" value={num(p30.visits)} hint={`${num(p7.visits)} en los últimos 7 días · ${num(d.periods.today.visits)} hoy`} icon={<Eye size={18} />} />
