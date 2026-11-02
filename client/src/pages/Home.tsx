@@ -384,12 +384,15 @@ function Departments() {
         <SectionHeading
           title={t("Nuestros productos", "Our products")}
           text={t(
-            "Alta charcutería ibérica, quesos seleccionados y aceites de oliva virgen extra. Todo listo para recoger en tienda o recibir en casa.",
-            "Fine Iberian charcuterie, selected cheeses and extra virgin olive oils. Ready for store pickup or home delivery.",
+            "Alta charcutería ibérica, quesos, aceites de oliva virgen extra, carnicería y frutería. Todo listo para recoger en tienda o recibir en casa.",
+            "Fine Iberian charcuterie, cheeses, extra virgin olive oils, butcher and greengrocer. Ready for store pickup or home delivery.",
           )}
         />
         <div className="cg-depts">
-          {departmentsWithImages(settings.pages.departmentImages).map((d, i) => (
+          {departmentsWithImages(settings.pages.departmentImages)
+            // Butcher and greengrocer have their own section right below.
+            .filter((d) => d.slug !== "carniceria" && d.slug !== "fruteria")
+            .map((d, i) => (
             <Link key={d.slug} href={d.href} className={`cg-dept${i === 0 ? " cg-dept--wide" : ""}`}>
               <img src={d.image} alt="" loading="lazy" decoding="async" />
               <span className="cg-dept__label">
@@ -405,6 +408,75 @@ function Departments() {
             </span>
             <ArrowRight size={22} strokeWidth={1.25} aria-hidden="true" />
           </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- Fresh market (butcher & greengrocer) */
+
+function FreshMarket() {
+  const { lang, settings, whatsappHref, track } = useStore();
+  const t = useT();
+  const images = new Map<string, string>(departmentsWithImages(settings.pages.departmentImages).map((d) => [d.slug, d.image]));
+  const shops = [
+    {
+      slug: "carniceria",
+      href: "/gourmet/carniceria",
+      title: t("Carnicería", "Butcher"),
+      text: t(
+        "Ternera, cerdo ibérico fresco, pollo, cordero y hamburguesas caseras, cortados al momento como los pidas.",
+        "Beef, fresh Iberian pork, chicken, lamb and homemade burgers, cut to order the way you like.",
+      ),
+      wa: t("Hola Corredera, quisiera hacer un encargo de carnicería:", "Hello Corredera, I'd like to order from the butcher:"),
+    },
+    {
+      slug: "fruteria",
+      href: "/gourmet/fruteria",
+      title: t("Frutería", "Greengrocer"),
+      text: t(
+        "Fruta de temporada, verdura fresca, frutos rojos y cestas de fruta por encargo, seleccionadas cada día.",
+        "Seasonal fruit, fresh vegetables, berries and fruit baskets to order, selected every day.",
+      ),
+      wa: t("Hola Corredera, quisiera hacer un encargo de frutería:", "Hello Corredera, I'd like to order from the greengrocer:"),
+    },
+  ];
+  return (
+    <section id="mercado" className="cg-section cg-section--cream" aria-labelledby="mercado-title">
+      <div className="cg-container">
+        <div className="cg-heading cg-heading--center">
+          <p className="cg-eyebrow">{t("En el mismo local", "Under the same roof")}</p>
+          <h2 id="mercado-title" className="cg-heading__title">{t("Carnicería y frutería", "Butcher & greengrocer")}</h2>
+          <p className="cg-heading__text">
+            {t(
+              "Haz toda la compra en Calle de la Puebla, 15: carne cortada al momento y fruta y verdura fresca junto a nuestra tienda gourmet.",
+              "Do all your shopping at Calle de la Puebla, 15: meat cut to order and fresh produce next to our gourmet shop.",
+            )}
+          </p>
+        </div>
+        <div className="cg-market">
+          {shops.map((s) => (
+            <article key={s.slug} className="cg-market__card">
+              <Link href={s.href} className="cg-market__media" tabIndex={-1} aria-hidden="true">
+                <img src={images.get(s.slug)} alt="" loading="lazy" decoding="async" width={1000} height={800} />
+              </Link>
+              <div className="cg-market__body">
+                <h3>
+                  <Link href={s.href}>{s.title}</Link>
+                </h3>
+                <p>{s.text}</p>
+                <div className="cg-market__actions">
+                  <Link href={s.href} className="cg-btn cg-btn--primary">
+                    {lang === "en" ? "See products" : "Ver productos"}
+                  </Link>
+                  <a className="cg-btn cg-btn--wa-outline" href={whatsappHref(s.wa)} target="_blank" rel="noreferrer" onClick={() => track("whatsapp_click")}>
+                    <MessageCircle size={16} aria-hidden="true" /> {t("Encargar", "Order")}
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -443,7 +515,7 @@ function HowToOrder() {
   const { settings, lang } = useStore();
   const t = useT();
   const steps = [
-    { icon: Gift, title: t("1. Elige", "1. Choose"), text: t("Añade a tu pedido jamones, loncheados, embutidos, quesos o aceites.", "Add hams, sliced packs, charcuterie, cheeses or oils to your order.") },
+    { icon: Gift, title: t("1. Elige", "1. Choose"), text: t("Añade a tu pedido jamones, embutidos, quesos, aceites, carne o fruta.", "Add hams, charcuterie, cheeses, oils, meat or fruit to your order.") },
     { icon: MessageCircle, title: t("2. Envía por WhatsApp", "2. Send via WhatsApp"), text: t("Tu pedido llega con todos los detalles. Te confirmamos disponibilidad, peso e importe.", "Your order arrives with every detail. We confirm availability, weight and amount.") },
     { icon: Truck, title: t("3. Recoge o recibe", "3. Pick up or receive"), text: t("Recógelo en Calle de la Puebla, 15 o recíbelo en casa. Pagas al recoger o a la entrega.", "Collect it at Calle de la Puebla, 15 or get it delivered. Pay on pickup or delivery.") },
   ];
@@ -563,7 +635,7 @@ function Visit() {
         </div>
         <div className="cg-hours">
           <div>
-            <h3>{t("Tienda gourmet", "Gourmet shop")}</h3>
+            <h3>{t("Tienda gourmet, carnicería y frutería", "Gourmet shop, butcher & greengrocer")}</h3>
             <p>{es ? s.gourmetHoursEs : s.gourmetHoursEn}</p>
             <p className="cg-hours__muted">{es ? s.gourmetClosedNoteEs : s.gourmetClosedNoteEn}</p>
           </div>
@@ -652,6 +724,7 @@ export default function Home() {
       <WhyCorredera />
       <CarvingService />
       <Departments />
+      <FreshMarket />
       <SeasonalCampaign />
       <HowToOrder />
       <About />

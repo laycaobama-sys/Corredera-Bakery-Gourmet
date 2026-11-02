@@ -334,7 +334,7 @@ describe("Security, Privacy (RGPD/LSSI) & Full Website CMS Audit Suite", () => {
       id: "bo1",
       confirmId: "bo1",
     });
-    expect(delRes.remainingCount).toBe(126);
+    expect(delRes.remainingCount).toBe(138);
 
     const statusAfterDel = await adminCaller.admin.authStatus();
     expect(statusAfterDel.storage.backups.length).toBeGreaterThan(0);
@@ -346,7 +346,7 @@ describe("Security, Privacy (RGPD/LSSI) & Full Website CMS Audit Suite", () => {
     const restoredCatalog = await adminCaller.admin.restoreCatalogBackup({
       fileName: autoBackupFile,
     });
-    expect(restoredCatalog.restoredCount).toBe(127);
+    expect(restoredCatalog.restoredCount).toBe(139);
 
     // 3. First-party telemetry & durable disk order persistence
     await publicCaller.order.recordEvent({

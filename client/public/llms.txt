@@ -1,6 +1,6 @@
 # Corredera Bakery & Gourmet (Madrid)
 
-> Tienda gourmet en Calle de la Puebla, 15 · 28004 Madrid: jamones ibéricos 5 Jotas, Joselito y Dehesa de Extremadura con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos ibéricos de bellota, quesos seleccionados, aceites de oliva virgen extra, conservas y vinos. También obrador y cafetería (Bakery & Café).
+> Tienda gourmet, carnicería y frutería en Calle de la Puebla, 15 · 28004 Madrid (entre Gran Vía y Malasaña): jamones ibéricos 5 Jotas, Joselito y Dehesa de Extremadura con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos ibéricos de bellota, quesos seleccionados, aceites de oliva virgen extra, conservas y vinos; carne cortada al momento (ternera, cerdo ibérico fresco, pollo, cordero, hamburguesas caseras) y fruta y verdura fresca de temporada con cestas por encargo. También obrador y cafetería (Bakery & Café).
 
 ## Cómo comprar
 - Pedidos desde https://correderagourmet.com/tienda; se confirman por WhatsApp +34 640 34 19 32. Sin pago online: se paga al recoger o a la entrega.
@@ -17,6 +17,8 @@
 - [Sobres de Embutidos](https://correderagourmet.com/gourmet/sobres-embutidos): Sobres de embutidos ibéricos de 100 g envasados al vacío en Madrid: lomo de bellota, cecina de León, chorizo y salchichón Joselito y de bellota.
 - [Quesos](https://correderagourmet.com/gourmet/quesos): Selección de quesos gourmet en Madrid: Payoyo, Pecorino trufado, Bóer con miel y trufa, Comté, Idiazábal y cuñas artesanas. Encargos en Corredera Gourmet.
 - [Aceites](https://correderagourmet.com/gourmet/aceites): Encarga Aceite de Oliva Virgen Extra (AOVE) en Madrid: Ecológico en lata, Arbequina, Lucio Picual, Lucio Milenium, El Silencio y Señoríos de Relleu en Corredera.
+- [Carnicería](https://correderagourmet.com/gourmet/carniceria): Carnicería en Calle de la Puebla 15, Madrid: ternera, cerdo ibérico fresco, pollo, cordero, carne picada y hamburguesas caseras. Corte al momento, encargo por WhatsApp y envío.
+- [Frutería](https://correderagourmet.com/gourmet/fruteria): Frutería en Calle de la Puebla 15, Madrid: fruta de temporada, verdura fresca, frutos rojos, aguacate y cestas de fruta por encargo. Encargo por WhatsApp, recogida o envío.
 - [Bakery & Café](https://correderagourmet.com/bakery-cafe): Consulta la carta de desayunos, cafetería, bollería artesana, tartas y packs para eventos de Corredera Bakery & Gourmet en Calle de la Puebla, 15 (Madrid).
 
 ## Jamones Ibéricos Enteros
@@ -99,6 +101,22 @@
 - [Aceite de Oliva Virgen Extra El Silencio](https://correderagourmet.com/producto/ao5): 17,99 €
 - [AOVE Señoríos de Relleu · Formato Pequeño](https://correderagourmet.com/producto/ao6): 9,99 €
 - [AOVE Señoríos de Relleu · Formato Botella](https://correderagourmet.com/producto/ao7): 22,99 €
+
+## Carnicería en Calle de la Puebla, Madrid
+- [Ternera](https://correderagourmet.com/producto/ca1): Consultar
+- [Cerdo ibérico fresco](https://correderagourmet.com/producto/ca2): Consultar
+- [Pollo y aves](https://correderagourmet.com/producto/ca3): Consultar
+- [Cordero](https://correderagourmet.com/producto/ca4): Consultar
+- [Carne picada y hamburguesas caseras](https://correderagourmet.com/producto/ca5): Consultar
+- [Elaborados de carnicería](https://correderagourmet.com/producto/ca6): Consultar
+
+## Frutería en Calle de la Puebla, Madrid
+- [Fruta de temporada](https://correderagourmet.com/producto/fr1): Consultar
+- [Verdura y hortaliza fresca](https://correderagourmet.com/producto/fr2): Consultar
+- [Tomate de temporada](https://correderagourmet.com/producto/fr3): Consultar
+- [Aguacate y fruta tropical](https://correderagourmet.com/producto/fr4): Consultar
+- [Frutos rojos](https://correderagourmet.com/producto/fr5): Consultar
+- [Cesta de fruta por encargo](https://correderagourmet.com/producto/fr6): Consultar
 
 ## Carta Bakery & Café (consumo en local)
 - Desayuno Clásico: 3,90 €

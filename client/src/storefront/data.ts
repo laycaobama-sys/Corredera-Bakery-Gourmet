@@ -17,6 +17,8 @@ export const SHOP_CATEGORY_IDS = [
   "aceites",
   "conservas",
   "vinos",
+  "fruteria",
+  "carniceria",
 ] as const;
 
 export type ShopCategoryId = (typeof SHOP_CATEGORY_IDS)[number];
@@ -39,6 +41,8 @@ export const SHOP_CATEGORY_LABELS: Record<ShopCategoryId, { es: string; en: stri
   aceites: { es: "Aceites AOVE", en: "Olive oils" },
   conservas: { es: "Conservas y aperitivo", en: "Preserves & aperitifs" },
   vinos: { es: "Vinos y bodega", en: "Wines" },
+  fruteria: { es: "Frutería", en: "Greengrocer" },
+  carniceria: { es: "Carnicería", en: "Butcher" },
 };
 
 /** Primary navigation of the shop: each entry maps to an indexable landing page. */
@@ -105,6 +109,24 @@ export const NAV_DEPARTMENTS = [
     image: "/assets/products/ao2.jpg",
     descEs: "Aceite de oliva virgen extra",
     descEn: "Extra virgin olive oil",
+  },
+  {
+    slug: "carniceria",
+    href: "/gourmet/carniceria",
+    es: "Carnicería",
+    en: "Butcher",
+    image: "/assets/products/ca1.jpg",
+    descEs: "Ternera, ibérico fresco, pollo y cordero",
+    descEn: "Beef, fresh Iberian pork, chicken, lamb",
+  },
+  {
+    slug: "fruteria",
+    href: "/gourmet/fruteria",
+    es: "Frutería",
+    en: "Greengrocer",
+    image: "/assets/products/fr1.jpg",
+    descEs: "Fruta y verdura fresca cada día",
+    descEn: "Fresh fruit and vegetables daily",
   },
 ] as const;
 
@@ -196,6 +218,14 @@ export function productHighlights(item: MenuItem, lang: Lang): string[] {
       return es
         ? ["Aceite de oliva virgen extra", "Precio por unidad", "Perfecto para regalo gourmet"]
         : ["Extra virgin olive oil", "Price per unit", "Perfect gourmet gift"];
+    case "fruteria":
+      return es
+        ? ["Género fresco seleccionado cada día", "Precio según mercado, confirmado por WhatsApp", "Recogida en tienda o envío junto a tu pedido"]
+        : ["Fresh produce selected every day", "Market price, confirmed via WhatsApp", "Store pickup or delivered with your order"];
+    case "carniceria":
+      return es
+        ? ["Cortado al momento como prefieras", "Importe según peso exacto, confirmado antes de preparar", "Envasado al vacío bajo petición"]
+        : ["Cut to order the way you like", "Amount by exact weight, confirmed before preparing", "Vacuum packed on request"];
     default:
       return es
         ? ["Selección Corredera Gourmet", "Recogida en Calle de la Puebla, 15", "Confirmación personal por WhatsApp"]

@@ -3,16 +3,17 @@ import { DurableObject } from "cloudflare:workers";
 import path from "node:path";
 import { menuItems } from "../shared/catalog";
 import { buildProductCulinarySvg } from "../shared/productVisuals";
-import { forceSetOwnerPassword, getAdminAuthConfigStatus } from "../server/adminAuth";
+import { forceSetOwnerPassword, getAdminAuthConfigStatus, installOwnerPasswordHash } from "../server/adminAuth";
 import { getCatalogStorageDiagnostics } from "../server/catalogRepository";
 import { appRouter } from "../server/routers";
 import dataFs, { setDataFsBackend } from "../server/_core/dataFs";
-import { renderHtmlPage } from "../server/_core/htmlPage";
+import { renderHtmlPage, withSiteOrigin } from "../server/_core/htmlPage";
 import { PUBLIC_UPLOADS_DIR, SERVER_DATA_DIR } from "../server/_core/paths";
 import { buildLlmsTxt, buildSitemapXml } from "../server/_core/seoRender";
 import catalogSeed from "../server/data/catalog-store.json";
 import settingsSeed from "../server/data/site-settings.json";
 import { createWorkerContext } from "./context";
+import ownerSeed from "./owner-seed.json";
 import { createSqlFs, readStoredBytes } from "./sqlFs";
 
 export interface Env {
@@ -76,12 +77,43 @@ export class CorrederaStore extends DurableObject<Env> {
     this.seed();
   }
 
-  /** First start: load the catalog and web content published in the repository, and the owner password if given. */
+  /**
+   * On start: load the catalog and web content published in the repository (first start only), apply
+   * one-time updates shipped with a deploy (new products, owner access) and the owner password if given.
+   */
   private seed() {
     const catalogFile = path.join(SERVER_DATA_DIR, "catalog-store.json");
     if (!dataFs.existsSync(catalogFile)) dataFs.writeFileSync(catalogFile, JSON.stringify(catalogSeed, null, 2));
     const settingsFile = path.join(SERVER_DATA_DIR, "site-settings.json");
     if (!dataFs.existsSync(settingsFile)) dataFs.writeFileSync(settingsFile, JSON.stringify(settingsSeed, null, 2));
+
+    const migrationsFile = path.join(SERVER_DATA_DIR, "data-migrations.json");
+    const applied: string[] = dataFs.existsSync(migrationsFile) ? JSON.parse(dataFs.readFileSync(migrationsFile, "utf-8")) : [];
+    const done = new Set(applied);
+
+    // Products added to the repository catalog under a "seed-…" tag reach the live shop once;
+    // if the owner deletes them later they are not added again.
+    const seedProducts = catalogSeed.products as { id: string; updatedBy?: string }[];
+    const tags = [...new Set(seedProducts.map((p) => p.updatedBy ?? ""))].filter((tag) => tag.startsWith("seed-") && !done.has(tag));
+    if (tags.length > 0) {
+      const state = JSON.parse(dataFs.readFileSync(catalogFile, "utf-8")) as { products: { id: string }[]; updatedAt: string };
+      const have = new Set(state.products.map((p) => p.id));
+      const additions = seedProducts.filter((p) => tags.includes(p.updatedBy ?? "") && !have.has(p.id));
+      if (additions.length > 0) {
+        state.products.push(...additions);
+        state.updatedAt = new Date().toISOString();
+        dataFs.writeFileSync(catalogFile, JSON.stringify(state, null, 2));
+      }
+      tags.forEach((tag) => done.add(tag));
+    }
+
+    // Owner access delivered with the code as a scrypt hash, applied once; the owner then changes it in the panel.
+    if (!done.has(ownerSeed.id)) {
+      installOwnerPasswordHash(ownerSeed.salt, ownerSeed.passwordHash);
+      done.add(ownerSeed.id);
+    }
+
+    if (done.size !== applied.length) dataFs.writeFileSync(migrationsFile, JSON.stringify([...done], null, 2));
 
     const initial = (this.env.ADMIN_INITIAL_PASSWORD ?? "").trim();
     if (initial.length >= 12 && !getAdminAuthConfigStatus().adminTokenConfigured) {
@@ -126,12 +158,17 @@ export class CorrederaStore extends DurableObject<Env> {
     }
     if (p.startsWith("/api/")) return Response.json({ error: "API route not found" }, { status: 404 });
 
-    if (p === "/sitemap.xml") return text(await buildSitemapXml(), 200, "application/xml; charset=utf-8", "public, max-age=3600");
-    if (p === "/llms.txt") return text(await buildLlmsTxt(), 200, "text/plain; charset=utf-8", "public, max-age=3600");
+    // Links always point at the domain the site is served from, so a new domain needs no configuration.
+    if (p === "/sitemap.xml") return text(withSiteOrigin(await buildSitemapXml(), url.origin), 200, "application/xml; charset=utf-8", "public, max-age=3600");
+    if (p === "/llms.txt") return text(withSiteOrigin(await buildLlmsTxt(), url.origin), 200, "text/plain; charset=utf-8", "public, max-age=3600");
+    if (p === "/robots.txt") {
+      const robots = await (await this.env.ASSETS.fetch(new Request(`${url.origin}/robots.txt`))).text();
+      return text(withSiteOrigin(robots, url.origin), 200, "text/plain; charset=utf-8", "public, max-age=3600");
+    }
 
     if (p.startsWith("/assets/uploads/")) return this.serveUpload(request, p.slice("/assets/uploads/".length));
 
-    const rendered = await renderHtmlPage(await this.getTemplate(url.origin), p + url.search);
+    const rendered = await renderHtmlPage(await this.getTemplate(url.origin), p + url.search, url.origin);
     return new Response(rendered.html, {
       status: rendered.status,
       headers: {
@@ -178,6 +215,10 @@ export default {
     const url = new URL(request.url);
     const p = url.pathname;
 
+    if (url.hostname.startsWith("www.")) {
+      url.hostname = url.hostname.slice(4);
+      return Response.redirect(url.toString(), 301);
+    }
     if (p === "/index.html") return Response.redirect(`${url.origin}/${url.search}`, 301);
 
     // A product photo that does not exist yet: branded illustration instead of a broken image.
@@ -190,7 +231,7 @@ export default {
     }
 
     // Any other missing static file answers at once, without waking the data store.
-    const dynamicFile = p === "/sitemap.xml" || p === "/llms.txt" || p.startsWith("/assets/uploads/") || p.startsWith("/api/");
+    const dynamicFile = p === "/sitemap.xml" || p === "/llms.txt" || p === "/robots.txt" || p.startsWith("/assets/uploads/") || p.startsWith("/api/");
     if (!dynamicFile && PASS_THROUGH_EXTENSION.test(p)) return text("Not found", 404);
 
     const isCacheable =
@@ -211,7 +252,9 @@ export default {
     const store = env.STORE.get(env.STORE.idFromName("main"));
     const response = await store.fetch(request);
     const isHtml = (response.headers.get("Content-Type") ?? "").startsWith("text/html");
-    const out = withHeaders(response, p.startsWith("/api/") ? { "X-Robots-Tag": "noindex, nofollow, noarchive" } : {});
+    // The *.workers.dev preview address is never indexed: only the real domain is.
+    const privateHost = url.hostname.endsWith(".workers.dev");
+    const out = withHeaders(response, p.startsWith("/api/") || privateHost ? { "X-Robots-Tag": "noindex, nofollow, noarchive" } : {});
 
     if (isCacheable && response.status === 200 && !request.headers.has("Range")) {
       const cached = out.clone();

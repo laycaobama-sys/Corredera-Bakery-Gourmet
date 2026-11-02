@@ -23,18 +23,18 @@ import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettingsSchema";
 import { buildProductCulinarySvg } from "../shared/productVisuals";
 import { buildFallbackIllustrationSvg } from "./_core/storageProxy";
 
-describe("Corredera catalog, single source of truth, 127 unique visuals & WhatsApp sales engine", () => {
-  it("uses shared/catalog.ts as the single source of truth with 127 items (57 Bakery and 70 Gourmet) and unique IDs", () => {
+describe("Corredera catalog, single source of truth, 139 unique visuals & WhatsApp sales engine", () => {
+  it("uses shared/catalog.ts as the single source of truth with 139 items (57 Bakery and 82 Gourmet) and unique IDs", () => {
     expect(menuItems).toBe(sharedMenuItems);
-    expect(menuItems).toHaveLength(127);
+    expect(menuItems).toHaveLength(139);
 
     const bakeryItems = menuItems.filter((item) => item.mode === "bakery");
     const gourmetItems = menuItems.filter((item) => item.mode === "gourmet");
     expect(bakeryItems).toHaveLength(57);
-    expect(gourmetItems).toHaveLength(70);
+    expect(gourmetItems).toHaveLength(82);
 
     const ids = menuItems.map((item) => item.id);
-    expect(new Set(ids).size).toBe(127);
+    expect(new Set(ids).size).toBe(139);
   });
 
   it("ensures every menu item has bilingual ES/EN copy, valid category, price, and a 100% unique image URL and plate visual", () => {
@@ -79,9 +79,9 @@ describe("Corredera catalog, single source of truth, 127 unique visuals & WhatsA
       expect(menuPriceStatusFor(item)).toMatch(/confirmed_by_owner|pending_owner_price_consultar/);
     }
 
-    // Zero duplicate image URLs or SVG plates across all 127 references
-    expect(seenImageUrls.size).toBe(127);
-    expect(seenPlateSvgs.size).toBe(127);
+    // Zero duplicate image URLs or SVG plates across all 139 references
+    expect(seenImageUrls.size).toBe(139);
+    expect(seenPlateSvgs.size).toBe(139);
   });
 
   it("verifies all top-of-page featured best-seller IDs exist in the catalog and cover key demand categories", () => {

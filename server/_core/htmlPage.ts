@@ -1,18 +1,23 @@
 import { listCatalogProducts } from "../catalogRepository";
 import { getSiteSettings } from "../siteSettingsRepository";
 import { resolveHtmlRouteSeoStatus } from "./seoMiddleware";
-import { buildSeoPage, injectSeo } from "./seoRender";
+import { buildSeoPage, injectSeo, SITE_URL } from "./seoRender";
 
 export type RenderedHtmlPage = { status: number; robots: string; html: string };
 
 const PRIVATE_ROBOTS = "noindex, nofollow, noarchive";
+
+/** Points every absolute link (canonical, Open Graph, JSON-LD) at the domain the site is actually served from. */
+export function withSiteOrigin(text: string, origin?: string) {
+  return origin && origin !== SITE_URL ? text.replaceAll(SITE_URL, origin) : text;
+}
 
 /**
  * Builds the HTML for any storefront URL (shared by the Node server and the Cloudflare Worker):
  * per-page SEO plus the live catalog and CMS settings embedded as JSON, so the first paint
  * already shows the owner's content without waiting for an API round trip.
  */
-export async function renderHtmlPage(template: string, rawUrl: string): Promise<RenderedHtmlPage> {
+export async function renderHtmlPage(template: string, rawUrl: string, origin?: string): Promise<RenderedHtmlPage> {
   const seoStatus = resolveHtmlRouteSeoStatus(rawUrl);
   if (seoStatus.robotsHeader === PRIVATE_ROBOTS) {
     return { status: seoStatus.statusCode, robots: seoStatus.robotsHeader, html: template };
@@ -34,10 +39,12 @@ export async function renderHtmlPage(template: string, rawUrl: string): Promise<
     }
 
     html = injectSeo(html, await buildSeoPage(rawUrl));
+    // The static JSON-LD carries the original contact email; the panel's email wins.
+    html = html.replaceAll("info@correderagourmet.com", settings.contact.contactEmail);
     const boot = JSON.stringify({ at: Date.now(), catalog, settings }).replace(/</g, "\\u003c");
     html = html.replace('<div id="root">', `<script id="cbg-boot" type="application/json">${boot}</script>\n    <div id="root">`);
   } catch (err) {
     console.warn("[HTML] Could not render page data:", err);
   }
-  return { status, robots, html };
+  return { status, robots, html: withSiteOrigin(html, origin) };
 }

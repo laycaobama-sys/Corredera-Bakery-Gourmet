@@ -64,7 +64,7 @@ function MegaMenu({ onNavigate }: { onNavigate: () => void }) {
           ))}
           <Link href="/tienda" className="cg-mega__item cg-mega__item--all" onClick={onNavigate}>
             <span className="cg-mega__title">{t("Ver toda la tienda", "Shop everything")}</span>
-            <span className="cg-mega__desc">{t("Conservas, vinos y más", "Preserves, wines and more")}</span>
+            <span className="cg-mega__desc">{t("Conservas, vinos, fruta y carne", "Preserves, wines, produce and meat")}</span>
           </Link>
         </div>
         <aside className="cg-mega__promo">
@@ -178,8 +178,11 @@ export function Header() {
 
           <div className="cg-header__right">
             <nav className="cg-nav cg-nav--right" aria-label={t("Navegación secundaria", "Secondary navigation")}>
-              <Link href="/gourmet/aceites" className={navClass("/gourmet/aceites")}>
-                {t("Aceites", "Olive oils")}
+              <Link href="/gourmet/carniceria" className={navClass("/gourmet/carniceria")}>
+                {t("Carnicería", "Butcher")}
+              </Link>
+              <Link href="/gourmet/fruteria" className={navClass("/gourmet/fruteria")}>
+                {t("Frutería", "Greengrocer")}
               </Link>
               <Link href="/bakery-cafe" className={navClass("/bakery-cafe")}>
                 {t("Carta & Café", "Menu & Café")}

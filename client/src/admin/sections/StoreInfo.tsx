@@ -7,9 +7,12 @@ export function StoreInfoSection() {
   const c = draft.contact;
   const s = draft.schedule;
   const sec = draft.sections;
+  const l = draft.legal;
   const setC = (p: Partial<typeof c>) => patch("contact", p);
   const setS = (p: Partial<typeof s>) => patch("schedule", p);
   const setSec = (p: Partial<typeof sec>) => patch("sections", p);
+  const setL = (p: Partial<typeof l>) => patch("legal", p);
+  const pending = (v: string) => (v.includes("PENDIENTE") ? "" : v);
 
   return (
     <>
@@ -147,6 +150,53 @@ export function StoreInfoSection() {
           </Field>
           <Field label="Texto del pie de página (inglés)" span={2}>
             <Textarea value={sec.footerNoteEn} onChange={(e) => setSec({ footerNoteEn: e.target.value })} maxLength={360} rows={2} />
+          </Field>
+        </div>
+      </Card>
+
+      <Card
+        title="Datos legales de la empresa"
+        subtitle="Aparecen en el aviso legal, la política de privacidad y las condiciones de encargo. El NIF y los datos registrales son obligatorios por ley (LSSI): mientras estén vacíos no se muestran."
+      >
+        <div className="adm-form">
+          <Field label="Razón social">
+            <Input value={l.companyName} onChange={(e) => setL({ companyName: e.target.value })} maxLength={160} />
+          </Field>
+          <Field label="Nombre comercial">
+            <Input value={l.tradeName} onChange={(e) => setL({ tradeName: e.target.value })} maxLength={160} />
+          </Field>
+          <Field label="NIF / CIF" hint="Ej. B12345678">
+            <Input
+              value={pending(l.nif)}
+              onChange={(e) => setL({ nif: e.target.value || "[PENDIENTE DE COMPLETAR POR EL PROPIETARIO: NIF/CIF]" })}
+              maxLength={120}
+              placeholder="Sin completar"
+            />
+          </Field>
+          <Field label="Email para privacidad y derechos">
+            <Input type="email" value={l.privacyEmail} onChange={(e) => setL({ privacyEmail: e.target.value })} maxLength={160} />
+          </Field>
+          <Field label="Domicilio social" span={2}>
+            <Input value={l.registeredAddress} onChange={(e) => setL({ registeredAddress: e.target.value })} maxLength={240} />
+          </Field>
+          <Field label="Inscripción en el Registro Mercantil" hint="Ej. Registro Mercantil de Madrid, Tomo X, Folio Y, Hoja M-Z" span={2}>
+            <Input
+              value={pending(l.registryInfo)}
+              onChange={(e) =>
+                setL({ registryInfo: e.target.value || "[PENDIENTE DE COMPLETAR POR EL PROPIETARIO: Datos de inscripción en el Registro Mercantil de Madrid]" })
+              }
+              maxLength={300}
+              placeholder="Sin completar"
+            />
+          </Field>
+          <Field label="Días que se guardan los pedidos" hint="Después se borran los datos del cliente del historial">
+            <Input
+              type="number"
+              min={1}
+              max={3650}
+              value={l.orderRetentionDays}
+              onChange={(e) => setL({ orderRetentionDays: Math.min(3650, Math.max(1, Number(e.target.value) || 1)) })}
+            />
           </Field>
         </div>
       </Card>

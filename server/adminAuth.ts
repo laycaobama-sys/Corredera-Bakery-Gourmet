@@ -217,6 +217,29 @@ export function forceSetOwnerPassword(
 }
 
 /**
+ * Installs an owner password delivered as a ready scrypt hash (the plain password never ships in the code).
+ * A fresh signing secret is generated, so earlier sessions stop working.
+ */
+export function installOwnerPasswordHash(salt: string, passwordHash: string, ownerName = "Propietario Corredera") {
+  if (!/^[0-9a-f]{64}$/.test(salt) || !/^[0-9a-f]{128}$/.test(passwordHash)) {
+    throw new Error("Invalid owner password hash");
+  }
+  const existing = readOwnerLockFile();
+  const record: OwnerLockRecord = {
+    version: (existing?.version ?? 0) + 1,
+    ownerName,
+    salt,
+    passwordHash,
+    jwtSigningSecret: crypto.randomBytes(32).toString("hex"),
+    createdAt: new Date().toISOString(),
+  };
+  fs.mkdirSync(path.dirname(activeOwnerLockPath), { recursive: true });
+  const tempPath = `${activeOwnerLockPath}.${process.pid}.${Date.now()}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(record, null, 2), { encoding: "utf-8", mode: 0o600 });
+  fs.renameSync(tempPath, activeOwnerLockPath);
+}
+
+/**
  * Allows the authenticated administrator to rotate their password.
  * Verifies the current password in constant time and generates a new scrypt salt,
  * hash, and JWT signing secret (invalidating previous sessions).

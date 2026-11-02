@@ -12,7 +12,7 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "none",
     // These have static copies but are generated live from the catalog and CMS.
-    "run_worker_first": ["/", "/index.html", "/sitemap.xml", "/llms.txt"]
+    "run_worker_first": ["/", "/index.html", "/sitemap.xml", "/llms.txt", "/robots.txt"]
   },
   "durable_objects": {
     "bindings": [{ "name": "STORE", "class_name": "CorrederaStore" }]

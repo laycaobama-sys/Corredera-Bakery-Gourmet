@@ -20,8 +20,10 @@ const SELECTOR = [
 ].join(",");
 
 /**
- * Fades sections in as they scroll into view. Content is only hidden once this script runs
- * (the `cg-reveal-ready` class), so crawlers and no-JS visitors always see everything.
+ * Fades sections in as they approach the viewport. They start animating a screen-fifth before they
+ * become visible, so by the time they scroll into view they are already in place and nothing looks late.
+ * Content is only hidden once this script runs (the `cg-reveal-ready` class), so crawlers and no-JS
+ * visitors always see everything.
  */
 export function RevealOnScroll() {
   const [location] = useLocation();
@@ -39,15 +41,19 @@ export function RevealOnScroll() {
           }
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+      { rootMargin: "0px 0px 20% 0px", threshold: 0 },
     );
 
+    // The body, not <main>: pages load lazily and replace <main> after this effect runs.
+    const root = document.body;
     const scan = () => {
-      document.querySelectorAll<HTMLElement>(SELECTOR).forEach((el, i) => {
+      const fold = window.innerHeight * 1.2;
+      root.querySelectorAll<HTMLElement>(SELECTOR).forEach((el) => {
         if (el.dataset.reveal) return;
         el.dataset.reveal = "1";
-        el.style.setProperty("--reveal-delay", `${(i % 4) * 70}ms`);
-        io.observe(el);
+        // Already on screen: shown at once, without animating.
+        if (el.getBoundingClientRect().top < fold) el.classList.add("is-visible", "is-instant");
+        else io.observe(el);
       });
     };
     scan();
@@ -60,7 +66,7 @@ export function RevealOnScroll() {
         scan();
       });
     });
-    mo.observe(document.body, { childList: true, subtree: true });
+    mo.observe(root, { childList: true, subtree: true });
     return () => {
       cancelAnimationFrame(frame);
       io.disconnect();

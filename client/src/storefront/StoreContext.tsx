@@ -9,7 +9,6 @@ import {
   type ReactNode,
 } from "react";
 import {
-  MARKET_DEPARTMENT_ITEMS,
   menuItems as fallbackMenuItems,
   type HamCuttingPreference,
   type Lang,
@@ -126,9 +125,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const recordEvent = trpc.order.recordEvent.useMutation();
 
   const items = useMemo<MenuItem[]>(() => {
-    const base = catalogQuery.data && catalogQuery.data.length > 0 ? catalogQuery.data : fallbackMenuItems;
-    const ids = new Set(base.map((i) => i.id));
-    return [...base, ...MARKET_DEPARTMENT_ITEMS.filter((i) => !ids.has(i.id))];
+    return catalogQuery.data && catalogQuery.data.length > 0 ? (catalogQuery.data as MenuItem[]) : fallbackMenuItems;
   }, [catalogQuery.data]);
 
   const itemById = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);

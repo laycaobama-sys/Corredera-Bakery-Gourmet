@@ -514,6 +514,144 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     isGourmetPrimary: true,
   },
   {
+    slug: "carniceria",
+    path: "/gourmet/carniceria",
+    navLabelEs: "Carnicería",
+    navLabelEn: "Butcher",
+    kickerEs: "Carnicería de barrio · Corte al momento",
+    kickerEn: "Neighbourhood butcher · Cut to order",
+    titleEs: "Carnicería en Calle de la Puebla, Madrid",
+    titleEn: "Butcher's Shop on Calle de la Puebla, Madrid",
+    subtitleEs:
+      "Ternera, cerdo ibérico fresco, pollo, cordero, carne picada y hamburguesas caseras, cortados al momento en el mismo local de Corredera.",
+    subtitleEn:
+      "Beef, fresh Iberian pork, chicken, lamb, minced meat and homemade burgers, cut to order in the same Corredera store.",
+    introEs:
+      "En nuestro local de Calle de la Puebla, 15 tenemos carnicería propia junto a la tienda gourmet y la frutería. Pide el corte, el grosor y la cantidad que necesitas: te lo preparamos al momento y te confirmamos el peso y el importe exacto antes de cerrar el encargo.",
+    introEn:
+    "At our Calle de la Puebla, 15 store we run our own butcher's counter next to the gourmet shop and the greengrocer. Ask for the cut, thickness and amount you need: we prepare it on the spot and confirm the exact weight and price before finalising the order.",
+    editorialTitleEs: "La carne como la pides, cortada delante de ti",
+    editorialTitleEn: "Meat the way you want it, cut in front of you",
+    editorialBodyEs:
+      "Filetes finos para empanar, chuletas gruesas para la parrilla, carne para guisar o picada al momento: dinos qué vas a cocinar y te aconsejamos la pieza. Puedes hacer tu compra en el local o encargarla por WhatsApp y recogerla preparada, o recibirla en casa junto al resto de tu pedido.",
+    editorialBodyEn:
+      "Thin steaks for breading, thick chops for the grill, stewing meat or freshly minced beef: tell us what you are cooking and we will recommend the cut. Shop in store, or order via WhatsApp and pick it up ready, or have it delivered with the rest of your order.",
+    editorialHighlightsEs: [
+      "Corte, fileteado y picado al momento sin coste",
+      "Peso e importe exactos confirmados por WhatsApp antes de preparar",
+      "Recogida en Calle de la Puebla, 15 o envío a domicilio (gastos de envío aparte)",
+    ],
+    editorialHighlightsEn: [
+      "Cutting, slicing and mincing to order at no extra cost",
+      "Exact weight and price confirmed via WhatsApp before preparing",
+      "Pickup at Calle de la Puebla, 15 or home delivery (shipping charged separately)",
+    ],
+    bannerImage: "/assets/products/ca1.jpg",
+    cardImage: "/assets/products/ca1.jpg",
+    cardBadgeEs: "Corte al momento",
+    cardBadgeEn: "Cut to order",
+    seoTitleEs: "Carnicería en Madrid centro (Malasaña, Gran Vía) | Corredera",
+    seoTitleEn: "Butcher's Shop in Central Madrid (Malasaña, Gran Vía) | Corredera",
+    seoDescriptionEs:
+      "Carnicería en Calle de la Puebla 15, Madrid: ternera, cerdo ibérico fresco, pollo, cordero, carne picada y hamburguesas caseras. Corte al momento, encargo por WhatsApp y envío.",
+    seoDescriptionEn:
+      "Butcher's shop at Calle de la Puebla 15, Madrid: beef, fresh Iberian pork, chicken, lamb, minced meat and homemade burgers. Cut to order, WhatsApp orders and delivery.",
+    filterItems: (items) => items.filter((item) => item.category === "carniceria"),
+    faqs: [
+      {
+        questionEs: "¿Puedo encargar la carne y recogerla ya preparada?",
+        questionEn: "Can I order meat and pick it up ready?",
+        answerEs:
+          "Sí. Envíanos tu encargo por WhatsApp indicando el corte, la cantidad aproximada y la hora de recogida. Te confirmamos el peso exacto y el importe antes de prepararlo.",
+        answerEn:
+          "Yes. Send us your order via WhatsApp with the cut, approximate amount and pickup time. We confirm the exact weight and price before preparing it.",
+      },
+      {
+        questionEs: "¿Por qué los precios de la carnicería aparecen como «Consultar»?",
+        questionEn: "Why are butcher prices shown as 'Ask price'?",
+        answerEs:
+          "Porque la carne se vende al peso y el precio depende de la pieza y del mercado de cada semana. Te damos el precio exacto al confirmar tu encargo, sin compromiso.",
+        answerEn:
+          "Because meat is sold by weight and the price depends on the cut and that week's market. We give you the exact price when confirming your order, with no obligation.",
+      },
+      {
+        questionEs: "¿Hacéis envío a domicilio de carne fresca?",
+        questionEn: "Do you deliver fresh meat?",
+        answerEs:
+          "Sí, junto al resto de tu pedido. Los gastos de envío se calculan aparte y se confirman antes de finalizar.",
+        answerEn:
+          "Yes, together with the rest of your order. Shipping is calculated separately and confirmed before finalising.",
+      },
+    ],
+    relatedSlugs: ["fruteria", "embutidos", "quesos", "aceites"],
+    isGourmetPrimary: true,
+  },
+  {
+    slug: "fruteria",
+    path: "/gourmet/fruteria",
+    navLabelEs: "Frutería",
+    navLabelEn: "Greengrocer",
+    kickerEs: "Frutería de barrio · Género fresco cada día",
+    kickerEn: "Neighbourhood greengrocer · Fresh every day",
+    titleEs: "Frutería en Calle de la Puebla, Madrid",
+    titleEn: "Greengrocer on Calle de la Puebla, Madrid",
+    subtitleEs:
+      "Fruta de temporada, verdura y hortaliza fresca, frutos rojos, aguacate, fruta tropical y cestas de fruta por encargo en el mismo local de Corredera.",
+    subtitleEn:
+      "Seasonal fruit, fresh vegetables, berries, avocado, tropical fruit and fruit baskets to order in the same Corredera store.",
+    introEs:
+      "Junto a la tienda gourmet y la carnicería, en Calle de la Puebla, 15 tenemos frutería con género que seleccionamos cada día. Haz tu compra en el local o encárgala por WhatsApp: te confirmamos disponibilidad e importe y la tienes lista para recoger o en tu casa.",
+    introEn:
+      "Next to the gourmet shop and the butcher's counter, at Calle de la Puebla, 15 we run a greengrocer with produce selected every day. Shop in store or order via WhatsApp: we confirm availability and price, ready for pickup or delivered to your door.",
+    editorialTitleEs: "Lo mejor de cada temporada, en pleno centro de Madrid",
+    editorialTitleEn: "The best of every season, in the heart of Madrid",
+    editorialBodyEs:
+      "La fruta y la verdura cambian con la temporada, por eso trabajamos con precio según mercado. Dinos qué necesitas para la semana, para una receta o para regalar una cesta, y lo preparamos a tu medida.",
+    editorialBodyEn:
+      "Fruit and vegetables change with the seasons, so we work with market prices. Tell us what you need for the week, for a recipe or to give as a basket, and we will prepare it for you.",
+    editorialHighlightsEs: [
+      "Género fresco seleccionado cada día",
+      "Cestas de fruta por encargo para regalo, oficina o celebraciones",
+      "Recogida en Calle de la Puebla, 15 o envío a domicilio (gastos de envío aparte)",
+    ],
+    editorialHighlightsEn: [
+      "Fresh produce selected every day",
+      "Fruit baskets to order for gifts, offices or celebrations",
+      "Pickup at Calle de la Puebla, 15 or home delivery (shipping charged separately)",
+    ],
+    bannerImage: "/assets/products/fr1.jpg",
+    cardImage: "/assets/products/fr1.jpg",
+    cardBadgeEs: "Fresco cada día",
+    cardBadgeEn: "Fresh daily",
+    seoTitleEs: "Frutería en Madrid centro (Malasaña, Gran Vía) | Corredera",
+    seoTitleEn: "Greengrocer in Central Madrid (Malasaña, Gran Vía) | Corredera",
+    seoDescriptionEs:
+      "Frutería en Calle de la Puebla 15, Madrid: fruta de temporada, verdura fresca, frutos rojos, aguacate y cestas de fruta por encargo. Encargo por WhatsApp, recogida o envío.",
+    seoDescriptionEn:
+      "Greengrocer at Calle de la Puebla 15, Madrid: seasonal fruit, fresh vegetables, berries, avocado and fruit baskets to order. WhatsApp orders, pickup or delivery.",
+    filterItems: (items) => items.filter((item) => item.category === "fruteria"),
+    faqs: [
+      {
+        questionEs: "¿Preparáis cestas de fruta para regalar?",
+        questionEn: "Do you prepare fruit baskets as gifts?",
+        answerEs:
+          "Sí. Indícanos por WhatsApp el presupuesto, el día y si quieres añadir productos gourmet (aceite, quesos o ibéricos) y te la preparamos.",
+        answerEn:
+          "Yes. Tell us your budget and date via WhatsApp, and whether you would like to add gourmet products (olive oil, cheese or Iberian ham), and we will prepare it.",
+      },
+      {
+        questionEs: "¿Cómo se calcula el precio de la fruta y la verdura?",
+        questionEn: "How are fruit and vegetable prices calculated?",
+        answerEs:
+          "Según el mercado de cada día y el peso. Te confirmamos el importe exacto antes de preparar tu encargo.",
+        answerEn:
+          "By the day's market price and weight. We confirm the exact amount before preparing your order.",
+      },
+    ],
+    relatedSlugs: ["carniceria", "aceites", "quesos", "jamones"],
+    isGourmetPrimary: true,
+  },
+  {
     slug: "bakery-cafe",
     path: "/bakery-cafe",
     navLabelEs: "Bakery & Café",
@@ -598,28 +736,22 @@ export function getGourmetCategoryByPath(
   return GOURMET_CATEGORY_PAGES.find((cat) => cat.path === clean);
 }
 
+const PRODUCT_CATEGORY_SLUG: Partial<Record<MenuItem["category"], string>> = {
+  jamones_enteros: "jamones",
+  sobres_jamon: "sobres-jamon",
+  embutidos: "embutidos",
+  sobres_embutidos: "sobres-embutidos",
+  quesos: "quesos",
+  aceites: "aceites",
+  carniceria: "carniceria",
+  fruteria: "fruteria",
+};
+
 export function getCategoryForProduct(
   item: MenuItem,
 ): GourmetCategoryPageConfig {
-  switch (item.category) {
-    case "jamones_enteros":
-      return GOURMET_CATEGORY_PAGES[0];
-    case "sobres_jamon":
-      return GOURMET_CATEGORY_PAGES[2];
-    case "embutidos":
-      return GOURMET_CATEGORY_PAGES[3];
-    case "sobres_embutidos":
-      return GOURMET_CATEGORY_PAGES[4];
-    case "quesos":
-      return GOURMET_CATEGORY_PAGES[5];
-    case "aceites":
-      return GOURMET_CATEGORY_PAGES[6];
-    default:
-      if (item.mode === "gourmet") {
-        return GOURMET_CATEGORY_PAGES[1];
-      }
-      return GOURMET_CATEGORY_PAGES[7];
-  }
+  const slug = PRODUCT_CATEGORY_SLUG[item.category] ?? (item.mode === "gourmet" ? "jamon-cortado" : "bakery-cafe");
+  return getGourmetCategoryBySlug(slug)!;
 }
 
 /**

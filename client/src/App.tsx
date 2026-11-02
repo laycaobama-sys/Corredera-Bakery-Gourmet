@@ -1,19 +1,18 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Suspense, lazy } from "react";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import CartaPage from "./pages/CartaPage";
+import CategoryPage from "./pages/CategoryPage";
 import Home from "./pages/Home";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import ShopPage from "./pages/ShopPage";
 import { PageTracker } from "./storefront/components/PageTracker";
 import { StoreProvider } from "./storefront/StoreContext";
 
+// Shop pages are a few KB each and ship with the main bundle, so every page opens without waiting for
+// another download. Only the owner panel (charts, forms) is loaded on demand.
 const AdminApp = lazy(() => import("./admin/AdminApp"));
-const CategoryPage = lazy(() => import("./pages/CategoryPage"));
-const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
-const ShopPage = lazy(() => import("./pages/ShopPage"));
-const CartaPage = lazy(() => import("./pages/CartaPage"));
 
 function PageFallback() {
   return (
@@ -45,15 +44,10 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <StoreProvider>
-            <PageTracker />
-            <Toaster />
-            <Router />
-          </StoreProvider>
-        </TooltipProvider>
-      </ThemeProvider>
+      <StoreProvider>
+        <PageTracker />
+        <Router />
+      </StoreProvider>
     </ErrorBoundary>
   );
 }

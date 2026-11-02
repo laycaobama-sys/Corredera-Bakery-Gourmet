@@ -1,5 +1,4 @@
 import {
-  ALL_AVAILABLE_ITEMS,
   menuItems,
   parsePriceEuros,
   type MenuItem,
@@ -15,7 +14,7 @@ export const HAM_PREF_STORAGE_KEY = "cbg-ham-pref";
  */
 export function sanitizeStoredCart(
   raw: unknown,
-  validIds: Set<string> = new Set(menuItems.map((m) => m.id)),
+  validIds: Set<string> | null = new Set(menuItems.map((m) => m.id)),
 ): Record<string, number> {
   try {
     const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
@@ -24,7 +23,7 @@ export function sanitizeStoredCart(
     }
     const clean: Record<string, number> = {};
     for (const [id, val] of Object.entries(parsed as Record<string, unknown>)) {
-      if (!validIds.has(id)) continue;
+      if (validIds ? !validIds.has(id) : !/^[A-Za-z0-9_-]{1,64}$/.test(id)) continue;
       const num = typeof val === "number" ? Math.floor(val) : Number.parseInt(String(val), 10);
       if (!Number.isFinite(num) || num <= 0) continue;
       clean[id] = Math.min(99, num);
@@ -39,7 +38,8 @@ export function readStoredCart(): Record<string, number> {
   try {
     return sanitizeStoredCart(
       window.localStorage.getItem(CART_STORAGE_KEY),
-      new Set(ALL_AVAILABLE_ITEMS.map((m) => m.id)),
+      // Products created in the admin panel are kept too; StoreContext drops ids missing from the live catalog.
+      null,
     );
   } catch {
     return {};

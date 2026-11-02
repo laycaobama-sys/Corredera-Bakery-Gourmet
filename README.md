@@ -1,6 +1,6 @@
 # Corredera Bakery & Gourmet
 
-Tienda online gourmet (jamones ibéricos, embutidos, quesos y aceites) con carta Bakery & Café secundaria.
+Tienda online gourmet (jamones ibéricos, embutidos, quesos y aceites), carnicería y frutería del mismo local, con carta Bakery & Café secundaria.
 React 19 + Vite / Express / tRPC. Pedidos validados en servidor y enviados por WhatsApp (sin pago online).
 
 ## Comandos
@@ -18,7 +18,7 @@ React 19 + Vite / Express / tRPC. Pedidos validados en servidor y enviados por W
 | --- | --- |
 | `/` | Home gourmet: hero con carrusel + accesos, barra de contacto, más vendidos con pestañas, ¿Por qué Corredera?, servicio de corte, departamentos, cómo encargar, nosotros, Bakery & Café (secundario), visítanos y FAQ |
 | `/tienda` | Toda la tienda para llevar, con filtros por categoría (`?c=quesos`), búsqueda y orden |
-| `/gourmet/:slug` | Categorías: `jamones`, `jamon-cortado`, `sobres-jamon`, `embutidos`, `sobres-embutidos`, `quesos`, `aceites` |
+| `/gourmet/:slug` | Categorías: `jamones`, `jamon-cortado`, `sobres-jamon`, `embutidos`, `sobres-embutidos`, `quesos`, `aceites`, `carniceria`, `fruteria` |
 | `/producto/:id` | Ficha de producto: galería, precio, opción de corte del jamón, cantidad, añadir al pedido / WhatsApp directo, relacionados |
 | `/bakery-cafe` | Carta Bakery & Café (consumo en local; packs y tartas enteras por encargo) |
 | `/admin` | Panel privado de catálogo y contenidos (CMS) |
@@ -76,22 +76,24 @@ La primera vez se cargan el catálogo y los textos de `server/data/catalog-store
 
 1. Cloudflare → *Workers & Pages* → *Create* → *Import a repository* → este repositorio de GitHub.
 2. Build command: `pnpm build:cloudflare` · Deploy command: `npx wrangler deploy` · Root: `/`.
-3. En *Settings → Variables and Secrets* añade el secreto `ADMIN_INITIAL_PASSWORD` (mínimo 12 caracteres):
-   será la contraseña del dueño en `/admin`. Después puede cambiarla desde *Seguridad*, y el secreto ya no se usa.
-4. *Settings → Domains & Routes*: añade el dominio (p. ej. `correderagourmet.com`).
+3. *Settings → Domains & Routes*: añade el dominio. La web detecta sola su dominio (canonical, sitemap, robots y datos para Google e IA), así que no hay que configurar nada más. `www.` redirige al dominio sin `www`, y la dirección `*.workers.dev` no se indexa.
+
+**Acceso del dueño a `/admin`:** el código incluye una contraseña inicial ya preparada (solo su huella cifrada con scrypt, en `worker/owner-seed.json`; la clave en claro nunca está en el repositorio). Se aplica una única vez al desplegar. El dueño entra con ella y la cambia en *Seguridad y actividad*; esa nueva clave se mantiene en los siguientes despliegues. Para dar otra clave inicial en el futuro: genera una nueva huella con otro `id` en ese archivo.
+Opcional: el secreto `ADMIN_INITIAL_PASSWORD` solo se usa si todavía no existe ninguna contraseña.
+
+**Novedades de catálogo:** los productos añadidos a `server/data/catalog-store.json` con `"updatedBy": "seed-…"` se incorporan una vez a la tienda en producción al desplegar, sin tocar lo que el dueño haya cambiado.
 
 **Opción B: desde el ordenador**
 
 ```bash
 pnpm install
 pnpm exec wrangler login
-pnpm exec wrangler secret put ADMIN_INITIAL_PASSWORD
 pnpm deploy:cloudflare
 ```
 
 `pnpm dev:cloudflare` prueba la versión de Cloudflare en local (`http://127.0.0.1:8787`).
 En Cloudflare deja **Rocket Loader desactivado**. Las páginas se guardan en la caché de Cloudflare 60 s y las fotos subidas un año.
-Si el dominio no es `correderagourmet.com`, añade la variable `PUBLIC_SITE_URL`.
+Rellena el NIF y los datos del Registro Mercantil en el panel (*Tienda, horarios y envíos → Datos legales*): aparecen en el aviso legal en cuanto se guardan.
 
 ## Despliegue en un servidor Node (alternativa)
 

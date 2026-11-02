@@ -3,7 +3,6 @@ import { z } from "zod";
 import {
   formatEuros,
   formatPrice,
-  MARKET_DEPARTMENT_ITEMS,
   menuItems,
   parsePriceEuros,
   SHIPPING_NOTICE_EN,
@@ -198,7 +197,7 @@ export const orderRouter = router({
       }
 
       const activeCatalog = await listCatalogProducts({ includeInactive: false });
-      const fullLookupPool = [...activeCatalog, ...MARKET_DEPARTMENT_ITEMS];
+      const fullLookupPool = activeCatalog;
 
       // 1. Group and deduplicate item IDs
       const groupedQty = new Map<string, number>();

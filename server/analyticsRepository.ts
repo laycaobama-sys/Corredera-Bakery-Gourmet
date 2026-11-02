@@ -3,6 +3,7 @@ import fs from "./_core/dataFs";
 import path from "path";
 import { SERVER_DATA_DIR } from "./_core/paths";
 import { recordAuditAction } from "./catalogRepository";
+import { getSiteSettings } from "./siteSettingsRepository";
 
 export type AnalyticsEventType =
   | "pageview"
@@ -216,7 +217,12 @@ function readOrdersStore(): StoredValidatedOrder[] {
   try {
     const raw = fs.readFileSync(activeOrdersFilePath, "utf-8");
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    // Privacy policy: customer data is kept only for the retention period set in the admin panel.
+    const cutoff = Date.now() - getSiteSettings().legal.orderRetentionDays * 24 * 60 * 60 * 1000;
+    const kept = (parsed as StoredValidatedOrder[]).filter((o) => new Date(o.createdAt).getTime() >= cutoff);
+    if (kept.length !== parsed.length) writeOrdersStoreAtomic(kept);
+    return kept;
   } catch {
     return [];
   }

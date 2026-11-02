@@ -1,6 +1,6 @@
 {
   "name": "Corredera Bakery & Gourmet",
-  "description": "Jamones ibéricos 5 Jotas y Joselito con corte a cuchillo gratis, loncheados, embutidos, quesos y aceites AOVE. Tienda gourmet en Calle de la Puebla 15, Madrid.",
+  "description": "Jamones 5 Jotas y Joselito con corte a cuchillo gratis, embutidos, quesos, aceites AOVE, carnicería y frutería en Calle de la Puebla 15, Madrid.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

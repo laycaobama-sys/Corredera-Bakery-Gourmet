@@ -13,7 +13,7 @@ import { getSiteSettings } from "../siteSettingsRepository";
 
 export const SITE_URL = (process.env.PUBLIC_SITE_URL || "https://correderagourmet.com").replace(/\/+$/, "");
 
-const SHOP_CATEGORIES = new Set(["jamones_enteros", "sobres_jamon", "embutidos", "sobres_embutidos", "quesos", "aceites", "conservas", "vinos"]);
+const SHOP_CATEGORIES = new Set(["jamones_enteros", "sobres_jamon", "embutidos", "sobres_embutidos", "quesos", "aceites", "conservas", "vinos", "fruteria", "carniceria"]);
 const IN_STORE_ONLY = new Set(["g8", "g9", "g20", "g1", "g3"]);
 
 const esc = (s: string) =>
@@ -118,6 +118,7 @@ const HOME_FAQ = (s: SiteSettings) => [
   { q: "¿Dónde comprar jamón ibérico 5 Jotas o Joselito en Madrid?", a: `En Corredera Gourmet, ${s.contact.addressLine}, entre Gran Vía y Malasaña. Puedes encargarlo en la web y recogerlo en tienda o recibirlo en casa.` },
   { q: "¿El corte y envasado del jamón entero tiene coste?", a: "No. Al encargar cualquiera de nuestros jamones enteros, el corte a cuchillo y el envasado al vacío son gratuitos." },
   { q: "¿Cómo se paga un pedido?", a: "No hay pago online: el pedido se envía por WhatsApp, confirmamos disponibilidad e importe y se paga al recoger en tienda o a la entrega." },
+  { q: "¿Hay carnicería y frutería en Corredera?", a: `Sí. En el mismo local de ${s.contact.addressLine} tenemos carnicería (ternera, cerdo ibérico fresco, pollo, cordero y hamburguesas caseras cortadas al momento) y frutería con fruta y verdura fresca de temporada. Puedes encargar por WhatsApp y recoger o recibir en casa.` },
   { q: "¿Hacéis envíos a domicilio?", a: s.contact.shippingNoticeEs },
 ];
 
@@ -128,7 +129,7 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
   const shop = all.filter(isShopProduct);
   const s = settings;
   const homeDescription =
-    "Jamones ibéricos 5 Jotas y Joselito con corte a cuchillo gratis, loncheados, embutidos, quesos y aceites AOVE. Tienda gourmet en Calle de la Puebla 15, Madrid.";
+    "Jamones ibéricos 5 Jotas y Joselito con corte a cuchillo gratis, embutidos, quesos y aceites AOVE, carnicería y frutería. Tienda gourmet en Calle de la Puebla 15, Madrid.";
   const nav = `<nav><a href="/">Inicio</a> · <a href="/tienda">Tienda</a> · ${GOURMET_CATEGORY_PAGES.map((c) => `<a href="${c.path}">${esc(c.navLabelEs)}</a>`).join(" · ")}</nav>`;
 
   if (path === "/") {
@@ -139,7 +140,7 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
       canonical: `${SITE_URL}/`,
       image: abs(s.storefront.heroSlides[0]?.imageUrl ?? "/assets/home/hero-jamon.jpg"),
       jsonLd: [itemList("Los más vendidos de Corredera Gourmet", featured), faqPage(HOME_FAQ(s))],
-      bodyHtml: `${nav}<h1>Corredera Gourmet: jamones ibéricos, embutidos, quesos y aceites en Madrid</h1><p>${esc(s.pages.aboutText1Es)}</p><p>${esc(s.pages.carvingTextEs)}</p><h2>Los más vendidos</h2>${productListHtml(featured)}<h2>Preguntas frecuentes</h2>${HOME_FAQ(s)
+      bodyHtml: `${nav}<h1>Corredera Gourmet: jamones ibéricos, embutidos, quesos, aceites, carnicería y frutería en Madrid</h1><p>${esc(s.pages.aboutText1Es)}</p><p>${esc(s.pages.carvingTextEs)}</p><h2>Los más vendidos</h2>${productListHtml(featured)}<h2>Preguntas frecuentes</h2>${HOME_FAQ(s)
         .map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`)
         .join("")}<h2>Visítanos</h2>${contactHtml(s)}`,
     };
@@ -260,7 +261,7 @@ export async function buildLlmsTxt(): Promise<string> {
   const lines: string[] = [
     `# ${s.legal.tradeName} (Madrid)`,
     "",
-    `> Tienda gourmet en ${s.contact.addressLine}: jamones ibéricos 5 Jotas, Joselito y Dehesa de Extremadura con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos ibéricos de bellota, quesos seleccionados, aceites de oliva virgen extra, conservas y vinos. También obrador y cafetería (Bakery & Café).`,
+    `> Tienda gourmet, carnicería y frutería en ${s.contact.addressLine} (entre Gran Vía y Malasaña): jamones ibéricos 5 Jotas, Joselito y Dehesa de Extremadura con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos ibéricos de bellota, quesos seleccionados, aceites de oliva virgen extra, conservas y vinos; carne cortada al momento (ternera, cerdo ibérico fresco, pollo, cordero, hamburguesas caseras) y fruta y verdura fresca de temporada con cestas por encargo. También obrador y cafetería (Bakery & Café).`,
     "",
     "## Cómo comprar",
     `- Pedidos desde ${SITE_URL}/tienda; se confirman por WhatsApp ${s.contact.whatsappDisplay}. Sin pago online: se paga al recoger o a la entrega.`,

@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import { trpc } from "@/lib/trpc";
 import {
   BarChart3,
@@ -130,7 +131,17 @@ function LoginScreen({ onSuccess, notConfigured }: { onSuccess: () => void; notC
   );
 }
 
+/** The panel's notifications live here so the public shop never loads them. */
 export default function AdminApp({ section = "" }: { section?: string }) {
+  return (
+    <>
+      <AdminPanel section={section} />
+      <Toaster />
+    </>
+  );
+}
+
+function AdminPanel({ section }: { section: string }) {
   const utils = trpc.useUtils();
   const auth = trpc.admin.authStatus.useQuery(undefined, { retry: false, refetchOnWindowFocus: false });
   const logout = trpc.admin.logoutAdmin.useMutation();
