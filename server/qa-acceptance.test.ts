@@ -82,13 +82,13 @@ describe("Independent QA Lead Acceptance Battery (11 Areas)", () => {
     const robotsTxt = await robotsRes.text();
     expect(robotsTxt).not.toContain("/admin");
     expect(robotsTxt).toContain("Disallow: /api/");
-    expect(robotsTxt).toContain("Sitemap: https://correderagourmet.com/sitemap.xml");
+    expect(robotsTxt).toContain("Sitemap: https://correderamadrid.com/sitemap.xml");
 
     const sitemapRes = await fetch(`${baseUrl}/sitemap.xml`);
     expect(sitemapRes.status).toBe(200);
     const sitemapXml = await sitemapRes.text();
-    expect(sitemapXml).toContain("https://correderagourmet.com/");
-    expect(sitemapXml).toContain("https://correderagourmet.com/?lang=en");
+    expect(sitemapXml).toContain("https://correderamadrid.com/");
+    expect(sitemapXml).toContain("https://correderamadrid.com/?lang=en");
     expect(sitemapXml).not.toContain("/admin");
 
     const manifestRes = await fetch(`${baseUrl}/site.webmanifest`);

@@ -82,8 +82,8 @@ function StoreHealth({ pendingOrders }: { pendingOrders: number }) {
     checks.push({ tone: "warn", text: `${pendingOrders} ${pendingOrders === 1 ? "pedido espera" : "pedidos esperan"} confirmación por WhatsApp.`, href: "/admin/pedidos", action: "Ver pedidos" });
   if (s.legal.nif.includes("PENDIENTE") || s.legal.registryInfo.includes("PENDIENTE"))
     checks.push({ tone: "warn", text: "Faltan el NIF o los datos del Registro Mercantil (obligatorios en el aviso legal).", href: "/admin/tienda", action: "Completar datos legales" });
-  if (emailDomain === "correderagourmet.com" && !host.endsWith("correderagourmet.com"))
-    checks.push({ tone: "warn", text: `El email de contacto (${s.contact.contactEmail}) es del dominio antiguo: puede que no recibas correos.`, href: "/admin/tienda", action: "Cambiar email" });
+  if (emailDomain === "correderagourmet.com")
+    checks.push({ tone: "warn", text: `El email de contacto (${s.contact.contactEmail}) es del dominio antiguo: no recibirás correos.`, href: "/admin/tienda", action: "Cambiar email" });
   if (askPrice > 0)
     checks.push({ tone: "info", text: `${askPrice} productos muestran «Consultar». Si tienes su precio, ponlo: se vende más.`, href: "/admin/productos?filtro=consultar", action: "Ver productos" });
   if (hidden > 0)

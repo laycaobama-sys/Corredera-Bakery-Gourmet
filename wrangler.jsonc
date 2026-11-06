@@ -23,8 +23,14 @@
   },
   "vars": {
     "NODE_ENV": "production",
+    "PUBLIC_SITE_URL": "https://correderamadrid.com",
     "DATA_DIR": "/data",
     "UPLOAD_DIR": "/uploads"
   },
+  // Public domain, registered and managed in this Cloudflare account. www redirects to the root in worker/index.ts.
+  "routes": [
+    { "pattern": "correderamadrid.com", "custom_domain": true },
+    { "pattern": "www.correderamadrid.com", "custom_domain": true }
+  ],
   "observability": { "enabled": true }
 }

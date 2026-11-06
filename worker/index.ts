@@ -107,6 +107,14 @@ export class CorrederaStore extends DurableObject<Env> {
       tags.forEach((tag) => done.add(tag));
     }
 
+    // The old domain's mailbox no longer exists: move the published addresses to the new domain, once.
+    if (!done.has("settings-domain-correderamadrid")) {
+      const raw = dataFs.readFileSync(settingsFile, "utf-8");
+      const moved = raw.replaceAll("info@correderagourmet.com", "info@correderamadrid.com");
+      if (moved !== raw) dataFs.writeFileSync(settingsFile, moved);
+      done.add("settings-domain-correderamadrid");
+    }
+
     // Owner access delivered with the code as a scrypt hash, applied once; the owner then changes it in the panel.
     if (!done.has(ownerSeed.id)) {
       installOwnerPasswordHash(ownerSeed.salt, ownerSeed.passwordHash);

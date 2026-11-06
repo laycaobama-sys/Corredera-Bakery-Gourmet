@@ -79,7 +79,7 @@ describe("Owner admin panel: single access, analytics, orders and customers", ()
   });
 
   it("tracks pages, time on page, traffic sources and product views", async () => {
-    const visitor = appRouter.createCaller({ req: { ip: "198.51.100.4", headers: { host: "correderagourmet.com" } } as any, res: {} as any, user: null });
+    const visitor = appRouter.createCaller({ req: { ip: "198.51.100.4", headers: { host: "correderamadrid.com" } } as any, res: {} as any, user: null });
     await visitor.order.recordEvent({ eventType: "pageview", path: "/", referrer: "https://www.google.com/search?q=jamon", device: "mobile", lang: "es" });
     await visitor.order.recordEvent({ eventType: "pageview", path: "/producto/je1?utm=x", device: "mobile", lang: "es" });
     await visitor.order.recordEvent({ eventType: "page_time", path: "/producto/je1", seconds: 40 });
@@ -102,7 +102,7 @@ describe("Owner admin panel: single access, analytics, orders and customers", ()
   it("classifies referrers and normalizes tracked paths", () => {
     expect(classifyReferrer("")).toBe("Directo");
     expect(classifyReferrer("https://l.instagram.com/?u=x")).toBe("Instagram");
-    expect(classifyReferrer("https://correderagourmet.com/tienda", "correderagourmet.com")).toBe("Directo");
+    expect(classifyReferrer("https://correderamadrid.com/tienda", "correderamadrid.com")).toBe("Directo");
     expect(normalizeTrackedPath("/gourmet/quesos/?a=1")).toBe("/gourmet/quesos");
     expect(normalizeTrackedPath("/api/trpc")).toBeNull();
     expect(normalizeTrackedPath("javascript:alert(1)")).toBeNull();

@@ -12,7 +12,7 @@ import { getSiteSettings } from "../siteSettingsRepository";
  * and AI assistants (ChatGPT, Claude, Perplexity, Gemini) can then read and cite each page.
  */
 
-export const SITE_URL = (process.env.PUBLIC_SITE_URL || "https://correderagourmet.com").replace(/\/+$/, "");
+export const SITE_URL = (process.env.PUBLIC_SITE_URL || "https://correderamadrid.com").replace(/\/+$/, "");
 
 const SHOP_CATEGORIES = new Set(["jamones_enteros", "sobres_jamon", "embutidos", "sobres_embutidos", "quesos", "aceites", "conservas", "vinos", "fruteria", "carniceria"]);
 const IN_STORE_ONLY = new Set(["g8", "g9", "g20", "g1", "g3"]);

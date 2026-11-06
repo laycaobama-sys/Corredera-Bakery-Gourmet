@@ -8,7 +8,7 @@ import { menuItems } from "../shared/catalog";
 import { GOURMET_CATEGORY_PAGES } from "../shared/gourmetRoutes";
 import { buildLlmsTxt } from "../server/_core/seoRender";
 
-const BASE = "https://correderagourmet.com";
+const BASE = "https://correderamadrid.com";
 const today = new Date().toISOString().slice(0, 10);
 
 type Entry = { path: string; priority: string; changefreq: string; alternates?: boolean };

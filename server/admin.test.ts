@@ -59,7 +59,7 @@ const adminUser: User = {
   id: 1,
   openId: "owner-admin",
   name: "Propietario Corredera",
-  email: "info@correderagourmet.com",
+  email: "info@correderamadrid.com",
   loginMethod: "admin_token",
   role: "admin",
   createdAt: new Date(),

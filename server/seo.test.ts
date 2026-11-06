@@ -40,18 +40,18 @@ describe("Corredera Bakery & Gourmet — Technical & Local SEO Audit Suite", () 
   it("validates canonical URL, bidirectional hreflang (es, en, x-default), Open Graph, and Twitter Card metadata with existing physical image asset", () => {
     const html = fs.readFileSync(INDEX_HTML_PATH, "utf-8");
 
-    expect(html).toContain('<link rel="canonical" href="https://correderagourmet.com/" />');
-    expect(html).toContain('<link rel="alternate" hreflang="es" href="https://correderagourmet.com/" />');
-    expect(html).toContain('<link rel="alternate" hreflang="en" href="https://correderagourmet.com/?lang=en" />');
-    expect(html).toContain('<link rel="alternate" hreflang="x-default" href="https://correderagourmet.com/" />');
+    expect(html).toContain('<link rel="canonical" href="https://correderamadrid.com/" />');
+    expect(html).toContain('<link rel="alternate" hreflang="es" href="https://correderamadrid.com/" />');
+    expect(html).toContain('<link rel="alternate" hreflang="en" href="https://correderamadrid.com/?lang=en" />');
+    expect(html).toContain('<link rel="alternate" hreflang="x-default" href="https://correderamadrid.com/" />');
 
     expect(html).toContain('<meta property="og:type" content="website" />');
     expect(html).toContain('<meta property="og:locale" content="es_ES" />');
     expect(html).toContain('<meta property="og:locale:alternate" content="en_US" />');
-    expect(html).toContain('<meta property="og:url" content="https://correderagourmet.com/" />');
+    expect(html).toContain('<meta property="og:url" content="https://correderamadrid.com/" />');
     expect(html).toContain('<meta name="twitter:card" content="summary_large_image" />');
 
-    const ogImageMatch = html.match(/<meta\s+property="og:image"\s+content="https:\/\/correderagourmet\.com(\/[^"]+)"/);
+    const ogImageMatch = html.match(/<meta\s+property="og:image"\s+content="https:\/\/correderamadrid.com(\/[^"]+)"/);
     expect(ogImageMatch).not.toBeNull();
     const relativeImagePath = ogImageMatch![1];
     const physicalAssetPath = path.join(ROOT_DIR, "client", "public", relativeImagePath);
@@ -68,13 +68,13 @@ describe("Corredera Bakery & Gourmet — Technical & Local SEO Audit Suite", () 
 
     const locMatches = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
     expect(locMatches.slice(0, 3)).toEqual([
-      "https://correderagourmet.com/",
-      "https://correderagourmet.com/?lang=en",
-      "https://correderagourmet.com/tienda",
+      "https://correderamadrid.com/",
+      "https://correderamadrid.com/?lang=en",
+      "https://correderamadrid.com/tienda",
     ]);
-    expect(locMatches).toContain("https://correderagourmet.com/gourmet/jamones");
-    expect(locMatches).toContain("https://correderagourmet.com/bakery-cafe");
-    expect(locMatches).toContain("https://correderagourmet.com/producto/je1");
+    expect(locMatches).toContain("https://correderamadrid.com/gourmet/jamones");
+    expect(locMatches).toContain("https://correderamadrid.com/bakery-cafe");
+    expect(locMatches).toContain("https://correderamadrid.com/producto/je1");
     expect(new Set(locMatches).size).toBe(locMatches.length);
 
     for (const loc of locMatches) {
@@ -82,7 +82,7 @@ describe("Corredera Bakery & Gourmet — Technical & Local SEO Audit Suite", () 
       expect(loc).not.toContain("/admin");
       expect(loc).not.toContain("/404");
       // Every sitemap URL must resolve to an indexable 200 route
-      const status = resolveHtmlRouteSeoStatus(loc.replace("https://correderagourmet.com", ""));
+      const status = resolveHtmlRouteSeoStatus(loc.replace("https://correderamadrid.com", ""));
       expect(status.statusCode).toBe(200);
     }
 
@@ -99,7 +99,7 @@ describe("Corredera Bakery & Gourmet — Technical & Local SEO Audit Suite", () 
     expect(robots).toContain("User-agent: *");
     expect(robots).toContain("Allow: /");
     expect(robots).toContain("Disallow: /api/");
-    expect(robots).toContain("Sitemap: https://correderagourmet.com/sitemap.xml");
+    expect(robots).toContain("Sitemap: https://correderamadrid.com/sitemap.xml");
     // Must not expose private admin path in plaintext robots.txt
     expect(robots).not.toContain("/admin");
   });
@@ -121,9 +121,9 @@ describe("Corredera Bakery & Gourmet — Technical & Local SEO Audit Suite", () 
     expect(serialized).not.toContain("GeoCoordinates");
 
     // Verify separated entities
-    const orgNode = graph.find((n) => n["@id"] === "https://correderagourmet.com/#organization");
-    const bakeryNode = graph.find((n) => n["@id"] === "https://correderagourmet.com/#bakery") as Record<string, unknown>;
-    const gourmetNode = graph.find((n) => n["@id"] === "https://correderagourmet.com/#gourmet") as Record<string, unknown>;
+    const orgNode = graph.find((n) => n["@id"] === "https://correderamadrid.com/#organization");
+    const bakeryNode = graph.find((n) => n["@id"] === "https://correderamadrid.com/#bakery") as Record<string, unknown>;
+    const gourmetNode = graph.find((n) => n["@id"] === "https://correderamadrid.com/#gourmet") as Record<string, unknown>;
 
     expect(orgNode).toBeDefined();
     expect(orgNode?.legalName).toBe("Vallejo Lorenzo S.L.");
@@ -214,8 +214,8 @@ describe("Corredera Bakery & Gourmet — Technical & Local SEO Audit Suite", () 
     const auditMd = fs.readFileSync(SEO_AUDIT_PATH, "utf-8");
     expect(auditMd).toContain("Google Business Profile");
     expect(auditMd).toContain("Google Search Console");
-    expect(auditMd).toContain("https://correderagourmet.com/");
-    expect(auditMd).toContain("https://correderagourmet.com/?lang=en");
+    expect(auditMd).toContain("https://correderamadrid.com/");
+    expect(auditMd).toContain("https://correderamadrid.com/?lang=en");
     expect(auditMd).toContain("Vallejo Lorenzo S.L.");
   });
 });

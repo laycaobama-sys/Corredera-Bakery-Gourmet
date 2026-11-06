@@ -597,7 +597,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     whatsappDisplay: "+34 640 34 19 32",
     landlineNumber: "+34919471449",
     landlineDisplay: "919 47 14 49",
-    contactEmail: "info@correderagourmet.com",
+    contactEmail: "info@correderamadrid.com",
     addressLine: "Calle de la Puebla, 15 · 28004 Madrid",
     neighborhoodNoteEs:
       "Entre Gran Vía y Corredera Baja de San Pablo. Acceso a pie desde Metro Callao (L3, L5), Gran Vía (L1, L5) y Tribunal (L1, L10).",
@@ -669,7 +669,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     registeredAddress: "Calle de la Puebla, 15, 28004 Madrid, España",
     registryInfo:
       "[PENDIENTE DE COMPLETAR POR EL PROPIETARIO: Datos de inscripción en el Registro Mercantil de Madrid]",
-    privacyEmail: "info@correderagourmet.com",
+    privacyEmail: "info@correderamadrid.com",
     orderRetentionDays: 90,
   },
   starsSection: {

@@ -40,7 +40,7 @@ export async function renderHtmlPage(template: string, rawUrl: string, origin?: 
 
     html = injectSeo(html, await buildSeoPage(rawUrl));
     // The static JSON-LD carries the original contact email; the panel's email wins.
-    html = html.replaceAll("info@correderagourmet.com", settings.contact.contactEmail);
+    html = html.replaceAll("info@correderamadrid.com", settings.contact.contactEmail);
     const boot = JSON.stringify({ at: Date.now(), catalog, settings }).replace(/</g, "\\u003c");
     html = html.replace('<div id="root">', `<script id="cbg-boot" type="application/json">${boot}</script>\n    <div id="root">`);
   } catch (err) {

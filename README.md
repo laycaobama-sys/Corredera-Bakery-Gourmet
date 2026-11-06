@@ -112,7 +112,7 @@ Railway, Render, Fly.io, un VPS o Docker con Node.js 20+.
 
 1. `pnpm install && pnpm build`, y arrancar con `pnpm start` (puerto `PORT`).
 2. Volumen persistente para `DATA_DIR` (catálogo, ajustes, pedidos, analítica, clave) y `UPLOAD_DIR` (fotos subidas desde el panel).
-3. `PUBLIC_SITE_URL=https://tu-dominio` si el dominio no es `correderagourmet.com`.
+3. `PUBLIC_SITE_URL=https://tu-dominio` si el dominio no es `correderamadrid.com`.
 4. En el servidor: `pnpm admin:password` para crear la clave del propietario.
 
 ## Cartas para imprimir

@@ -10,14 +10,14 @@ describe("Server-side SEO for crawlers and AI assistants", () => {
   it("gives each product page its own title, Product JSON-LD with EUR offer and a readable snapshot", async () => {
     const page = await buildSeoPage("/producto/je1");
     expect(page.title).toContain("Jamón 5 Jotas");
-    expect(page.canonical).toBe("https://correderagourmet.com/producto/je1");
+    expect(page.canonical).toBe("https://correderamadrid.com/producto/je1");
     const product = page.jsonLd.find((j) => (j as { "@type": string })["@type"] === "Product") as Record<string, any>;
     expect(product.offers.price).toBe("625.00");
     expect(product.offers.priceCurrency).toBe("EUR");
 
     const html = injectSeo(template, page);
     expect(html).toContain("<title>Jamón 5 Jotas");
-    expect(html).toContain('<link rel="canonical" href="https://correderagourmet.com/producto/je1" />');
+    expect(html).toContain('<link rel="canonical" href="https://correderamadrid.com/producto/je1" />');
     expect(html).toContain('"@type":"Product"');
     expect(html).toContain('<div class="seo-snapshot" hidden><nav>');
     expect(html.match(/<title>/g)).toHaveLength(1);
@@ -48,7 +48,7 @@ describe("Server-side SEO for crawlers and AI assistants", () => {
 
   it("publishes a live sitemap with product images and an llms.txt summary from the catalog", async () => {
     const xml = await buildSitemapXml();
-    expect(xml).toContain("<loc>https://correderagourmet.com/producto/je1</loc>");
+    expect(xml).toContain("<loc>https://correderamadrid.com/producto/je1</loc>");
     expect(xml).toContain("<image:loc>");
     const llms = await buildLlmsTxt();
     expect(llms).toContain("Calle de la Puebla");
