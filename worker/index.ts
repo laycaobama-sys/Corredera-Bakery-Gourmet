@@ -227,6 +227,11 @@ export default {
       url.hostname = url.hostname.slice(4);
       return Response.redirect(url.toString(), 301);
     }
+    // The launch address now forwards to the real domain, so old links keep working and only one site is indexed.
+    if (url.hostname === "corredera-bakery-gourmet.ibraguimova19.workers.dev") {
+      url.hostname = "correderamadrid.com";
+      return Response.redirect(url.toString(), request.method === "GET" || request.method === "HEAD" ? 301 : 308);
+    }
     if (p === "/index.html") return Response.redirect(`${url.origin}/${url.search}`, 301);
 
     // A product photo that does not exist yet: branded illustration instead of a broken image.

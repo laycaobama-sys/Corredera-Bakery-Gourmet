@@ -22,6 +22,14 @@ const esc = (s: string) =>
 
 const abs = (url: string) => (/^https?:\/\//.test(url) ? url : `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`);
 
+/** Search snippets are cut at about 160 characters: end on a whole word. */
+const snippet = (text: string, max = 158) => {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 1);
+  return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,.;:·-]+$/, "")}…`;
+};
+
 function priceNumber(item: MenuItem) {
   const n = parsePriceEuros(item.price);
   return n === null ? null : n.toFixed(2);
@@ -270,7 +278,7 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
         lang,
         alternates: alternates(`/producto/${item.id}`),
         title: `${nameOf(item)}${priceText} | Corredera Gourmet Madrid`.slice(0, 120),
-        description: `${descOf(item)} ${info} ${en ? "Buy at Corredera Gourmet, Madrid: store pickup or home delivery." : "Compra en Corredera Gourmet, Madrid: recogida en tienda o envío a domicilio."}`.replace(/\s+/g, " ").trim().slice(0, 300),
+        description: snippet(`${descOf(item)} ${info} ${en ? "Buy at Corredera Gourmet, Madrid: store pickup or home delivery." : "Compra en Corredera Gourmet, Madrid: recogida en tienda o envío a domicilio."}`),
         canonical: canonicalOf(`/producto/${item.id}`),
         image: abs(item.imageUrl || `/assets/products/${item.id}.jpg`),
         // Google rejects Product markup without a price, so items priced on request only get breadcrumbs.

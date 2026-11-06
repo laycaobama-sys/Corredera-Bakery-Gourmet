@@ -156,7 +156,7 @@ export function itemBadge(item: MenuItem, lang: Lang) {
 }
 
 /** Raise when bundled product photos are replaced, so browsers fetch the new files instead of cached ones. */
-export const PRODUCT_PHOTO_VERSION = "4";
+export const PRODUCT_PHOTO_VERSION = "5";
 
 /** Second photo that fades in on hover and joins the product gallery. A photo replaced by the owner keeps its own pair. */
 export function itemHoverImage(item: MenuItem & { imageUrl?: string; hoverImageUrl?: string }) {
