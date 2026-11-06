@@ -1355,34 +1355,108 @@ summary:focus-visible,
 .cg-card {
   display: flex;
   flex-direction: column;
-  background: #fff;
   text-align: center;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  border: 1px solid var(--cg-line);
-}
-
-.cg-card:hover {
-  box-shadow: var(--cg-shadow);
-  transform: translateY(-3px);
 }
 
 .cg-card__media {
   position: relative;
   display: block;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 1;
   overflow: hidden;
   background: #fff;
+  border: 1px solid #f0ebe3;
 }
 
 .cg-card__media > img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.6s ease;
 }
 
 .cg-card:hover .cg-card__media > img {
   transform: scale(1.045);
+}
+
+/* Second photo: fades in over the main one on hover */
+.cg-card__media > .cg-card__hover {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s ease !important;
+}
+
+.cg-card__media:hover .cg-card__hover.is-ready {
+  opacity: 1;
+}
+
+/* Maker's plate and Corredera seal on the photo */
+.cg-marks {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: calc(100% - 20px);
+  pointer-events: none;
+}
+
+.cg-marks .cg-seal {
+  position: static;
+}
+
+.cg-brand {
+  display: block;
+  max-width: 100%;
+  padding: 4px 10px;
+  border: 1px solid rgba(156, 122, 67, 0.55);
+  background: rgba(255, 252, 247, 0.97);
+  color: var(--cg-burgundy);
+  font-family: var(--cg-serif);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cg-brand--lg {
+  padding: 6px 14px;
+  font-size: 15px;
+}
+
+.cg-card__body .cg-brand {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cg-gold);
+  font-family: var(--cg-sans);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+.cg-brand--logo {
+  padding: 4px 8px;
+}
+
+.cg-brand--logo img {
+  display: block;
+  height: 24px;
+  width: auto;
+  max-width: 110px;
+  object-fit: contain;
+}
+
+.cg-brand--lg.cg-brand--logo img {
+  height: 44px;
+  max-width: 180px;
 }
 
 .cg-card__badge {
@@ -1471,14 +1545,16 @@ summary:focus-visible,
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 20px 18px 22px;
-  border-top: 1px solid var(--cg-line);
+  padding: 16px 8px 10px;
 }
 
 .cg-card__title {
-  font-family: var(--cg-serif) !important;
-  font-size: 20px !important;
-  line-height: 1.22 !important;
+  font-family: var(--cg-sans) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em;
+  line-height: 1.35 !important;
+  text-transform: uppercase;
   color: var(--cg-ink);
 }
 
@@ -1518,6 +1594,26 @@ summary:focus-visible,
   flex-direction: column;
   align-items: center;
   gap: 6px;
+}
+
+.cg-card__actions .cg-btn {
+  min-height: 40px;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  transition: opacity 0.2s ease;
+}
+
+.cg-card__actions .cg-btn--outline {
+  color: var(--cg-burgundy);
+}
+
+.cg-card__actions .cg-btn:hover {
+  background: none;
+  opacity: 0.65;
 }
 
 .cg-card__view {
@@ -3179,7 +3275,7 @@ summary:focus-visible,
 
 .cg-pdp__main {
   position: relative;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 1;
   border: 1px solid var(--cg-line);
   overflow: hidden;
   background: #fff;
@@ -3188,7 +3284,15 @@ summary:focus-visible,
 .cg-pdp__main > img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  animation: cg-fade-in 0.45s ease;
+  transition: transform 0.6s ease;
+}
+
+@media (hover: hover) {
+  .cg-pdp__main:hover > img {
+    transform: scale(1.05);
+  }
 }
 
 .cg-pdp__thumbs {
@@ -3998,6 +4102,18 @@ summary:focus-visible,
     padding: 4px 7px;
   }
 
+  .cg-marks {
+    right: 6px;
+    bottom: 6px;
+    max-width: calc(100% - 12px);
+    gap: 4px;
+  }
+
+  .cg-brand--lg {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
   .cg-seal {
     right: 6px;
     bottom: 6px;
@@ -4286,4 +4402,31 @@ summary:focus-visible,
     padding: 0 14px;
     font-size: 12px;
   }
+}
+
+/* Buying guide */
+.cg-guide {
+  padding-block: 8px 72px;
+}
+
+.cg-guide section {
+  margin-top: 32px;
+}
+
+.cg-guide h2 {
+  margin-bottom: 10px;
+  font-family: var(--cg-serif);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--cg-burgundy);
+}
+
+.cg-guide p {
+  line-height: 1.7;
+}
+
+.cg-guide__cta {
+  margin-top: 36px;
+  text-align: center;
 }

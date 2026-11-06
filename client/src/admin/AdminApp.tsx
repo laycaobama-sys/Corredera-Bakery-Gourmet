@@ -18,6 +18,14 @@ import {
   Store,
   Users,
   X,
+  Boxes,
+  FileBarChart,
+  FileText,
+  Receipt,
+  ShoppingCart,
+  Truck,
+  UserRoundPlus,
+  Wallet,
 } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -27,21 +35,35 @@ import { AnalyticsSection } from "./sections/Analytics";
 import { CampaignSection } from "./sections/Campaign";
 import { CustomersSection } from "./sections/Customers";
 import { DashboardSection } from "./sections/Dashboard";
+import { InvoicesSection, QuotesSection } from "./sections/Documents";
+import { FinanceSection, ReportsSection } from "./sections/Finance";
 import { HomepageSection } from "./sections/Homepage";
+import { LeadsSection } from "./sections/Leads";
+import { LogisticsSection } from "./sections/Logistics";
 import { OrdersSection } from "./sections/Orders";
 import { PagesContentSection } from "./sections/PagesContent";
 import { ProductsSection } from "./sections/Products";
+import { PurchasesSection } from "./sections/Purchases";
 import { SecuritySection } from "./sections/Security";
+import { StockSection } from "./sections/Stock";
 import { StoreInfoSection } from "./sections/StoreInfo";
 import { Button, errorMessage, Loading } from "./ui";
 
 const TOKEN_KEY = "corredera-admin-token";
 
 export const SECTIONS = [
-  { id: "", label: "Resumen", icon: LayoutDashboard, group: "Negocio" },
-  { id: "pedidos", label: "Pedidos", icon: ShoppingBag, group: "Negocio" },
-  { id: "clientes", label: "Clientes", icon: Users, group: "Negocio" },
-  { id: "analitica", label: "Analítica web", icon: BarChart3, group: "Negocio" },
+  { id: "", label: "Panel de dirección", icon: LayoutDashboard, group: "Dirección" },
+  { id: "finanzas", label: "Finanzas", icon: Wallet, group: "Dirección" },
+  { id: "informes", label: "Informes", icon: FileBarChart, group: "Dirección" },
+  { id: "pedidos", label: "Pedidos", icon: ShoppingBag, group: "Ventas" },
+  { id: "logistica", label: "Logística", icon: Truck, group: "Ventas" },
+  { id: "facturacion", label: "Facturación", icon: Receipt, group: "Ventas" },
+  { id: "presupuestos", label: "Presupuestos", icon: FileText, group: "Ventas" },
+  { id: "clientes", label: "Clientes", icon: Users, group: "CRM" },
+  { id: "leads", label: "Leads y oportunidades", icon: UserRoundPlus, group: "CRM" },
+  { id: "analitica", label: "Analítica web", icon: BarChart3, group: "CRM" },
+  { id: "stock", label: "Stock", icon: Boxes, group: "Almacén" },
+  { id: "compras", label: "Compras y proveedores", icon: ShoppingCart, group: "Almacén" },
   { id: "productos", label: "Productos y precios", icon: Package, group: "Catálogo y web" },
   { id: "portada", label: "Portada y avisos", icon: MonitorSmartphone, group: "Catálogo y web" },
   { id: "contenido", label: "Fotos y textos de la web", icon: ImageIcon, group: "Catálogo y web" },
@@ -293,6 +315,14 @@ function AdminPanel({ section }: { section: string }) {
         </header>
         <main className="adm-content">
           {current.id === "" && <DashboardSection />}
+          {current.id === "finanzas" && <FinanceSection />}
+          {current.id === "informes" && <ReportsSection />}
+          {current.id === "logistica" && <LogisticsSection />}
+          {current.id === "facturacion" && <InvoicesSection />}
+          {current.id === "presupuestos" && <QuotesSection />}
+          {current.id === "leads" && <LeadsSection />}
+          {current.id === "stock" && <StockSection />}
+          {current.id === "compras" && <PurchasesSection />}
           {current.id === "pedidos" && <OrdersSection />}
           {current.id === "clientes" && <CustomersSection />}
           {current.id === "analitica" && <AnalyticsSection />}

@@ -4,6 +4,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CartaPage from "./pages/CartaPage";
 import CategoryPage from "./pages/CategoryPage";
+import GuidePage from "./pages/GuidePage";
 import Home from "./pages/Home";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import ShopPage from "./pages/ShopPage";
@@ -31,6 +32,7 @@ function Router() {
         <Route path="/tienda" component={ShopPage} />
         <Route path="/gourmet/:slug">{(params) => <CategoryPage slug={params.slug} />}</Route>
         <Route path="/bakery-cafe" component={CartaPage} />
+        <Route path="/guia/jamon-iberico" component={GuidePage} />
         <Route path="/producto/:id">{(params) => <ProductDetailPage productId={params.id} />}</Route>
         <Route path="/admin">{() => <AdminApp />}</Route>
         <Route path="/admin/:section">{(params) => <AdminApp section={params.section} />}</Route>

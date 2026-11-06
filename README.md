@@ -44,6 +44,17 @@ Desde la web no se puede crear ninguna cuenta: la contraseña se fija en el serv
 - Bloqueo de 15 minutos tras 5 intentos fallidos; la sesión caduca a las 12 horas.
 - Al desplegar, conserva la carpeta `server/data/` (o define `DATA_DIR`): ahí están la clave, el catálogo, los ajustes, los pedidos y la analítica.
 
+El panel es además la herramienta de gestión del negocio (`server/businessRepository.ts`, `client/src/admin/sections/`). Todo arranca a cero y se calcula con datos reales: nunca muestra cifras inventadas.
+
+| Sección | Qué permite |
+| --- | --- |
+| Panel de dirección | En directo: facturación, margen bruto, clientes nuevos, previsión de cierre, valor del inventario, referencias activas, pedidos de hoy, envíos en ruta y roturas de stock |
+| Finanzas e Informes | Resultado del mes, gastos, por cobrar y por pagar, objetivo mensual, productos más vendidos y exportación a CSV |
+| Logística | Tablero por estados, transportista, seguimiento e importe final tras pesar |
+| Facturación y Presupuestos | Numeración consecutiva, IVA por línea, impresión o PDF y paso de presupuesto a factura. Es un registro interno: confirmar Verifactu con el gestor antes de usarlas como facturas oficiales |
+| Leads | Oportunidades por etapas con seguimiento |
+| Stock y Compras | Existencias, mínimos, coste, movimientos, proveedores y recepción de compras |
+
 Secciones del panel (`client/src/admin/`):
 
 | Sección | Qué permite |
@@ -104,11 +115,15 @@ Railway, Render, Fly.io, un VPS o Docker con Node.js 20+.
 3. `PUBLIC_SITE_URL=https://tu-dominio` si el dominio no es `correderagourmet.com`.
 4. En el servidor: `pnpm admin:password` para crear la clave del propietario.
 
+## Cartas para imprimir
+
+`node scripts/build-cartas.mjs` genera en `cartas/` las cartas A4 Gourmet y Bakery & Café en español e inglés (no se publican en la web). Con `--live https://tu-dominio` usa los precios publicados en ese momento.
+
 ## Fotos de producto
 
 Las fotos de estudio de la tienda se generaron con Google Flow mediante la herramienta local `srzGoogleFlowMCP/` (no incluida en el repositorio):
 `node scripts/generate-product-photos.mjs [id …]` y después `python scripts/install-product-photos.py`.
-Las descripciones de cada foto están en `scripts/product-photo-prompts.json`. El propietario puede sustituir
+Las descripciones de cada foto están en `scripts/*-photo-prompts.json`. La instalación deja la foto principal sobre fondo blanco; `-alt` es la segunda foto que aparece al pasar el cursor (`node scripts/build-hover-map.mjs` actualiza la lista). Lanza un solo proceso de generación cada vez: dos a la vez mezclan los resultados. El propietario puede sustituir
 cualquier foto desde **Productos y precios**.
 
 `server/_core/publicConfig.ts` expone solo valores públicos; las claves privadas permanecen en el servidor.

@@ -5,6 +5,7 @@ import {
   getGourmetCategoryByPath,
   isValidProductRoute,
 } from "../../shared/gourmetRoutes";
+import { GUIDE_PATH } from "../../shared/guideJamon";
 import { CLIENT_PUBLIC_DIR, DIST_PUBLIC_DIR } from "./paths";
 import { buildLlmsTxt, buildSitemapXml } from "./seoRender";
 
@@ -28,6 +29,7 @@ export function resolveHtmlRouteSeoStatus(rawPath: string): RouteSeoResolution {
   if (
     cleanPath === "/" ||
     cleanPath === "/tienda" ||
+    cleanPath === GUIDE_PATH ||
     Boolean(getGourmetCategoryByPath(cleanPath)) ||
     isValidProductRoute(cleanPath)
   ) {

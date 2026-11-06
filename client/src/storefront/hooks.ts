@@ -19,7 +19,8 @@ export function usePageMeta(title: string, description?: string) {
       document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
     }
     const canonical = document.querySelector('link[rel="canonical"]');
-    canonical?.setAttribute("href", `https://correderagourmet.com${window.location.pathname}`);
+    const english = new URLSearchParams(window.location.search).get("lang") === "en";
+    canonical?.setAttribute("href", `${window.location.origin}${window.location.pathname}${english ? "?lang=en" : ""}`);
   }, [title, description]);
 }
 

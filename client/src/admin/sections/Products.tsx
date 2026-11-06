@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { ChevronDown, Eye, EyeOff, Package, Plus, Search, Star, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { categories, type MenuItem, type Mode } from "../../../../shared/catalog";
+import { categories, productBrand, type MenuItem, type Mode } from "../../../../shared/catalog";
 import {
   VALID_BAKERY_CATEGORIES,
   VALID_GOURMET_CATEGORIES,
@@ -115,6 +115,8 @@ type Draft = {
   unitInfoEn: string;
   weightInfoEn: string;
   imageUrl: string;
+  hoverImageUrl: string;
+  brand: string;
   active: boolean;
   featured: boolean;
   freeCuttingService: boolean;
@@ -142,6 +144,8 @@ function toDraft(p: ManagedCatalogProduct): Draft {
     unitInfoEn: p.unitInfoEn ?? "",
     weightInfoEn: p.weightInfoEn ?? "",
     imageUrl: p.imageUrl,
+    hoverImageUrl: p.hoverImageUrl ?? "",
+    brand: p.brand ?? "",
     active: p.active,
     featured: Boolean(p.featured),
     freeCuttingService: Boolean(p.freeCuttingService),
@@ -169,6 +173,8 @@ function newDraft(mode: Mode): Draft {
     unitInfoEn: "",
     weightInfoEn: "",
     imageUrl: "",
+    hoverImageUrl: "",
+    brand: "",
     active: true,
     featured: false,
     freeCuttingService: false,
@@ -370,6 +376,8 @@ function ProductEditor({ draft: initial, onClose, onSaved }: { draft: Draft; onC
       featured: d.featured,
       icon: ICON_BY_CATEGORY[d.category] ?? "bag",
       imageUrl: d.imageUrl,
+      hoverImageUrl: d.hoverImageUrl,
+      brand: d.brand.trim() || undefined,
       active: d.active,
     };
     try {
@@ -412,6 +420,12 @@ function ProductEditor({ draft: initial, onClose, onSaved }: { draft: Draft; onC
       <div className="adm-editor">
         <div className="adm-editor__media">
           <ImageUpload value={d.imageUrl} onChange={(url) => set("imageUrl", url)} label="Foto del producto" />
+          <ImageUpload
+            value={d.hoverImageUrl}
+            onChange={(url) => set("hoverImageUrl", url)}
+            onClear={() => set("hoverImageUrl", "")}
+            label="Segunda foto (al pasar el cursor)"
+          />
           <Toggle checked={d.active} onChange={(v) => set("active", v)} label="Visible en la web" description="Si lo apagas, el producto deja de mostrarse sin borrarlo." />
           {d.mode === "gourmet" && (
             <Toggle checked={d.featured} onChange={(v) => set("featured", v)} label="Destacar en «Más vendidos»" description="Aparece en la portada." />
@@ -445,6 +459,9 @@ function ProductEditor({ draft: initial, onClose, onSaved }: { draft: Draft; onC
           </Field>
           <Field label="Nombre" span={2}>
             <Input value={d.name} onChange={(e) => set("name", e.target.value)} maxLength={180} placeholder="Ej. Jamón ibérico de bellota · Pieza entera" />
+          </Field>
+          <Field label="Marca o denominación" hint="Se muestra sobre la foto. Ej. Joselito, 5 Jotas, D.O.P. Manchego" span={2}>
+            <Input value={d.brand} onChange={(e) => set("brand", e.target.value)} maxLength={80} placeholder={productBrand({ name: d.name, mode: d.mode }) ?? "Sin marca"} />
           </Field>
           <Field label="Descripción" span={2}>
             <Textarea value={d.desc} onChange={(e) => set("desc", e.target.value)} maxLength={600} rows={4} placeholder="Cuenta qué es, su origen, curación, sabor…" />

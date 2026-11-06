@@ -1,5 +1,6 @@
 import { COOKIE_NAME } from "@shared/const";
 import { adminRouter } from "./adminRouter";
+import { businessRouter } from "./businessRouter";
 import { catalogRouter } from "./catalogRouter";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -11,6 +12,7 @@ export const appRouter = router({
   order: orderRouter,
   catalog: catalogRouter,
   admin: adminRouter,
+  business: businessRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

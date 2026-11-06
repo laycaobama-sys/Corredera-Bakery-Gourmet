@@ -4,6 +4,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Too
 import { Link } from "wouter";
 import { MODALITY_LABEL, ORDER_STATUS, type OrderStatus } from "../shared";
 import { Badge, Card, Empty, eur, fmtDate, fmtDuration, Kpi, Loading, num, PageHeader } from "../ui";
+import { DirectionPanel } from "./Direction";
 
 export const CHART = {
   primary: "#6b2328",
@@ -121,11 +122,14 @@ export function DashboardSection() {
   return (
     <>
       <PageHeader
-        title="Resumen del negocio"
-        subtitle={`Datos actualizados ${fmtDate(d.updatedAt)} · se refrescan cada minuto`}
+        title="Panel de dirección"
+        subtitle="La foto del negocio en tiempo real: ventas, margen, inventario, pedidos y envíos."
       />
 
+      <DirectionPanel />
       <StoreHealth pendingOrders={d.totals.pendingOrdersCount} />
+
+      <h2 className="adm-section-title">La web</h2>
 
       <div className="adm-kpis">
         <Kpi label="Visitas (30 días)" value={num(p30.visits)} hint={`${num(p7.visits)} en los últimos 7 días · ${num(d.periods.today.visits)} hoy`} icon={<Eye size={18} />} />

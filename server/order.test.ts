@@ -199,7 +199,7 @@ describe("Corredera Bakery & Gourmet — Contact & Orders Flow Audit", () => {
     });
 
     const diag = await caller.order.diagnostics();
-    expect(diag.catalogItemsCount).toBe(139);
+    expect(diag.catalogItemsCount).toBe(192);
     expect(diag.officialWhatsAppDigits).toBe("34640341932");
     expect(diag.officialWhatsAppNumber).toBe("+34 640 34 19 32");
     expect(diag.persistenceStorage).toBe("unconfigured_database_url");

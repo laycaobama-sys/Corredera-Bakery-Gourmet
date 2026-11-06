@@ -6,6 +6,7 @@ import {
   type Lang,
   type MenuItem,
 } from "../../../shared/catalog";
+import { PRODUCT_HOVER_PHOTOS } from "../../../shared/productHoverPhotos";
 
 /** Take-home gourmet families shown in the online shop (the tasting-bar items live in the in-store menu). */
 export const SHOP_CATEGORY_IDS = [
@@ -53,8 +54,8 @@ export const NAV_DEPARTMENTS = [
     es: "Jamones",
     en: "Hams",
     image: "/assets/products/je1.jpg",
-    descEs: "Piezas enteras con corte gratis",
-    descEn: "Whole pieces, free carving",
+    descEs: "Jamones y paletas, piezas enteras",
+    descEn: "Whole hams and shoulders",
   },
   {
     slug: "jamon-cortado",
@@ -116,8 +117,8 @@ export const NAV_DEPARTMENTS = [
     es: "Carnicería",
     en: "Butcher",
     image: "/assets/products/ca1.jpg",
-    descEs: "Ternera, ibérico fresco, pollo y cordero",
-    descEn: "Beef, fresh Iberian pork, chicken, lamb",
+    descEs: "Ternera, entraña, ibérico fresco y pollo",
+    descEn: "Beef, skirt steak, Iberian pork, chicken",
   },
   {
     slug: "fruteria",
@@ -155,7 +156,15 @@ export function itemBadge(item: MenuItem, lang: Lang) {
 }
 
 /** Raise when bundled product photos are replaced, so browsers fetch the new files instead of cached ones. */
-export const PRODUCT_PHOTO_VERSION = "3";
+export const PRODUCT_PHOTO_VERSION = "4";
+
+/** Second photo that fades in on hover and joins the product gallery. A photo replaced by the owner keeps its own pair. */
+export function itemHoverImage(item: MenuItem & { imageUrl?: string; hoverImageUrl?: string }) {
+  if (item.hoverImageUrl) return item.hoverImageUrl;
+  const bundled = !item.imageUrl || item.imageUrl === `/assets/products/${item.id}.jpg`;
+  const file = bundled ? PRODUCT_HOVER_PHOTOS[item.id] : undefined;
+  return file ? `/assets/products/${file}.jpg?v=${PRODUCT_PHOTO_VERSION}` : null;
+}
 
 export function itemImage(item: MenuItem & { imageUrl?: string }) {
   const url = menuImageFor(item);
@@ -184,6 +193,17 @@ export function priceParts(item: MenuItem, lang: Lang) {
   };
 }
 
+/** Items without a published price: the customer asks on WhatsApp instead of adding them to an order. */
+export function isAskPrice(item: MenuItem) {
+  return parsePriceEuros(item.price) === null;
+}
+
+export function askPriceMessage(item: MenuItem, lang: Lang) {
+  return lang === "en"
+    ? `Hello Corredera, what is the price of ${item.nameEn || item.name}? Is it available?`
+    : `Hola Corredera, ¿qué precio tiene ${item.name}? ¿Lo tenéis disponible?`;
+}
+
 /** Short format line under the product name, e.g. "7 a 8 kg" or "Sobre 100 g envasado al vacío". */
 export function formatLine(item: MenuItem, lang: Lang) {
   const raw =
@@ -194,7 +214,7 @@ export function formatLine(item: MenuItem, lang: Lang) {
 }
 
 export function isWholeHam(item: MenuItem) {
-  return item.category === "jamones_enteros" || Boolean(item.freeCuttingService);
+  return Boolean(item.freeCuttingService);
 }
 
 /** Editorial specs shown on the product sheet, derived from the item family. */
@@ -203,8 +223,8 @@ export function productHighlights(item: MenuItem, lang: Lang): string[] {
   switch (item.category) {
     case "jamones_enteros":
       return es
-        ? ["Corte a cuchillo y envasado al vacío gratis", "Peso orientativo confirmado en tienda", "Recogida en Madrid o envío a domicilio"]
-        : ["Free hand-carving and vacuum packing", "Indicative weight confirmed in store", "Madrid pickup or home delivery"];
+        ? [item.freeCuttingService ? "Corte a cuchillo y envasado al vacío gratis" : "Importe según el peso exacto de la pieza", "Peso orientativo confirmado en tienda", "Recogida en Madrid o envío a domicilio"]
+        : [item.freeCuttingService ? "Free hand-carving and vacuum packing" : "Amount by the exact weight of the piece", "Indicative weight confirmed in store", "Madrid pickup or home delivery"];
     case "sobres_jamon":
     case "sobres_embutidos":
       return es

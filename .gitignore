@@ -34,3 +34,6 @@ bun.lock
 bun.lockb
 package-lock.json
 yarn.lock
+
+# Stock, purchases, invoices and sales of the business
+server/data/business-store.json

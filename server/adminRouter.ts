@@ -23,6 +23,7 @@ import {
   signAdminSessionToken,
   verifyAdminAccessToken,
 } from "./adminAuth";
+import { forgetOrder, syncOrderStatus } from "./businessRepository";
 import {
   deleteValidatedOrder,
   getAnalyticsDashboardData,
@@ -665,11 +666,13 @@ export const adminRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        return await updateValidatedOrderStatus(
+        const order = await updateValidatedOrderStatus(
           input.orderId,
           input.status,
           ctx.user.openId
         );
+        syncOrderStatus(order, input.status);
+        return order;
       } catch (err) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -715,7 +718,9 @@ export const adminRouter = router({
     .input(z.object({ orderId: z.string().trim().min(1).max(64) }))
     .mutation(async ({ input, ctx }) => {
       try {
-        return await deleteValidatedOrder(input.orderId, ctx.user.openId);
+        const deleted = await deleteValidatedOrder(input.orderId, ctx.user.openId);
+        forgetOrder(input.orderId);
+        return deleted;
       } catch (err) {
         throw new TRPCError({
           code: "NOT_FOUND",

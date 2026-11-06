@@ -197,7 +197,7 @@ describe("Independent QA Lead Acceptance Battery (11 Areas)", () => {
       t6: 4,
     });
 
-    // Verify all categories in both modes return non-empty results and sum to 57 + 82 = 139
+    // Verify all categories in both modes return non-empty results and sum to 57 + 135 = 192
     let bakerySum = 0;
     for (const cat of categories.bakery) {
       if (cat.id === "todos") continue;
@@ -214,7 +214,7 @@ describe("Independent QA Lead Acceptance Battery (11 Areas)", () => {
       expect(items.length).toBeGreaterThan(0);
       gourmetSum += items.length;
     }
-    expect(gourmetSum).toBe(82);
+    expect(gourmetSum).toBe(135);
 
     // Empty state when searching for non-existent dish
     const emptyRes = filterCatalogItems({

@@ -223,7 +223,7 @@ export const orderRouter = router({
           });
         }
 
-        if (found.category === "jamones_enteros" || found.freeCuttingService) {
+        if (found.freeCuttingService) {
           hasWholeHam = true;
         }
 

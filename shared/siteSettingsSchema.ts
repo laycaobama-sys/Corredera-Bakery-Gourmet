@@ -332,11 +332,14 @@ export const pagesSchema = z.object({
   cartaTitleEn: safeText(3, 80, "Título de la carta (EN)"),
   cartaIntroEs: safeText(10, 500, "Introducción de la carta (ES)"),
   cartaIntroEn: safeText(10, 500, "Introducción de la carta (EN)"),
+  /** Official logos uploaded by the owner: shown on every product of that brand. */
+  brandLogos: z.array(z.object({ brand: z.string().trim().min(1).max(80), logoUrl: safeImagePath("Logo de la marca") })).max(60).default([]),
 });
 
 export type PagesContent = z.infer<typeof pagesSchema>;
 
 export const DEFAULT_PAGES: PagesContent = {
+  brandLogos: [],
   homeTiles: [
     {
       titleEs: "Tienda gourmet",

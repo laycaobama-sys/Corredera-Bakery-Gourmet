@@ -62,6 +62,7 @@ export const PRODUCT_ICONS = [
 
 export type ManagedCatalogProduct = MenuItem & {
   imageUrl: string;
+  hoverImageUrl?: string;
   active: boolean;
   sortOrder: number;
   updatedAt?: string;
@@ -183,6 +184,21 @@ const baseProductFields = {
         !v.includes(".."),
       "La imagen debe ser una ruta local segura (/assets/...) o URL HTTPS verificada"
     ),
+  hoverImageUrl: z
+    .string()
+    .trim()
+    .max(512, "La URL de imagen es demasiado larga")
+    .refine(
+      (v) => v === "" || (SAFE_IMAGE_URL_REGEX.test(v) && !/javascript:|data:|vbscript:/i.test(v) && !v.includes("..")),
+      "La imagen debe ser una ruta local segura (/assets/...) o URL HTTPS verificada"
+    )
+    .optional(),
+  brand: z
+    .string()
+    .trim()
+    .max(80, "La marca no puede superar 80 caracteres")
+    .refine((v) => !/[<>]/.test(v), "No se permiten etiquetas HTML")
+    .optional(),
   active: z.boolean().default(true),
 };
 

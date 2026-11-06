@@ -2,16 +2,19 @@ import { Check, Info, MessageCircle, Package, Scissors, ShoppingBag, Store, Truc
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { canOrderOnline, type MenuItem } from "../../../shared/catalog";
-import { getCategoryForProduct, getProductShowcaseImages } from "../../../shared/gourmetRoutes";
-import { BrandSeal, handleImageError, ProductCard, QtyStepper } from "../storefront/components/ProductCard";
+import { getCategoryForProduct } from "../../../shared/gourmetRoutes";
+import { BrandPlate, BrandSeal, handleImageError, ProductCard, QtyStepper } from "../storefront/components/ProductCard";
 import { Breadcrumbs, SectionHeading, StoreLayout } from "../storefront/components/StoreLayout";
 import {
   categoryLabel,
   formatLine,
   isShopItem,
+  askPriceMessage,
+  isAskPrice,
   isWholeHam,
   itemBadge,
   itemDesc,
+  itemHoverImage,
   itemImage,
   itemName,
   priceParts,
@@ -40,8 +43,8 @@ function ProductView({ item }: { item: MenuItem }) {
 
   const images = useMemo(() => {
     const primary = itemImage(item);
-    const extra = getProductShowcaseImages(item, primary).slice(1);
-    return [primary, ...extra.filter((src) => src !== primary)];
+    const second = itemHoverImage(item);
+    return second ? [primary, second] : [primary];
   }, [item]);
   const [active, setActive] = useState(0);
   useEffect(() => setActive(0), [item.id]);
@@ -94,6 +97,7 @@ function ProductView({ item }: { item: MenuItem }) {
         <div className="cg-pdp__gallery">
           <div className="cg-pdp__main">
             <img
+              key={images[active]}
               src={images[active]}
               alt={name}
               width={1000}
@@ -102,7 +106,10 @@ function ProductView({ item }: { item: MenuItem }) {
               onError={(e) => handleImageError(e, item)}
             />
             {badge && <span className="cg-card__badge">{badge}</span>}
-            <BrandSeal size="lg" />
+            <span className="cg-marks cg-marks--lg">
+              <BrandPlate item={item} size="lg" />
+              <BrandSeal size="lg" />
+            </span>
           </div>
           {images.length > 1 && (
             <div className="cg-pdp__thumbs" role="group" aria-label={t("Imágenes del producto", "Product images")}>
@@ -129,7 +136,28 @@ function ProductView({ item }: { item: MenuItem }) {
           )}
           <p className="cg-pdp__desc">{itemDesc(item, lang)}</p>
 
-          {orderable ? (
+          {isAskPrice(item) ? (
+            <>
+              <p className="cg-notice cg-notice--soft">
+                <Info size={18} strokeWidth={1.5} aria-hidden="true" />
+                <span>
+                  {t(
+                    "Te confirmamos el precio del día y la disponibilidad al momento por WhatsApp, sin compromiso.",
+                    "We confirm today's price and availability straight away on WhatsApp, with no obligation.",
+                  )}
+                </span>
+              </p>
+              <a
+                className="cg-btn cg-btn--wa cg-btn--block"
+                href={whatsappHref(askPriceMessage(item, lang))}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => track("whatsapp_click", item)}
+              >
+                <MessageCircle size={18} aria-hidden="true" /> {t("Consultar precio por WhatsApp", "Ask for the price on WhatsApp")}
+              </a>
+            </>
+          ) : orderable ? (
             <>
               {ham && (
                 <fieldset className="cg-options">

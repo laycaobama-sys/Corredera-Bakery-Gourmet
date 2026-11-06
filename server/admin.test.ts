@@ -246,7 +246,7 @@ describe("Corredera Admin Panel & Server Persistence Suite", () => {
   // 2. REAL PRODUCT CRUD & PUBLIC PERSISTENCE
   // =========================================================================
   describe("2. Real Product CRUD, Order Sync & Persistence Across Reloads", () => {
-    it("seeds the 139 canonical references (57 Bakery + 82 Gourmet) and persists full CRUD operations", async () => {
+    it("seeds the 192 canonical references (57 Bakery + 135 Gourmet) and persists full CRUD operations", async () => {
       const { ctx: adminCtx } = createMockContext({ user: adminUser });
       const { ctx: publicCtx } = createMockContext({ user: null });
       const adminCaller = appRouter.createCaller(adminCtx);
@@ -254,9 +254,9 @@ describe("Corredera Admin Panel & Server Persistence Suite", () => {
 
       // 1. Initial seed check
       const initialAll = await adminCaller.admin.listAllProducts();
-      expect(initialAll.length).toBe(139);
+      expect(initialAll.length).toBe(192);
       expect(initialAll.filter((p) => p.mode === "bakery").length).toBe(57);
-      expect(initialAll.filter((p) => p.mode === "gourmet").length).toBe(82);
+      expect(initialAll.filter((p) => p.mode === "gourmet").length).toBe(135);
 
       // 2. Create a new product
       const created = await adminCaller.admin.createProduct({
@@ -299,7 +299,7 @@ describe("Corredera Admin Panel & Server Persistence Suite", () => {
 
       // 3. Verify new product is persisted and visible on public catalog endpoint
       const publicAfterCreate = await publicCaller.catalog.listPublic();
-      expect(publicAfterCreate.length).toBe(140);
+      expect(publicAfterCreate.length).toBe(193);
       expect(publicAfterCreate.some((p) => p.id === "bo99")).toBe(true);
 
       // 4. Update product price and name, verify public catalog and order calculation reflect new price
@@ -338,10 +338,10 @@ describe("Corredera Admin Panel & Server Persistence Suite", () => {
 
       const publicAfterDeactivate = await publicCaller.catalog.listPublic();
       expect(publicAfterDeactivate.some((p) => p.id === "bo99")).toBe(false);
-      expect(publicAfterDeactivate.length).toBe(139);
+      expect(publicAfterDeactivate.length).toBe(192);
 
       const adminListAfterDeactivate = await adminCaller.admin.listAllProducts();
-      expect(adminListAfterDeactivate.length).toBe(140);
+      expect(adminListAfterDeactivate.length).toBe(193);
 
       await expect(
         publicCaller.order.validateAndPrepareOrder({
@@ -361,7 +361,7 @@ describe("Corredera Admin Panel & Server Persistence Suite", () => {
         confirmId: "bo99",
       });
       expect(deleted.deletedId).toBe("bo99");
-      expect(deleted.remainingCount).toBe(139);
+      expect(deleted.remainingCount).toBe(192);
     });
   });
 
@@ -484,26 +484,26 @@ describe("Corredera Admin Panel & Server Persistence Suite", () => {
       expect(uploadRes.sizeBytes).toBe(validJpegBuffer.length);
     });
 
-    it("creates backup snapshots and restores the canonical 139 catalog safely", async () => {
+    it("creates backup snapshots and restores the canonical 192 catalog safely", async () => {
       const { ctx } = createMockContext({ user: adminUser });
       const caller = appRouter.createCaller(ctx);
 
       const backup = await caller.admin.createBackup({ label: "vitest-check" });
-      expect(backup.productsCount).toBe(139);
+      expect(backup.productsCount).toBe(192);
       expect(backup.fileName).toContain("vitest-check");
 
       // Delete one item in test store, then restore canonical catalog
       await caller.admin.deleteProduct({ id: "d1", confirmId: "d1" });
       const afterDelete = await caller.admin.listAllProducts();
-      expect(afterDelete.length).toBe(138);
+      expect(afterDelete.length).toBe(191);
 
       const restored = await caller.admin.restoreCanonicalDefaults({
         confirmPhrase: "RESTAURAR_102",
       });
-      expect(restored.restoredCount).toBe(139);
+      expect(restored.restoredCount).toBe(192);
 
       const afterRestore = await caller.admin.listAllProducts();
-      expect(afterRestore.length).toBe(139);
+      expect(afterRestore.length).toBe(192);
 
       const logs = await caller.admin.listAuditLogs({ limit: 10 });
       expect(logs.length).toBeGreaterThanOrEqual(3);

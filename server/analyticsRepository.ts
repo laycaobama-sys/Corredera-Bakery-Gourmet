@@ -593,7 +593,7 @@ export function getAnalyticsDashboardData() {
 
   const conversionRatePct =
     state.totals.uniqueVisitors > 0
-      ? Number(((state.totals.conversions.orderValidated / state.totals.uniqueVisitors) * 100).toFixed(1))
+      ? Math.min(100, Number(((state.totals.conversions.orderValidated / state.totals.uniqueVisitors) * 100).toFixed(1)))
       : 0;
 
   const activeOrders = orders.filter((o) => o.status !== "cancelled");

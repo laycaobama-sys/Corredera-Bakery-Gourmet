@@ -1,4 +1,6 @@
+import { trpc } from "@/lib/trpc";
 import { ExternalLink } from "lucide-react";
+import { productBrand } from "../../../../shared/catalog";
 import { NAV_DEPARTMENTS } from "../../storefront/data";
 import type { PagesContent } from "../../../../shared/siteSettingsSchema";
 import { useSettingsDraft } from "../shared";
@@ -7,6 +9,7 @@ import { LINK_OPTIONS } from "./Homepage";
 
 export function PagesContentSection() {
   const { draft, patch, dirty, commit, discard, saving, loading } = useSettingsDraft();
+  const products = trpc.admin.listAllProducts.useQuery();
   if (loading || !draft) return <Loading />;
   const p = draft.pages;
   const set = (partial: Partial<PagesContent>) => patch("pages", partial);
@@ -17,6 +20,12 @@ export function PagesContentSection() {
     const others = p.departmentImages.filter((d) => d.slug !== slug);
     set({ departmentImages: [...others, { slug, imageUrl }] });
   };
+
+  const setLogo = (brand: string, logoUrl: string) => {
+    const others = p.brandLogos.filter((b) => b.brand !== brand);
+    set({ brandLogos: logoUrl ? [...others, { brand, logoUrl }] : others });
+  };
+  const brands = [...new Set((products.data ?? []).map((item) => productBrand(item)).filter((b): b is string => Boolean(b)))].sort();
 
   return (
     <>
@@ -29,6 +38,24 @@ export function PagesContentSection() {
           </a>
         }
       />
+
+      <Card
+        title="Logos de las marcas"
+        subtitle="Sube el logo oficial que te facilite cada marca o distribuidor. Aparecerá solo sobre la foto de todos sus productos. Mientras no haya logo se muestra su nombre."
+      >
+        <div className="adm-logos">
+          {brands.map((brand) => (
+            <ImageUpload
+              key={brand}
+              value={p.brandLogos.find((b) => b.brand === brand)?.logoUrl ?? ""}
+              onChange={(url) => setLogo(brand, url)}
+              onClear={() => setLogo(brand, "")}
+              aspect="3 / 2"
+              label={brand}
+            />
+          ))}
+        </div>
+      </Card>
 
       <Card title="Carta Bakery & Café" subtitle="Cartel de desayunos y texto de presentación de la página de la carta.">
         <div className="adm-tile-editor">

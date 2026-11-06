@@ -44,16 +44,16 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
   {
     slug: "jamones",
     path: "/gourmet/jamones",
-    navLabelEs: "Jamones",
-    navLabelEn: "Whole Hams",
+    navLabelEs: "Jamones y paletas",
+    navLabelEn: "Whole Hams & Shoulders",
     kickerEs: "Alta Charcutería Ibérica · Piezas Enteras",
     kickerEn: "Fine Iberian Charcuterie · Whole Pieces",
-    titleEs: "Jamones Ibéricos Enteros",
-    titleEn: "Whole Iberian Hams",
+    titleEs: "Jamones y Paletas Ibéricas Enteras",
+    titleEn: "Whole Iberian Hams & Shoulders",
     subtitleEs:
-      "Piezas seleccionadas de 5 Jotas, Joselito, Dehesa de Extremadura y Cebo de Campo con servicio gratuito de corte a cuchillo y envasado al vacío.",
+      "Jamones 5 Jotas, Joselito, Dehesa de Extremadura, Guijuelo y Cebo de Campo con corte a cuchillo y envasado al vacío gratis, y paletas ibéricas de bellota y de cebo de campo.",
     subtitleEn:
-      "Selected whole pieces from 5 Jotas, Joselito, Dehesa de Extremadura and Cebo de Campo with complimentary hand-carving and vacuum-packing service.",
+      "5 Jotas, Joselito, Dehesa de Extremadura, Guijuelo and Cebo de Campo hams with free hand-carving and vacuum packing, plus acorn-fed and free-range Iberian shoulders.",
     introEs:
       "En Corredera Bakery & Gourmet seleccionamos piezas enteras de las casas más prestigiosas del mundo ibérico. Puedes encargar tu jamón en pieza entera tradicional o solicitar sin ningún coste adicional nuestro servicio profesional de corte y envasado al vacío en sobres listos para degustar.",
     introEn:
@@ -78,10 +78,10 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/products/je1.jpg",
     cardBadgeEs: "Corte y envasado gratis",
     cardBadgeEn: "Free slicing & vacuum pack",
-    seoTitleEs: "Jamones Ibéricos Enteros 5 Jotas y Joselito en Madrid | Corredera Gourmet",
-    seoTitleEn: "Whole Iberian Hams 5 Jotas & Joselito in Madrid | Corredera Gourmet",
+    seoTitleEs: "Comprar Jamón Ibérico en Madrid: 5 Jotas, Joselito y Guijuelo | Corredera",
+    seoTitleEn: "Buy Iberian Ham in Madrid: 5 Jotas, Joselito & Guijuelo | Corredera",
     seoDescriptionEs:
-      "Encarga jamones ibéricos enteros 5 Jotas, Joselito, Dehesa de Extremadura y Cebo de Campo en Madrid con corte y envasado al vacío gratis en Corredera Gourmet.",
+      "Compra jamón ibérico en Madrid: 5 Jotas, Joselito, Guijuelo y Extremadura con corte y envasado al vacío gratis, y paletas de bellota. Calle de la Puebla 15.",
     seoDescriptionEn:
       "Pre-order whole Iberian hams from 5 Jotas, Joselito, Extremadura and Cebo de Campo in Madrid with complimentary slicing and vacuum packing at Corredera Gourmet.",
     filterItems: (items) => items.filter((item) => item.category === "jamones_enteros"),
@@ -423,7 +423,7 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     seoTitleEs: "Quesos Artesanos y Gourmet en Madrid (Payoyo, Pecorino Trufado, Comté) | Corredera",
     seoTitleEn: "Artisan & Gourmet Cheeses in Madrid (Payoyo, Truffled Pecorino, Comté) | Corredera",
     seoDescriptionEs:
-      "Selección de quesos gourmet en Madrid: Payoyo, Pecorino trufado, Bóer con miel y trufa, Comté, Idiazábal y cuñas artesanas. Encargos en Corredera Gourmet.",
+      "Quesos en Madrid: Manchego D.O.P., Idiazábal, Cabrales, Torta del Casar, Payoyo, Comté, Roquefort y Parmesano. Al corte o por encargo en Corredera Gourmet.",
     seoDescriptionEn:
       "Curated gourmet cheeses in Madrid: Payoyo, truffled Pecorino, Boer with honey & truffle, Comté, Idiazábal and artisan wedges. Pre-order at Corredera Gourmet.",
     filterItems: (items) => items.filter((item) => item.category === "quesos"),
@@ -553,7 +553,7 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     seoTitleEs: "Carnicería en Madrid centro (Malasaña, Gran Vía) | Corredera",
     seoTitleEn: "Butcher's Shop in Central Madrid (Malasaña, Gran Vía) | Corredera",
     seoDescriptionEs:
-      "Carnicería en Calle de la Puebla 15, Madrid: ternera, cerdo ibérico fresco, pollo, cordero, carne picada y hamburguesas caseras. Corte al momento, encargo por WhatsApp y envío.",
+      "Carnicería en Calle de la Puebla 15, Madrid: ternera blanca, lomo y entraña de ternera, hamburguesas caseras, ibérico fresco, pollo y cordero. Corte al momento y encargo por WhatsApp.",
     seoDescriptionEn:
       "Butcher's shop at Calle de la Puebla 15, Madrid: beef, fresh Iberian pork, chicken, lamb, minced meat and homemade burgers. Cut to order, WhatsApp orders and delivery.",
     filterItems: (items) => items.filter((item) => item.category === "carniceria"),
@@ -567,12 +567,12 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
           "Yes. Send us your order via WhatsApp with the cut, approximate amount and pickup time. We confirm the exact weight and price before preparing it.",
       },
       {
-        questionEs: "¿Por qué los precios de la carnicería aparecen como «Consultar»?",
-        questionEn: "Why are butcher prices shown as 'Ask price'?",
+        questionEs: "¿Por qué algunos cortes aparecen como «Consultar»?",
+        questionEn: "Why do some cuts show 'Ask price'?",
         answerEs:
-          "Porque la carne se vende al peso y el precio depende de la pieza y del mercado de cada semana. Te damos el precio exacto al confirmar tu encargo, sin compromiso.",
+          "Porque su precio depende de la pieza y del mercado de cada semana. Pulsa «Consultar precio» y te respondemos por WhatsApp, sin compromiso.",
         answerEn:
-          "Because meat is sold by weight and the price depends on the cut and that week's market. We give you the exact price when confirming your order, with no obligation.",
+          "Because the price depends on the cut and that week's market. Tap 'Ask for price' and we reply on WhatsApp, with no obligation.",
       },
       {
         questionEs: "¿Hacéis envío a domicilio de carne fresca?",

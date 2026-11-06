@@ -97,6 +97,7 @@ export function Footer() {
             <li><AnchorLink to="servicio-corte">{t("Servicio de corte", "Carving service")}</AnchorLink></li>
             <li><AnchorLink to="como-encargar">{t("Cómo encargar", "How to order")}</AnchorLink></li>
             <li><Link href="/bakery-cafe">{t("Carta Bakery & Café", "Bakery & Café menu")}</Link></li>
+            <li><Link href="/guia/jamon-iberico">{t("Guía del jamón ibérico", "Iberian ham guide")}</Link></li>
             <li><AnchorLink to="visitanos">{t("Visítanos", "Visit us")}</AnchorLink></li>
           </ul>
         </nav>
