@@ -227,6 +227,10 @@ export default {
       url.hostname = url.hostname.slice(4);
       return Response.redirect(url.toString(), 301);
     }
+    if (url.protocol === "http:" && url.hostname === "correderamadrid.com") {
+      url.protocol = "https:";
+      return Response.redirect(url.toString(), 301);
+    }
     // The launch address now forwards to the real domain, so old links keep working and only one site is indexed.
     if (url.hostname === "corredera-bakery-gourmet.ibraguimova19.workers.dev") {
       url.hostname = "correderamadrid.com";

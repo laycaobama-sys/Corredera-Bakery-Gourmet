@@ -28,6 +28,8 @@
     "UPLOAD_DIR": "/uploads"
   },
   // Public domain, registered and managed in this Cloudflare account. www redirects to the root in worker/index.ts.
+  // Kept on so old links to the launch address reach the redirect in worker/index.ts.
+  "workers_dev": true,
   "routes": [
     { "pattern": "correderamadrid.com", "custom_domain": true },
     { "pattern": "www.correderamadrid.com", "custom_domain": true }
