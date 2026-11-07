@@ -380,7 +380,10 @@ export function injectSeo(html: string, page: SeoPage): string {
   const first = firstPaintHtml(page);
   // Each page preloads its own main photo, not the home page's.
   out = out.replace(/<link rel="preload" as="image" href="\/assets\/home\/hero-jamon\.jpg"[^>]*\/>/, () => first.preload);
-  return out.replace('<div id="root"></div>', () => `<div id="root">${first.html}<div class="seo-snapshot" hidden>${page.bodyHtml}</div></div>`);
+  // Text first, menu last: search engines build the snippet from the first text on the page.
+  const nav = page.bodyHtml.match(/^<nav>[\s\S]*?<\/nav>/)?.[0] ?? "";
+  const body = `${page.bodyHtml.slice(nav.length).replace(/<\/h1>/, `</h1><p>${esc(page.description)}</p>`)}${nav}`;
+  return out.replace('<div id="root"></div>', () => `<div id="root">${first.html}<div class="seo-snapshot" hidden>${body}</div></div>`);
 }
 
 /** Plain-text summary for AI assistants, always in sync with the catalog and the CMS. */

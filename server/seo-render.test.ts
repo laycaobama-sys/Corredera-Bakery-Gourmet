@@ -20,7 +20,7 @@ describe("Server-side SEO for crawlers and AI assistants", () => {
     expect(html).toContain('<link rel="canonical" href="https://correderamadrid.com/producto/jamon-5-jotas-pieza-entera" />');
     expect(html).toContain('"@type":"Product"');
     expect(html).toContain('<div class="cg-fp" aria-hidden="true">');
-    expect(html).toContain('<div class="seo-snapshot" hidden><nav>');
+    expect(html).toContain('<div class="seo-snapshot" hidden><h1>');
     expect(html.match(/<title>/g)).toHaveLength(1);
   });
 
