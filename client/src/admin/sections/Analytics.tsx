@@ -1,3 +1,4 @@
+import { productIdFromParam } from "../../../../shared/productUrls";
 import { trpc } from "@/lib/trpc";
 import { Clock, Eye, MapPin, MessageCircle, Phone, ShoppingCart, Smartphone } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -91,7 +92,7 @@ export function AnalyticsSection() {
                 </thead>
                 <tbody>
                   {d.pages.map((p) => {
-                    const id = p.path.startsWith("/producto/") ? p.path.slice(10) : null;
+                    const id = p.path.startsWith("/producto/") ? productIdFromParam(p.path.slice(10)) : null;
                     return (
                       <tr key={p.path}>
                         <td>{id && names.get(id) ? <span className="adm-page-name"><strong>{names.get(id)}</strong><small>{p.path}</small></span> : <PageName path={p.path} />}</td>

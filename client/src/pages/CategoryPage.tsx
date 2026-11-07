@@ -48,7 +48,7 @@ function GourmetCategory({ slug }: { slug: string }) {
           <p>{es ? config.subtitleEs : config.subtitleEn}</p>
         </div>
         <div className="cg-cat-hero__media">
-          <img src={dept?.image ?? config.bannerImage} alt="" loading="eager" fetchPriority="high" />
+          <img src={dept?.image ?? config.bannerImage} alt={es ? config.titleEs : config.titleEn} loading="eager" fetchPriority="high" />
         </div>
       </section>
 
@@ -114,7 +114,7 @@ function GourmetCategory({ slug }: { slug: string }) {
                 const d = departments.find((x) => x.slug === c.slug);
                 return (
                   <Link key={c.slug} href={c.path} className="cg-dept">
-                    <img src={d?.image ?? c.cardImage} alt="" loading="lazy" />
+                    <img src={d?.image ?? c.cardImage} alt={es ? c.navLabelEs : c.navLabelEn} loading="lazy" />
                     <span className="cg-dept__label">
                       <span className="cg-dept__title">{es ? c.navLabelEs : c.navLabelEn}</span>
                     </span>

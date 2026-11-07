@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <StoreLayout trust={false}>
       <section className="cg-container cg-404">
-        <img src="/assets/brand/corredera-emblem.png" alt="" width={371} height={439} />
+        <img src="/assets/brand/corredera-emblem.png" alt="" aria-hidden="true" width={371} height={439} />
         <p className="cg-eyebrow">404</p>
         <h1>{t("No hemos encontrado esta página", "We couldn't find this page")}</h1>
         <p>{t("Puede que el enlace haya cambiado. Te dejamos algunos caminos para seguir.", "The link may have changed. Here are a few ways to continue.")}</p>
@@ -23,7 +23,10 @@ export default function NotFound() {
             </Link>
           ))}
         </div>
-        <Link href="/" className="cg-btn cg-btn--primary">
+        <Link href="/tienda" className="cg-btn cg-btn--primary">
+          {t("Ver toda la tienda", "See the whole shop")}
+        </Link>
+        <Link href="/" className="cg-link-arrow">
           {t("Volver al inicio", "Back to home")}
         </Link>
       </section>

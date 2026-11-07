@@ -3,6 +3,7 @@ import { TRPCClientError } from "@trpc/client";
 import { CheckCircle2, MessageCircle, ShoppingBag, Trash2, X } from "lucide-react";
 import { useCallback, useState, type FormEvent } from "react";
 import { Link } from "wouter";
+import { productPath } from "../../../../shared/productUrls";
 import {
   buildWhatsAppOrderMessage,
   canOrderOnline,
@@ -180,7 +181,7 @@ export function CartDrawer() {
                 const { amount, unit } = priceParts(item, lang);
                 return (
                   <li key={item.id} className="cg-cart__line">
-                    <Link href={`/producto/${item.id}`} className="cg-cart__thumb" onClick={close}>
+                    <Link href={productPath(item.id)} className="cg-cart__thumb" onClick={close}>
                       <ProductImage item={item} />
                     </Link>
                     <div className="cg-cart__info">

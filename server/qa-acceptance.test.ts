@@ -94,7 +94,7 @@ describe("Independent QA Lead Acceptance Battery (11 Areas)", () => {
     const manifestRes = await fetch(`${baseUrl}/site.webmanifest`);
     expect(manifestRes.status).toBe(200);
     const manifestJson = await manifestRes.json();
-    expect(manifestJson.name).toContain("Corredera Bakery & Gourmet");
+    expect(manifestJson.name).toContain("Corredera Gourmet");
 
     const unknownApiRes = await fetch(`${baseUrl}/api/non-existent-endpoint`);
     expect(unknownApiRes.status).toBe(404);

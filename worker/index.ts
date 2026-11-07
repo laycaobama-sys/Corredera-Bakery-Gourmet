@@ -2,6 +2,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { DurableObject } from "cloudflare:workers";
 import path from "node:path";
 import { menuItems } from "../shared/catalog";
+import { productRedirectPath } from "../shared/productUrls";
 import { buildProductCulinarySvg } from "../shared/productVisuals";
 import { forceSetOwnerPassword, getAdminAuthConfigStatus, installOwnerPasswordHash } from "../server/adminAuth";
 import { getCatalogStorageDiagnostics } from "../server/catalogRepository";
@@ -9,7 +10,7 @@ import { appRouter } from "../server/routers";
 import dataFs, { setDataFsBackend } from "../server/_core/dataFs";
 import { renderHtmlPage, withSiteOrigin } from "../server/_core/htmlPage";
 import { PUBLIC_UPLOADS_DIR, SERVER_DATA_DIR } from "../server/_core/paths";
-import { buildLlmsTxt, buildSitemapXml } from "../server/_core/seoRender";
+import { buildLlmsFullTxt, buildLlmsTxt, buildSeoPage, buildSitemapXml, seoPageToMarkdown } from "../server/_core/seoRender";
 import catalogSeed from "../server/data/catalog-store.json";
 import settingsSeed from "../server/data/site-settings.json";
 import { createWorkerContext } from "./context";
@@ -58,6 +59,12 @@ function withHeaders(response: Response, extra: Record<string, string> = {}) {
   const out = new Response(response.body, response);
   for (const [k, v] of Object.entries({ ...SECURITY_HEADERS, ...extra })) out.headers.set(k, v);
   return out;
+}
+
+/** Assistants that prefer Markdown ask for it explicitly; browsers always get HTML. */
+function wantsMarkdown(request: Request) {
+  const accept = request.headers.get("Accept") ?? "";
+  return accept.includes("text/markdown") && !accept.includes("text/html");
 }
 
 function text(body: string, status: number, type = "text/plain; charset=utf-8", cache = "no-store") {
@@ -169,6 +176,7 @@ export class CorrederaStore extends DurableObject<Env> {
     // Links always point at the domain the site is served from, so a new domain needs no configuration.
     if (p === "/sitemap.xml") return text(withSiteOrigin(await buildSitemapXml(), url.origin), 200, "application/xml; charset=utf-8", "public, max-age=3600");
     if (p === "/llms.txt") return text(withSiteOrigin(await buildLlmsTxt(), url.origin), 200, "text/plain; charset=utf-8", "public, max-age=3600");
+    if (p === "/llms-full.txt") return text(withSiteOrigin(await buildLlmsFullTxt(), url.origin), 200, "text/plain; charset=utf-8", "public, max-age=3600");
     if (p === "/robots.txt") {
       const robots = await (await this.env.ASSETS.fetch(new Request(`${url.origin}/robots.txt`))).text();
       return text(withSiteOrigin(robots, url.origin), 200, "text/plain; charset=utf-8", "public, max-age=3600");
@@ -177,6 +185,13 @@ export class CorrederaStore extends DurableObject<Env> {
     if (p.startsWith("/assets/uploads/")) return this.serveUpload(request, p.slice("/assets/uploads/".length));
 
     const rendered = await renderHtmlPage(await this.getTemplate(url.origin), p + url.search, url.origin);
+    if (wantsMarkdown(request) && rendered.status === 200 && !rendered.robots.startsWith("noindex")) {
+      const page = await buildSeoPage(p + url.search);
+      return new Response(withSiteOrigin(seoPageToMarkdown(page), url.origin), {
+        status: 200,
+        headers: { "Content-Type": "text/markdown; charset=utf-8", "Cache-Control": "public, max-age=300", Vary: "Accept", "X-Robots-Tag": rendered.robots },
+      });
+    }
     return new Response(rendered.html, {
       status: rendered.status,
       headers: {
@@ -237,6 +252,10 @@ export default {
       return Response.redirect(url.toString(), request.method === "GET" || request.method === "HEAD" ? 301 : 308);
     }
     if (p === "/index.html") return Response.redirect(`${url.origin}/${url.search}`, 301);
+    // Old product addresses (/producto/je1) move permanently to the keyword URL.
+    const oldProduct = p.match(/^\/producto\/([A-Za-z0-9_-]+)\/?$/);
+    const keywordPath = oldProduct ? productRedirectPath(oldProduct[1]) : null;
+    if (keywordPath) return Response.redirect(`${url.origin}${keywordPath}${url.search}`, 301);
 
     // A product photo that does not exist yet: branded illustration instead of a broken image.
     const productPhoto = p.match(/^\/assets\/products\/([A-Za-z0-9_-]+?)(?:-480)?\.jpg$/);
@@ -248,11 +267,11 @@ export default {
     }
 
     // Any other missing static file answers at once, without waking the data store.
-    const dynamicFile = p === "/sitemap.xml" || p === "/llms.txt" || p === "/robots.txt" || p.startsWith("/assets/uploads/") || p.startsWith("/api/");
+    const dynamicFile = p === "/sitemap.xml" || p === "/llms.txt" || p === "/llms-full.txt" || p === "/robots.txt" || p.startsWith("/assets/uploads/") || p.startsWith("/api/");
     if (!dynamicFile && PASS_THROUGH_EXTENSION.test(p)) return text("Not found", 404);
 
     const isCacheable =
-      request.method === "GET" && (p.startsWith("/assets/uploads/") || (!p.startsWith("/api/") && !p.startsWith("/admin")));
+      !wantsMarkdown(request) && request.method === "GET" && (p.startsWith("/assets/uploads/") || (!p.startsWith("/api/") && !p.startsWith("/admin")));
     const cache = (caches as unknown as { default: Cache }).default;
     // Pages are cached at the edge for 60 s (uploads for a year): fast for visitors, and the owner's changes show within a minute.
     const cacheKey = new Request(url.toString(), { method: "GET" });
@@ -271,7 +290,10 @@ export default {
     const isHtml = (response.headers.get("Content-Type") ?? "").startsWith("text/html");
     // The *.workers.dev preview address is never indexed: only the real domain is.
     const privateHost = url.hostname.endsWith(".workers.dev");
-    const out = withHeaders(response, p.startsWith("/api/") || privateHost ? { "X-Robots-Tag": "noindex, nofollow, noarchive" } : {});
+    const out = withHeaders(response, {
+      ...(p.startsWith("/api/") || privateHost ? { "X-Robots-Tag": "noindex, nofollow, noarchive" } : {}),
+      ...(isHtml && !p.startsWith("/admin") ? { Link: '</sitemap.xml>; rel="sitemap", </llms.txt>; rel="describedby"; type="text/plain"' } : {}),
+    });
 
     if (isCacheable && response.status === 200 && !request.headers.has("Range")) {
       const cached = out.clone();

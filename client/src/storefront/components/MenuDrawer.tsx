@@ -53,7 +53,13 @@ export function MenuDrawer({ open, onClose }: { open: boolean; onClose: () => vo
           <p className="cg-drawer__label">Corredera</p>
           <ul className="cg-drawer__list cg-drawer__list--small">
             <li>
-              <AnchorLink to="servicio-corte" onClick={close}>{t("Servicio de corte de jamón", "Ham carving service")}</AnchorLink>
+              <Link href="/servicio-corte-jamon" onClick={close}>{t("Servicio de corte de jamón", "Ham carving service")}</Link>
+            </li>
+            <li>
+              <Link href="/lotes-navidad" onClick={close}>{t("Lotes de Navidad", "Christmas hampers")}</Link>
+            </li>
+            <li>
+              <Link href="/guia/jamon-iberico" onClick={close}>{t("Guía del jamón ibérico", "Iberian ham guide")}</Link>
             </li>
             <li>
               <AnchorLink to="como-encargar" onClick={close}>{t("Encargos y envíos", "Orders & delivery")}</AnchorLink>

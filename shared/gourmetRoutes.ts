@@ -1,3 +1,4 @@
+import { productIdFromParam } from "./productUrls";
 import { menuItems, type MenuItem } from "./catalog";
 
 export interface CategoryFaqItem {
@@ -78,8 +79,8 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/products/je1.jpg",
     cardBadgeEs: "Corte y envasado gratis",
     cardBadgeEn: "Free slicing & vacuum pack",
-    seoTitleEs: "Comprar Jamón Ibérico en Madrid: 5 Jotas, Joselito y Guijuelo | Corredera",
-    seoTitleEn: "Buy Iberian Ham in Madrid: 5 Jotas, Joselito & Guijuelo | Corredera",
+    seoTitleEs: "Comprar Jamón Ibérico en Madrid: 5 Jotas y Joselito | Corredera",
+    seoTitleEn: "Buy Iberian Ham in Madrid: 5 Jotas & Joselito | Corredera",
     seoDescriptionEs:
       "Compra jamón ibérico en Madrid: 5 Jotas, Joselito, Guijuelo y Extremadura con corte y envasado al vacío gratis, y paletas de bellota. Calle de la Puebla 15.",
     seoDescriptionEn:
@@ -151,7 +152,7 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/products/sj2.jpg",
     cardBadgeEs: "Corte Profesional",
     cardBadgeEn: "Professional Slicing",
-    seoTitleEs: "Jamón Ibérico Cortado a Cuchillo y Envasado al Vacío | Corredera Gourmet",
+    seoTitleEs: "Jamón Ibérico Cortado a Cuchillo al Vacío | Corredera Gourmet",
     seoTitleEn: "Hand-Carved & Vacuum-Packed Iberian Ham | Corredera Gourmet",
     seoDescriptionEs:
       "Jamón ibérico cortado a cuchillo y envasado al vacío en Madrid. Servicio gratuito de corte en piezas enteras y sobres de 100 g listos para degustar.",
@@ -225,8 +226,8 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/products/sj3.jpg",
     cardBadgeEs: "Sobres 100 g",
     cardBadgeEn: "100g Pouches",
-    seoTitleEs: "Sobres de Jamón Ibérico 100 g al Vacío (5 Jotas, Joselito) | Corredera Gourmet",
-    seoTitleEn: "100g Vacuum-Packed Iberian Ham Pouches (5 Jotas, Joselito) | Corredera Gourmet",
+    seoTitleEs: "Sobres de Jamón Ibérico 100 g al Vacío | Corredera Gourmet",
+    seoTitleEn: "100 g Vacuum-Packed Iberian Ham | Corredera Gourmet",
     seoDescriptionEs:
       "Sobres de 100 g de jamón ibérico envasado al vacío en Madrid: Joselito cortado a mano y a máquina, 5 Jotas, Extremadura y Los Pedroches. Encargos por WhatsApp.",
     seoDescriptionEn:
@@ -290,8 +291,8 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/products/em1.jpg",
     cardBadgeEs: "Alta Charcutería",
     cardBadgeEn: "Fine Charcuterie",
-    seoTitleEs: "Embutidos Ibéricos de Bellota, Presa, Lomo y Joselito en Madrid | Corredera Gourmet",
-    seoTitleEn: "Acorn-Fed Iberian Charcuterie, Presa, Loin & Joselito in Madrid | Corredera Gourmet",
+    seoTitleEs: "Embutidos Ibéricos de Bellota en Madrid | Corredera Gourmet",
+    seoTitleEn: "Acorn-Fed Iberian Charcuterie in Madrid | Corredera Gourmet",
     seoDescriptionEs:
       "Compra y encarga embutidos ibéricos en Madrid: presa ibérica curada, lomo 100 % bellota, chorizo y salchichón Joselito en Corredera Gourmet.",
     seoDescriptionEn:
@@ -355,8 +356,8 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/products/se1.jpg",
     cardBadgeEs: "Sobres 100 g",
     cardBadgeEn: "100g Pouches",
-    seoTitleEs: "Sobres de Embutidos Ibéricos 100 g (Lomo, Cecina, Joselito) | Corredera Gourmet",
-    seoTitleEn: "100g Iberian Charcuterie Pouches (Loin, Cecina, Joselito) | Corredera Gourmet",
+    seoTitleEs: "Sobres de Embutidos Ibéricos 100 g | Corredera Gourmet",
+    seoTitleEn: "100 g Iberian Charcuterie Packs | Corredera Gourmet",
     seoDescriptionEs:
       "Sobres de embutidos ibéricos de 100 g envasados al vacío en Madrid: lomo de bellota, cecina de León, chorizo y salchichón Joselito y de bellota.",
     seoDescriptionEn:
@@ -420,8 +421,8 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/products/q3.jpg",
     cardBadgeEs: "Cava de Quesos",
     cardBadgeEn: "Artisan Cheeses",
-    seoTitleEs: "Quesos Artesanos y Gourmet en Madrid (Payoyo, Pecorino Trufado, Comté) | Corredera",
-    seoTitleEn: "Artisan & Gourmet Cheeses in Madrid (Payoyo, Truffled Pecorino, Comté) | Corredera",
+    seoTitleEs: "Quesos Artesanos y Gourmet en Madrid | Corredera Gourmet",
+    seoTitleEn: "Artisan & Gourmet Cheeses in Madrid | Corredera Gourmet",
     seoDescriptionEs:
       "Quesos en Madrid: Manchego D.O.P., Idiazábal, Cabrales, Torta del Casar, Payoyo, Comté, Roquefort y Parmesano. Al corte o por encargo en Corredera Gourmet.",
     seoDescriptionEn:
@@ -485,8 +486,8 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/products/ao1.jpg",
     cardBadgeEs: "Colección AOVE",
     cardBadgeEn: "EVOO Collection",
-    seoTitleEs: "Aceite de Oliva Virgen Extra (AOVE) Gourmet en Madrid | Corredera Gourmet",
-    seoTitleEn: "Gourmet Extra Virgin Olive Oil (EVOO) in Madrid | Corredera Gourmet",
+    seoTitleEs: "Aceite de Oliva Virgen Extra en Madrid | Corredera Gourmet",
+    seoTitleEn: "Extra Virgin Olive Oil in Madrid | Corredera Gourmet",
     seoDescriptionEs:
       "Encarga Aceite de Oliva Virgen Extra (AOVE) en Madrid: Ecológico en lata, Arbequina, Lucio Picual, Lucio Milenium, El Silencio y Señoríos de Relleu en Corredera.",
     seoDescriptionEn:
@@ -553,9 +554,9 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     seoTitleEs: "Carnicería en Madrid centro (Malasaña, Gran Vía) | Corredera",
     seoTitleEn: "Butcher's Shop in Central Madrid (Malasaña, Gran Vía) | Corredera",
     seoDescriptionEs:
-      "Carnicería en Calle de la Puebla 15, Madrid: ternera blanca, lomo y entraña de ternera, hamburguesas caseras, ibérico fresco, pollo y cordero. Corte al momento y encargo por WhatsApp.",
+      "Carnicería en Calle de la Puebla 15, Madrid: ternera, hamburguesas caseras, ibérico fresco, pollo y cordero. Corte al momento y encargo por WhatsApp.",
     seoDescriptionEn:
-      "Butcher's shop at Calle de la Puebla 15, Madrid: beef, fresh Iberian pork, chicken, lamb, minced meat and homemade burgers. Cut to order, WhatsApp orders and delivery.",
+      "Butcher's shop at Calle de la Puebla 15, Madrid: beef, fresh Iberian pork, chicken, lamb and homemade burgers. Cut to order, WhatsApp orders and delivery.",
     filterItems: (items) => items.filter((item) => item.category === "carniceria"),
     faqs: [
       {
@@ -626,7 +627,7 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     seoTitleEs: "Frutería en Madrid centro (Malasaña, Gran Vía) | Corredera",
     seoTitleEn: "Greengrocer in Central Madrid (Malasaña, Gran Vía) | Corredera",
     seoDescriptionEs:
-      "Frutería en Calle de la Puebla 15, Madrid: fruta de temporada, verdura fresca, frutos rojos, aguacate y cestas de fruta por encargo. Encargo por WhatsApp, recogida o envío.",
+      "Frutería en Calle de la Puebla 15, Madrid: fruta de temporada, verdura fresca, frutos rojos y cestas por encargo. Encargo por WhatsApp, recogida o envío.",
     seoDescriptionEn:
       "Greengrocer at Calle de la Puebla 15, Madrid: seasonal fruit, fresh vegetables, berries, avocado and fruit baskets to order. WhatsApp orders, pickup or delivery.",
     filterItems: (items) => items.filter((item) => item.category === "fruteria"),
@@ -688,8 +689,8 @@ export const GOURMET_CATEGORY_PAGES: GourmetCategoryPageConfig[] = [
     cardImage: "/assets/carta-cartel.jpg",
     cardBadgeEs: "Carta de Local",
     cardBadgeEn: "In-Store Menu",
-    seoTitleEs: "Carta de Cafetería, Desayunos y Obrador en Madrid | Corredera Bakery & Gourmet",
-    seoTitleEn: "Cafe Menu, Breakfasts & Artisan Bakery in Madrid | Corredera Bakery & Gourmet",
+    seoTitleEs: "Carta de Cafetería y Desayunos en Madrid | Corredera Bakery",
+    seoTitleEn: "Café Menu & Breakfast in Madrid | Corredera Bakery",
     seoDescriptionEs:
       "Consulta la carta de desayunos, cafetería, bollería artesana, tartas y packs para eventos de Corredera Bakery & Gourmet en Calle de la Puebla, 15 (Madrid).",
     seoDescriptionEn:
@@ -768,6 +769,6 @@ export function getProductShowcaseImages(
 export function isValidProductRoute(rawPath: string): boolean {
   const clean = (rawPath.split("?")[0] || "/").replace(/\/+$/, "") || "/";
   if (!clean.startsWith("/producto/")) return false;
-  const id = decodeURIComponent(clean.slice("/producto/".length));
+  const id = productIdFromParam(decodeURIComponent(clean.slice("/producto/".length)));
   return menuItems.some((item) => item.id === id);
 }

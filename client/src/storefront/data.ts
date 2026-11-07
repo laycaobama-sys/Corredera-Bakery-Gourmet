@@ -7,6 +7,7 @@ import {
   type MenuItem,
 } from "../../../shared/catalog";
 import { PRODUCT_HOVER_PHOTOS } from "../../../shared/productHoverPhotos";
+import { heroSrcSet, PRODUCT_PHOTO_VERSION, versionedProductImage } from "../../../shared/productUrls";
 import { productDescription } from "../../../shared/seoCopy";
 
 /** Take-home gourmet families shown in the online shop (the tasting-bar items live in the in-store menu). */
@@ -133,9 +134,7 @@ export const NAV_DEPARTMENTS = [
 ] as const;
 
 /** Bundled home images ship a light 800px variant; uploaded images are used as they are. */
-export function heroSrcSet(url: string) {
-  return /^\/assets\/home\/[a-z0-9-]+\.jpg$/.test(url) ? `${url.replace(/\.jpg$/, "-800.jpg")} 800w, ${url} 1376w` : undefined;
-}
+export { heroSrcSet };
 
 /** Navigation departments with the photo chosen in the admin panel. */
 export function departmentsWithImages(overrides: { slug: string; imageUrl: string }[]) {
@@ -155,8 +154,7 @@ export function itemBadge(item: MenuItem, lang: Lang) {
   return lang === "en" ? item.badgeEn || item.badge : item.badge;
 }
 
-/** Raise when bundled product photos are replaced, so browsers fetch the new files instead of cached ones. */
-export const PRODUCT_PHOTO_VERSION = "5";
+export { PRODUCT_PHOTO_VERSION };
 
 /** Second photo that fades in on hover and joins the product gallery. A photo replaced by the owner keeps its own pair. */
 export function itemHoverImage(item: MenuItem & { imageUrl?: string; hoverImageUrl?: string }) {
@@ -168,7 +166,7 @@ export function itemHoverImage(item: MenuItem & { imageUrl?: string; hoverImageU
 
 export function itemImage(item: MenuItem & { imageUrl?: string }) {
   const url = menuImageFor(item);
-  return url.startsWith("/assets/products/") ? `${url}?v=${PRODUCT_PHOTO_VERSION}` : url;
+  return versionedProductImage(url);
 }
 
 export function categoryLabel(item: MenuItem, lang: Lang) {

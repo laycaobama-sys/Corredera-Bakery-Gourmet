@@ -1,3 +1,4 @@
+import { productIdFromParam } from "../../shared/productUrls";
 import { listCatalogProducts } from "../catalogRepository";
 import { getSiteSettings } from "../siteSettingsRepository";
 import { resolveHtmlRouteSeoStatus } from "./seoMiddleware";
@@ -33,7 +34,8 @@ export async function renderHtmlPage(template: string, rawUrl: string, origin?: 
     // Products created from the admin panel are real pages too, not 404s.
     const productId = rawUrl.split(/[?#]/)[0].match(/^\/producto\/([A-Za-z0-9_-]+)\/?$/)?.[1];
     if (productId) {
-      const exists = catalog.some((p) => p.id === decodeURIComponent(productId));
+      const id = productIdFromParam(decodeURIComponent(productId));
+      const exists = catalog.some((p) => p.id === id);
       status = exists ? 200 : 404;
       robots = exists ? "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" : "noindex, nofollow";
     }

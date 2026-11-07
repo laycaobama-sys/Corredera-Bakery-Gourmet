@@ -1,6 +1,7 @@
 import { Check, MessageCircle, Minus, Plus } from "lucide-react";
 import { useState, type SyntheticEvent } from "react";
 import { Link } from "wouter";
+import { productPath } from "../../../../shared/productUrls";
 import { canOrderOnline, productBrand, type MenuItem } from "../../../../shared/catalog";
 import { buildProductDataUri } from "../../../../shared/productVisuals";
 import { askPriceMessage, formatLine, isAskPrice, itemBadge, itemHoverImage, itemImage, itemName, priceParts } from "../data";
@@ -82,7 +83,7 @@ function HoverPhoto({ item, active }: { item: MenuItem; active: boolean }) {
 export function BrandSeal({ size = "sm" }: { size?: "sm" | "lg" }) {
   return (
     <span className={`cg-seal cg-seal--${size}`} aria-hidden="true">
-      <img src="/assets/brand/corredera-emblem.png" alt="" width={371} height={439} loading="lazy" />
+      <img src="/assets/brand/corredera-emblem.png" alt="" aria-hidden="true" width={371} height={439} loading="lazy" />
       <span>
         <strong>Corredera</strong>
         <small>Gourmet</small>
@@ -124,7 +125,7 @@ export function ProductCard({ item, eager = false }: { item: MenuItem; eager?: b
   const { amount, unit } = priceParts(item, lang);
   const badge = itemBadge(item, lang);
   const line = formatLine(item, lang);
-  const href = `/producto/${item.id}`;
+  const href = productPath(item.id);
   const orderable = canOrderOnline(item);
   const askPrice = isAskPrice(item);
 

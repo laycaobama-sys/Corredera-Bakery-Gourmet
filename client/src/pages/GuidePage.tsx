@@ -1,4 +1,6 @@
 import { Link } from "wouter";
+import { productPath } from "../../../shared/productUrls";
+import { CONTENT_PAGES } from "../../../shared/contentPages";
 import { GUIDE, GUIDE_ENTRIES } from "../../../shared/guideJamon";
 import { Breadcrumbs, StoreLayout } from "../storefront/components/StoreLayout";
 import { itemName, priceParts } from "../storefront/data";
@@ -37,7 +39,7 @@ export default function GuidePage() {
               return (
                 <li key={i.id}>
                   <span>
-                    <Link href={`/producto/${i.id}`} className="cg-inline-link">
+                    <Link href={productPath(i.id)} className="cg-inline-link">
                       {itemName(i, lang)}
                     </Link>
                   </span>
@@ -49,6 +51,16 @@ export default function GuidePage() {
             })}
           </ul>
         </section>
+        <nav className="cg-guide__links" aria-label={t("Más guías", "More guides")}>
+          <h2>{t("Más guías", "More guides")}</h2>
+          <ul>
+            {CONTENT_PAGES.filter((p) => p.kind === "guide").map((p) => (
+              <li key={p.path}>
+                <Link href={p.path} className="cg-inline-link">{es ? p.titleEs : p.titleEn}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
         <p className="cg-guide__cta">
           <Link href="/gourmet/jamones" className="cg-btn cg-btn--primary">
             {t("Ver jamones y paletas", "See hams and shoulders")}

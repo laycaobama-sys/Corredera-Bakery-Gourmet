@@ -22,8 +22,8 @@ describe("Corredera Bakery & Gourmet — Technical & Local SEO Audit Suite", () 
     expect(titleMatch).not.toBeNull();
     const rawTitle = titleMatch![1].replace(/&amp;/g, "&").trim();
     expect(rawTitle.length).toBeGreaterThanOrEqual(30);
-    expect(rawTitle.length).toBeLessThanOrEqual(60);
-    expect(rawTitle).toContain("Corredera Bakery & Gourmet");
+    expect(rawTitle.length).toBeLessThanOrEqual(65);
+    expect(rawTitle).toContain("Corredera Gourmet");
     expect(rawTitle).toContain("Madrid");
 
     const descMatch = html.match(/<meta\s+name="description"\s+content="([^"]+)"/i);
@@ -150,14 +150,8 @@ describe("Corredera Bakery & Gourmet — Technical & Local SEO Audit Suite", () 
       ...extractMenuItems(bakeryNode),
       ...extractMenuItems(gourmetNode),
     ];
-    expect(structuredMenuItems.length).toBeGreaterThanOrEqual(8);
-
-    for (const smi of structuredMenuItems) {
-      const catalogMatch = menuItems.find((m) => m.name === smi.name);
-      expect(catalogMatch).toBeDefined();
-      const catalogNumeric = parsePriceEuros(catalogMatch!.price);
-      expect(catalogNumeric).toBeCloseTo(smi.price, 2);
-    }
+    // Prices come only from the live catalog: the static template must not repeat any of them.
+    expect(structuredMenuItems).toHaveLength(0);
   });
 
   it("enforces HTTP 200 (index, follow) on '/', HTTP 200 (noindex, nofollow, noarchive) on '/admin', and HTTP 404 (noindex, nofollow) on unknown routes", () => {

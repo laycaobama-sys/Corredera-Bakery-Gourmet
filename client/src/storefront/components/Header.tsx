@@ -54,7 +54,7 @@ function MegaMenu({ onNavigate }: { onNavigate: () => void }) {
           {departmentsWithImages(settings.pages.departmentImages).map((dep) => (
             <Link key={dep.slug} href={dep.href} className="cg-mega__item" onClick={onNavigate}>
               <span className="cg-mega__thumb">
-                <img src={dep.image} alt="" loading="lazy" decoding="async" width={160} height={128} />
+                <img src={dep.image} alt={lang === "en" ? dep.en : dep.es} loading="lazy" decoding="async" width={160} height={128} />
               </span>
               <span>
                 <span className="cg-mega__title">{lang === "en" ? dep.en : dep.es}</span>

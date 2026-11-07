@@ -1,6 +1,7 @@
 import { Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
+import { productPath } from "../../../../shared/productUrls";
 import { normalizeSearchText } from "../../../../shared/catalog";
 import { categoryLabel, itemName, NAV_DEPARTMENTS, priceParts } from "../data";
 import { useEscape, useScrollLock, useT } from "../hooks";
@@ -80,7 +81,7 @@ export function SearchDialog() {
                 const { amount, unit } = priceParts(item, lang);
                 return (
                   <li key={item.id}>
-                    <Link href={`/producto/${item.id}`} onClick={close}>
+                    <Link href={productPath(item.id)} onClick={close}>
                       <span className="cg-search__thumb">
                         <ProductImage item={item} />
                       </span>

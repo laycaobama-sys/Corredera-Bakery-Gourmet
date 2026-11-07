@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
+import { productPath } from "../../../shared/productUrls";
 import type { MenuItem } from "../../../shared/catalog";
 import { homeFaqs, homeMeta, selectBestSellers } from "../../../shared/seoCopy";
 import type { HeroSlide } from "../../../shared/siteSettingsSchema";
@@ -175,6 +176,24 @@ function InfoBar() {
           </span>
         </AnchorLink>
       </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- Christmas */
+
+function ChristmasBanner() {
+  const t = useT();
+  return (
+    <section className="cg-container" aria-label={t("Navidad", "Christmas")}>
+      <Link href="/lotes-navidad" className="cg-xmas">
+        <Gift size={24} strokeWidth={1.25} aria-hidden="true" />
+        <span>
+          <strong>{t("Lotes de Navidad a medida", "Made-to-order Christmas hampers")}</strong>
+          <span>{t("Para regalar o para tu empresa. Te los preparamos a tu gusto.", "For gifts or your company. Made the way you like.")}</span>
+        </span>
+        <ArrowRight size={18} aria-hidden="true" />
+      </Link>
     </section>
   );
 }
@@ -345,8 +364,8 @@ function CarvingService() {
             ))}
           </ol>
           <div className="cg-feature__actions">
-            <Link href="/gourmet/jamones" className="cg-btn cg-btn--light">
-              {t("Ver jamones enteros", "See whole hams")}
+            <Link href="/servicio-corte-jamon" className="cg-btn cg-btn--light">
+              {t("Cómo funciona el corte", "How carving works")}
             </Link>
             <a
               href={whatsappHref(t("Hola Corredera Gourmet, quisiera información sobre el servicio de corte de jamón.", "Hello Corredera Gourmet, I'd like information about the ham carving service."))}
@@ -584,7 +603,7 @@ function BakeryTeaser() {
           <ul className="cg-bakery__list">
             {highlights.map((item) => (
               <li key={item.id}>
-                <Link href={`/producto/${item.id}`} className="cg-bakery__item">
+                <Link href={productPath(item.id)} className="cg-bakery__item">
                   <img src={itemImage(item)} alt={lang === "en" ? item.nameEn : item.name} width={56} height={56} loading="lazy" decoding="async" />
                   <span>{lang === "en" ? item.nameEn : item.name.replace(/^Promoción\s+/i, "")}</span>
                 </Link>
@@ -626,6 +645,11 @@ function Visit() {
               <MessageCircle size={16} aria-hidden="true" /> WhatsApp
             </a>
           </div>
+          <p className="cg-visit__review">
+            <a className="cg-inline-link" href={settings.contact.googleMapsUrl} target="_blank" rel="noreferrer" onClick={() => track("maps_click")}>
+              {t("Déjanos tu reseña en Google", "Leave us a Google review")}
+            </a>
+          </p>
         </div>
         <div className="cg-hours">
           <div>
@@ -680,6 +704,7 @@ export default function Home() {
     <StoreLayout trust={false}>
       <Hero />
       <InfoBar />
+      <ChristmasBanner />
       <BestSellers />
       <WhyCorredera />
       <CarvingService />

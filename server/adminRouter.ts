@@ -1,3 +1,5 @@
+import { productPath } from "../shared/productUrls";
+import { pingIndexNow } from "./_core/indexNow";
 import { TRPCError } from "@trpc/server";
 import fs from "./_core/dataFs";
 import path from "path";
@@ -351,7 +353,9 @@ export const adminRouter = router({
     .input(productUpsertSchema)
     .mutation(async ({ input, ctx }) => {
       try {
-        return await createCatalogProduct(input, ctx.user.openId);
+        const created = await createCatalogProduct(input, ctx.user.openId);
+        pingIndexNow([productPath(input.id), "/tienda", "/sitemap.xml"]);
+        return created;
       } catch (err) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -367,7 +371,9 @@ export const adminRouter = router({
     .input(productUpsertSchema)
     .mutation(async ({ input, ctx }) => {
       try {
-        return await updateCatalogProduct(input, ctx.user.openId);
+        const updated = await updateCatalogProduct(input, ctx.user.openId);
+        pingIndexNow([productPath(input.id)]);
+        return updated;
       } catch (err) {
         throw new TRPCError({
           code: "BAD_REQUEST",

@@ -1,7 +1,11 @@
 import { categories, parsePriceEuros, productBrand, type MenuItem } from "../../shared/catalog";
 import { BRAND_NAME, bakeryMeta, homeFaqs, homeMeta, productDescription, productMeta, productName, selectBestSellers, shopMeta } from "../../shared/seoCopy";
+import { CONTENT_PAGES, getContentPage, type ContentPage, type ContentTable } from "../../shared/contentPages";
 import { GUIDE, GUIDE_ENTRIES, GUIDE_PATH } from "../../shared/guideJamon";
 import { GOURMET_CATEGORY_PAGES, getGourmetCategoryBySlug } from "../../shared/gourmetRoutes";
+import { productNotes } from "../../shared/productCopy";
+import { PRODUCT_HOVER_PHOTOS } from "../../shared/productHoverPhotos";
+import { heroSrcSet, productIdFromParam, productPath, versionedProductImage } from "../../shared/productUrls";
 import type { SiteSettings } from "../../shared/siteSettingsSchema";
 import { listCatalogProducts } from "../catalogRepository";
 import { getSiteSettings } from "../siteSettingsRepository";
@@ -45,16 +49,31 @@ export type SeoPage = {
   bodyHtml: string;
 };
 
+/**
+ * What the visitor sees before the app starts: logo, page title and main photo, using the same image
+ * address the app uses so nothing downloads twice. React replaces it when it loads.
+ */
+function firstPaintHtml(page: SeoPage) {
+  const heading = page.bodyHtml.match(/<h1>([\s\S]*?)<\/h1>/)?.[1] ?? "";
+  const src = versionedProductImage(page.image.startsWith(SITE_URL) ? page.image.slice(SITE_URL.length) : page.image);
+  const srcset = heroSrcSet(src);
+  const sizes = "(max-width: 1024px) 100vw, 70vw";
+  return {
+    preload: `<link rel="preload" as="image" href="${esc(src)}"${srcset ? ` imagesrcset="${esc(srcset)}" imagesizes="${sizes}"` : ""} fetchpriority="high" />`,
+    html: `<div class="cg-fp" aria-hidden="true"><div class="cg-fp__bar"><img src="/assets/brand/corredera-lockup.png" alt="" width="640" height="153" /></div><p class="cg-fp__title">${heading}</p><img class="cg-fp__img" src="${esc(src)}"${srcset ? ` srcset="${esc(srcset)}" sizes="${sizes}"` : ""} alt="" fetchpriority="high" /></div>`,
+  };
+}
+
 function productJsonLd(item: ManagedItem, settings: SiteSettings, name: string, description: string, brand: string | null) {
   const price = priceNumber(item);
   const perKg = item.price.includes("/ kg");
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    "@id": `${SITE_URL}/producto/${item.id}#product`,
+    "@id": `${SITE_URL}${productPath(item.id)}#product`,
     name,
     description,
-    image: abs(item.imageUrl || `/assets/products/${item.id}.jpg`),
+    image: productImages(item),
     sku: item.id,
     ...(brand ? { brand: { "@type": "Brand", name: brand } } : {}),
     category: categoryLabel(item),
@@ -62,7 +81,7 @@ function productJsonLd(item: ManagedItem, settings: SiteSettings, name: string, 
       ? {
           offers: {
             "@type": "Offer",
-            url: `${SITE_URL}/producto/${item.id}`,
+            url: `${SITE_URL}${productPath(item.id)}`,
             priceCurrency: "EUR",
             price,
             ...(perKg
@@ -76,6 +95,12 @@ function productJsonLd(item: ManagedItem, settings: SiteSettings, name: string, 
         }
       : {}),
   };
+}
+
+function productImages(item: ManagedItem) {
+  const main = abs(item.imageUrl || `/assets/products/${item.id}.jpg`);
+  const second = PRODUCT_HOVER_PHOTOS[item.id];
+  return second && (!item.imageUrl || item.imageUrl === `/assets/products/${item.id}.jpg`) ? [main, abs(`/assets/products/${second}.jpg`)] : [main];
 }
 
 function categoryLabel(item: MenuItem) {
@@ -97,7 +122,7 @@ function itemList(name: string, items: ManagedItem[]) {
     "@type": "ItemList",
     name,
     numberOfItems: items.length,
-    itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE_URL}/producto/${it.id}`, name: it.name })),
+    itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE_URL}${productPath(it.id)}`, name: it.name })),
   };
 }
 
@@ -111,12 +136,66 @@ function faqPage(faqs: { q: string; a: string }[]) {
 
 function productListHtml(items: ManagedItem[], nameOf: (i: MenuItem) => string = (i) => i.name) {
   return `<ul>${items
-    .map((i) => `<li><a href="/producto/${esc(i.id)}">${esc(nameOf(i))}</a> — ${esc(i.price)}${i.weightInfo ? ` · ${esc(i.weightInfo)}` : ""}</li>`)
+    .map((i) => `<li><a href="${esc(productPath(i.id))}">${esc(nameOf(i))}</a> — ${esc(i.price)}${i.weightInfo ? ` · ${esc(i.weightInfo)}` : ""}</li>`)
     .join("")}</ul>`;
 }
 
 function contactHtml(s: SiteSettings) {
   return `<p>${esc(s.contact.addressLine)} · WhatsApp ${esc(s.contact.whatsappDisplay)} · Tel. ${esc(s.contact.landlineDisplay)} · ${esc(s.contact.contactEmail)}</p><p>Horario tienda gourmet: ${esc(s.schedule.gourmetHoursEs)} (${esc(s.schedule.gourmetClosedNoteEs)}). Bakery &amp; Café: ${esc(s.schedule.bakeryWeekdaysEs)}, ${esc(s.schedule.bakeryWeekendEs)}, ${esc(s.schedule.bakerySundayEs)}.</p>`;
+}
+
+function notesHtml(item: MenuItem, en: boolean) {
+  const notes = productNotes(item);
+  if (!notes) return "";
+  return `<h2>${en ? "How to serve and store it" : "Cómo se sirve y se conserva"}</h2><p>${esc(en ? notes.serveEn : notes.serveEs)}</p><p>${esc(en ? notes.keepEn : notes.keepEs)}</p><ul>${notes.links
+    .map((l) => `<li><a href="${esc(l.href)}">${esc(en ? l.en : l.es)}</a></li>`)
+    .join("")}</ul>`;
+}
+
+function tableHtml(table: ContentTable, en: boolean) {
+  const head = en ? table.headEn : table.headEs;
+  const rows = en ? table.rowsEn : table.rowsEs;
+  return `<table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+}
+
+const ORGANIZATION_REF = { "@id": `${SITE_URL}/#organization` };
+
+function contentSeoPage(
+  page: ContentPage,
+  ctx: { lang: SeoPage["lang"]; s: SiteSettings; all: ManagedItem[]; nav: string; listHtml: (items: ManagedItem[]) => string; canonical: string; alternates: SeoPage["alternates"]; crumbHome: { name: string; url: string } },
+): SeoPage {
+  const en = ctx.lang === "en";
+  const title = en ? page.titleEn : page.titleEs;
+  const description = en ? page.descriptionEn : page.descriptionEs;
+  const answer = en ? page.answerEn : page.answerEs;
+  const image = abs(page.image);
+  const byId = new Map(ctx.all.map((i) => [i.id, i]));
+  const products = page.productIds.map((id) => byId.get(id)).filter((i): i is ManagedItem => Boolean(i));
+  const faqs = page.faqs.map((f) => ({ q: en ? f.qEn : f.qEs, a: en ? f.aEn : f.aEs }));
+  const productsTitle = en ? page.productsTitleEn : page.productsTitleEs;
+  const crumbs = [ctx.crumbHome, ...(page.kind === "guide" ? [{ name: en ? "Ham guide" : "Guía del jamón", url: GUIDE_PATH }] : []), { name: title, url: page.path }];
+  const main =
+    page.kind === "service"
+      ? { "@context": "https://schema.org", "@type": "Service", name: title, description, serviceType: en ? "Ham carving and vacuum packing" : "Corte de jamón a cuchillo y envasado al vacío", provider: ORGANIZATION_REF, areaServed: { "@type": "City", name: "Madrid" }, url: ctx.canonical, image }
+      : { "@context": "https://schema.org", "@type": "Article", headline: title, description, image, inLanguage: en ? "en" : "es", datePublished: page.published, dateModified: page.updated, author: ORGANIZATION_REF, publisher: ORGANIZATION_REF, mainEntityOfPage: ctx.canonical };
+  return {
+    lang: ctx.lang,
+    alternates: ctx.alternates,
+    title: en ? page.seoTitleEn : page.seoTitleEs,
+    description,
+    canonical: ctx.canonical,
+    image,
+    jsonLd: [breadcrumbs(crumbs), main, faqPage(faqs), ...(products.length ? [itemList(productsTitle, products)] : [])],
+    bodyHtml: `${ctx.nav}<h1>${esc(title)}</h1><p>${esc(answer)}</p>${page.sections
+      .map((sec) => {
+        const paragraphs = (en ? sec.pEn : sec.pEs) ?? [];
+        const list = (en ? sec.listEn : sec.listEs) ?? [];
+        return `<h2>${esc(en ? sec.hEn : sec.hEs)}</h2>${paragraphs.map((p) => `<p>${esc(p)}</p>`).join("")}${list.length ? `<ul>${list.map((li) => `<li>${esc(li)}</li>`).join("")}</ul>` : ""}${sec.table ? tableHtml(sec.table, en) : ""}`;
+      })
+      .join("")}${products.length ? `<h2>${esc(productsTitle)}</h2>${ctx.listHtml(products)}` : ""}<h2>${en ? "Frequently asked questions" : "Preguntas frecuentes"}</h2>${faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("")}<ul>${page.links
+      .map((l) => `<li><a href="${esc(l.href)}">${esc(en ? l.en : l.es)}</a></li>`)
+      .join("")}</ul>${contactHtml(ctx.s)}`,
+  };
 }
 
 export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
@@ -134,7 +213,7 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
   const descOf = (i: MenuItem) => productDescription(i, lang);
   const listHtml = (items: ManagedItem[]) => productListHtml(items, nameOf);
   const home = homeMeta(lang);
-  const nav = `<nav><a href="/">${en ? "Home" : "Inicio"}</a> · <a href="/tienda">${en ? "Shop" : "Tienda"}</a> · ${GOURMET_CATEGORY_PAGES.map((c) => `<a href="${c.path}">${esc(en ? c.navLabelEn : c.navLabelEs)}</a>`).join(" · ")} · <a href="${GUIDE_PATH}">${esc(en ? GUIDE.titleEn : GUIDE.titleEs)}</a></nav>`;
+  const nav = `<nav><a href="/">${en ? "Home" : "Inicio"}</a> · <a href="/tienda">${en ? "Shop" : "Tienda"}</a> · ${GOURMET_CATEGORY_PAGES.map((c) => `<a href="${c.path}">${esc(en ? c.navLabelEn : c.navLabelEs)}</a>`).join(" · ")} · <a href="${GUIDE_PATH}">${esc(en ? GUIDE.titleEn : GUIDE.titleEs)}</a> · ${CONTENT_PAGES.map((p) => `<a href="${p.path}">${esc(en ? p.titleEn : p.titleEs)}</a>`).join(" · ")}</nav>`;
   const crumbHome = { name: en ? "Home" : "Inicio", url: "/" };
   const crumbShop = { name: en ? "Shop" : "Tienda", url: "/tienda" };
 
@@ -233,24 +312,28 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
     }
   }
 
+  const contentPage = getContentPage(path);
+  if (contentPage) return contentSeoPage(contentPage, { lang, s, all, nav, listHtml, canonical: canonicalOf(path), alternates: alternates(path), crumbHome });
+
   const prodMatch = path.match(/^\/producto\/([A-Za-z0-9_-]+)$/);
   if (prodMatch) {
-    const item = all.find((i) => i.id === decodeURIComponent(prodMatch[1]));
+    const item = all.find((i) => i.id === productIdFromParam(decodeURIComponent(prodMatch[1])));
     if (item) {
       const cat = GOURMET_CATEGORY_PAGES.find((c) => c.isGourmetPrimary && c.filterItems([item]).length > 0);
-      const crumbs = [crumbHome, ...(item.mode === "gourmet" ? [crumbShop] : [{ name: en ? "Menu" : "Carta", url: "/bakery-cafe" }]), ...(cat ? [{ name: en ? cat.navLabelEn : cat.navLabelEs, url: cat.path }] : []), { name: nameOf(item), url: `/producto/${item.id}` }];
+      const crumbs = [crumbHome, ...(item.mode === "gourmet" ? [crumbShop] : [{ name: en ? "Menu" : "Carta", url: "/bakery-cafe" }]), ...(cat ? [{ name: en ? cat.navLabelEn : cat.navLabelEs, url: cat.path }] : []), { name: nameOf(item), url: productPath(item.id) }];
       const hasPrice = priceNumber(item) !== null;
       const brand = productBrand(item);
+      const related = all.filter((i) => i.id !== item.id && i.category === item.category).slice(0, 4);
       const info = en ? item.weightInfoEn ?? item.unitInfoEn ?? "" : item.weightInfo ?? item.unitInfo ?? "";
       return {
         lang,
-        alternates: alternates(`/producto/${item.id}`),
+        alternates: alternates(productPath(item.id)),
         ...productMeta(item, lang),
-        canonical: canonicalOf(`/producto/${item.id}`),
+        canonical: canonicalOf(productPath(item.id)),
         image: abs(item.imageUrl || `/assets/products/${item.id}.jpg`),
         // Google rejects Product markup without a price, so items priced on request only get breadcrumbs.
         jsonLd: [...(hasPrice ? [productJsonLd(item, s, nameOf(item), descOf(item), brand)] : []), breadcrumbs(crumbs)],
-        bodyHtml: `${nav}<h1>${esc(nameOf(item))}</h1>${brand ? `<p>${en ? "Brand" : "Marca"}: ${esc(brand)}</p>` : ""}<p>${en ? "Price" : "Precio"}: ${esc(hasPrice ? item.price : en ? "ask on WhatsApp" : "a consultar por WhatsApp")}${item.refPricePerKg ? ` (${en ? "reference" : "referencia"} ${esc(item.refPricePerKg)})` : ""}</p>${info ? `<p>${esc(info)}</p>` : ""}<p>${esc(descOf(item))}</p>${item.freeCuttingService ? `<p>${en ? "Free hand-carving and vacuum packing included." : "Incluye gratis el corte a cuchillo y el envasado al vacío."}</p>` : ""}${contactHtml(s)}`,
+        bodyHtml: `${nav}<h1>${esc(nameOf(item))}</h1>${brand ? `<p>${en ? "Brand" : "Marca"}: ${esc(brand)}</p>` : ""}<p>${en ? "Price" : "Precio"}: ${esc(hasPrice ? item.price : en ? "ask on WhatsApp" : "a consultar por WhatsApp")}${item.refPricePerKg ? ` (${en ? "reference" : "referencia"} ${esc(item.refPricePerKg)})` : ""}</p>${info ? `<p>${esc(info)}</p>` : ""}<p>${esc(descOf(item))}</p>${item.freeCuttingService ? `<p>${en ? "Free hand-carving and vacuum packing included." : "Incluye gratis el corte a cuchillo y el envasado al vacío."}</p>` : ""}${notesHtml(item, en)}${related.length ? `<h2>${en ? "You may also like" : "Quizás también te interese"}</h2>${listHtml(related)}` : ""}${contactHtml(s)}`,
       };
     }
   }
@@ -271,6 +354,11 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
 export function injectSeo(html: string, page: SeoPage): string {
   const replaceTag = (h: string, pattern: RegExp, value: string) => h.replace(pattern, (m) => m.replace(/content="[^"]*"/, `content="${esc(value)}"`));
   let out = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(page.title)}</title>`);
+  const verification = [
+    process.env.GOOGLE_SITE_VERIFICATION && `<meta name="google-site-verification" content="${esc(process.env.GOOGLE_SITE_VERIFICATION)}" />`,
+    process.env.BING_SITE_VERIFICATION && `<meta name="msvalidate.01" content="${esc(process.env.BING_SITE_VERIFICATION)}" />`,
+  ].filter(Boolean);
+  if (verification.length) out = out.replace("</head>", `    ${verification.join("\n    ")}\n  </head>`);
   out = out.replace(/<html lang="[^"]*"/, `<html lang="${page.lang}"`);
   out = replaceTag(out, /<meta\s+name="description"[\s\S]*?\/>/, page.description);
   out = replaceTag(out, /<meta property="og:title"[^>]*\/>/, page.title);
@@ -289,7 +377,10 @@ export function injectSeo(html: string, page: SeoPage): string {
   out = out.replace(/<link rel="alternate" hreflang="x-default" href="[^"]*" \/>/, `<link rel="alternate" hreflang="x-default" href="${esc(page.alternates.es)}" />`);
   const ld = page.jsonLd.map((j) => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, "\\u003c")}</script>`).join("\n    ");
   if (ld) out = out.replace("</head>", `    ${ld}\n  </head>`);
-  return out.replace('<div id="root"></div>', `<div id="root"><div class="seo-snapshot" hidden>${page.bodyHtml}</div></div>`);
+  const first = firstPaintHtml(page);
+  // Each page preloads its own main photo, not the home page's.
+  out = out.replace(/<link rel="preload" as="image" href="\/assets\/home\/hero-jamon\.jpg"[^>]*\/>/, () => first.preload);
+  return out.replace('<div id="root"></div>', () => `<div id="root">${first.html}<div class="seo-snapshot" hidden>${page.bodyHtml}</div></div>`);
 }
 
 /** Plain-text summary for AI assistants, always in sync with the catalog and the CMS. */
@@ -299,7 +390,15 @@ export async function buildLlmsTxt(): Promise<string> {
   const lines: string[] = [
     `# ${BRAND_NAME} (Madrid)`,
     "",
-    `> Tienda gourmet, carnicería y frutería en ${s.contact.addressLine} (entre Gran Vía y Malasaña): jamones ibéricos 5 Jotas, Joselito y Dehesa de Extremadura con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos ibéricos de bellota, quesos seleccionados, aceites de oliva virgen extra, conservas y vinos; carne cortada al momento (ternera, cerdo ibérico fresco, pollo, cordero, hamburguesas caseras) y fruta y verdura fresca de temporada con cestas por encargo. También obrador y cafetería (Bakery & Café).`,
+    `> ${BRAND_NAME}, también conocida como Corredera Madrid (correderamadrid.com), es un comercio de alimentación en ${s.contact.addressLine}, entre Gran Vía y Malasaña. No son las calles Corredera Alta y Corredera Baja de San Pablo, aunque está junto a ellas.`,
+    "",
+    "## Datos clave",
+    `- Qué es: tienda gourmet con carnicería y frutería, y Corredera Bakery & Café en el mismo local. Razón social: ${s.legal.companyName}.`,
+    `- Dirección: ${s.contact.addressLine}. Metro cercano: Callao, Gran Vía y Tribunal.`,
+    `- Teléfono: ${s.contact.landlineDisplay}. WhatsApp: ${s.contact.whatsappDisplay}. Email: ${s.contact.contactEmail}.`,
+    "- Jamones: 5 Jotas, Joselito, Dehesa de Extremadura, Guijuelo y cebo de campo, además de paletas.",
+    "- Servicio: corte a cuchillo y envasado al vacío gratis al comprar un jamón entero.",
+    "- Otros productos: sobres de 100 g, embutidos, quesos, aceites de oliva virgen extra, conservas y vinos; carne cortada al momento; fruta y verdura.",
     "",
     "## Cómo comprar",
     `- Pedidos desde ${SITE_URL}/tienda; se confirman por WhatsApp ${s.contact.whatsappDisplay}. Sin pago online: se paga al recoger o a la entrega.`,
@@ -310,13 +409,14 @@ export async function buildLlmsTxt(): Promise<string> {
     "## Páginas",
     `- [Tienda completa](${SITE_URL}/tienda)`,
     `- [${GUIDE.titleEs}](${SITE_URL}${GUIDE_PATH}): ${GUIDE.descriptionEs}`,
+    ...CONTENT_PAGES.map((p) => `- [${p.titleEs}](${SITE_URL}${p.path}): ${p.descriptionEs}`),
     ...GOURMET_CATEGORY_PAGES.map((c) => `- [${c.navLabelEs}](${SITE_URL}${c.path}): ${c.seoDescriptionEs}`),
     "",
   ];
   for (const cfg of GOURMET_CATEGORY_PAGES.filter((c) => c.isGourmetPrimary)) {
     const items = cfg.filterItems(all).filter((i) => i.mode === "gourmet");
     if (!items.length) continue;
-    lines.push(`## ${cfg.titleEs}`, ...items.map((i) => `- [${i.name}](${SITE_URL}/producto/${i.id}): ${i.price}${i.weightInfo ? ` · ${i.weightInfo}` : ""}`), "");
+    lines.push(`## ${cfg.titleEs}`, ...items.map((i) => `- [${i.name}](${SITE_URL}${productPath(i.id)}): ${i.price}${i.weightInfo ? ` · ${i.weightInfo}` : ""}`), "");
   }
   const bakery = all.filter((i) => i.mode === "bakery");
   lines.push("## Carta Bakery & Café (consumo en local)", ...bakery.map((i) => `- ${i.name}: ${i.price}`), "");
@@ -324,24 +424,66 @@ export async function buildLlmsTxt(): Promise<string> {
   return lines.join("\n");
 }
 
+/** Last deliberate content change of pages that are not tied to a product. */
+const PAGES_UPDATED = "2026-11-07";
+const day = (iso?: string) => (iso && /^\d{4}-\d{2}-\d{2}/.test(iso) ? iso.slice(0, 10) : PAGES_UPDATED);
+const latest = (dates: string[]) => dates.reduce((a, b) => (b > a ? b : a), PAGES_UPDATED);
+
 export async function buildSitemapXml(): Promise<string> {
-  const all = (await listCatalogProducts({ includeInactive: false })) as ManagedItem[];
-  const today = new Date().toISOString().slice(0, 10);
-  const urls: { loc: string; pr: string; img?: string; title?: string }[] = [
-    { loc: "/", pr: "1.0" },
-    { loc: "/tienda", pr: "0.9" },
-    { loc: GUIDE_PATH, pr: "0.7" },
-    ...GOURMET_CATEGORY_PAGES.map((c) => ({ loc: c.path, pr: c.isGourmetPrimary ? "0.8" : "0.6" })),
-    ...all.map((i) => ({ loc: `/producto/${i.id}`, pr: i.mode === "gourmet" ? "0.6" : "0.4", img: abs(i.imageUrl || `/assets/products/${i.id}.jpg`), title: i.name })),
+  const all = (await listCatalogProducts({ includeInactive: false })) as (ManagedItem & { updatedAt?: string })[];
+  const allDates = all.map((i) => day(i.updatedAt));
+  const urls: { loc: string; lastmod: string; img?: string; title?: string }[] = [
+    { loc: "/", lastmod: latest(allDates) },
+    { loc: "/tienda", lastmod: latest(allDates) },
+    { loc: GUIDE_PATH, lastmod: PAGES_UPDATED },
+    ...CONTENT_PAGES.map((p) => ({ loc: p.path, lastmod: p.updated })),
+    ...GOURMET_CATEGORY_PAGES.map((c) => ({ loc: c.path, lastmod: latest(c.filterItems(all).map((i) => day((i as { updatedAt?: string }).updatedAt))) })),
+    ...all.map((i) => ({ loc: productPath(i.id), lastmod: day(i.updatedAt), img: abs(i.imageUrl || `/assets/products/${i.id}.jpg`), title: i.name })),
   ];
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
     ...urls.map(
       (u) =>
-        `  <url><loc>${esc(SITE_URL + u.loc)}</loc><lastmod>${today}</lastmod><priority>${u.pr}</priority><xhtml:link rel="alternate" hreflang="es" href="${esc(SITE_URL + u.loc)}"/><xhtml:link rel="alternate" hreflang="en" href="${esc(`${SITE_URL}${u.loc}?lang=en`)}"/>${u.img ? `<image:image><image:loc>${esc(u.img)}</image:loc><image:title>${esc(u.title ?? "")}</image:title></image:image>` : ""}</url>`,
+        `  <url><loc>${esc(SITE_URL + u.loc)}</loc><lastmod>${u.lastmod}</lastmod><xhtml:link rel="alternate" hreflang="es" href="${esc(SITE_URL + u.loc)}"/><xhtml:link rel="alternate" hreflang="en" href="${esc(`${SITE_URL}${u.loc}?lang=en`)}"/><xhtml:link rel="alternate" hreflang="x-default" href="${esc(SITE_URL + u.loc)}"/>${u.img ? `<image:image><image:loc>${esc(u.img)}</image:loc><image:title>${esc(u.title ?? "")}</image:title></image:image>` : ""}</url>`,
     ),
     "</urlset>",
     "",
   ].join("\n");
+}
+
+/** Longer version of llms.txt with the full text of the guides and landing pages. */
+export async function buildLlmsFullTxt(): Promise<string> {
+  const lines = [await buildLlmsTxt(), "## Guías y servicios", ""];
+  for (const p of CONTENT_PAGES) {
+    lines.push(`### ${p.titleEs}`, `${SITE_URL}${p.path}`, "", p.answerEs, "");
+    for (const sec of p.sections) {
+      lines.push(`#### ${sec.hEs}`, ...(sec.pEs ?? []), ...(sec.listEs ?? []).map((li) => `- ${li}`));
+      if (sec.table) lines.push(`| ${sec.table.headEs.join(" | ")} |`, `| ${sec.table.headEs.map(() => "---").join(" | ")} |`, ...sec.table.rowsEs.map((r) => `| ${r.join(" | ")} |`));
+      lines.push("");
+    }
+    for (const f of p.faqs) lines.push(`**${f.qEs}** ${f.aEs}`, "");
+  }
+  return lines.join("\n");
+}
+
+/** Plain Markdown version of a page, for assistants that ask for it with Accept: text/markdown. */
+export function seoPageToMarkdown(page: SeoPage) {
+  const text = page.bodyHtml
+    .replace(/<nav>[\s\S]*?<\/nav>/g, "")
+    .replace(/<h1>([\s\S]*?)<\/h1>/g, "# $1\n\n")
+    .replace(/<h2>([\s\S]*?)<\/h2>/g, "\n## $1\n\n")
+    .replace(/<h3>([\s\S]*?)<\/h3>/g, "\n### $1\n\n")
+    .replace(/<a href="([^"]*)">([\s\S]*?)<\/a>/g, (_m, href: string, label: string) => `[${label}](${href.startsWith("/") ? SITE_URL + href : href})`)
+    .replace(/<li>([\s\S]*?)<\/li>/g, "- $1\n")
+    .replace(/<\/(p|ul|table|tr)>/g, "\n")
+    .replace(/<\/t[dh]>/g, " | ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return `${text}\n\nFuente: ${page.canonical}\n`;
 }

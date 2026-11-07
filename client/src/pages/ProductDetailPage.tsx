@@ -1,8 +1,10 @@
 import { Check, Info, MessageCircle, Package, Scissors, ShoppingBag, Store, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { canOrderOnline, type MenuItem } from "../../../shared/catalog";
 import { getCategoryForProduct } from "../../../shared/gourmetRoutes";
+import { productNotes } from "../../../shared/productCopy";
+import { productIdFromParam, productRedirectPath } from "../../../shared/productUrls";
 import { productMeta } from "../../../shared/seoCopy";
 import { BrandPlate, BrandSeal, handleImageError, ProductCard, QtyStepper } from "../storefront/components/ProductCard";
 import { Breadcrumbs, SectionHeading, StoreLayout } from "../storefront/components/StoreLayout";
@@ -27,7 +29,13 @@ import NotFound from "./NotFound";
 
 export default function ProductDetailPage({ productId }: { productId: string }) {
   const { itemById, catalogReady } = useStore();
-  const item = itemById.get(productId);
+  const [, navigate] = useLocation();
+  const item = itemById.get(productIdFromParam(productId));
+  // Old links reach the keyword address without a full page load.
+  const canonicalPath = productRedirectPath(productId);
+  useEffect(() => {
+    if (canonicalPath) navigate(canonicalPath, { replace: true });
+  }, [canonicalPath, navigate]);
   if (!item) return catalogReady ? <NotFound /> : <StoreLayout><div className="cg-container cg-pdp" aria-busy="true" /></StoreLayout>;
   return <ProductView key={item.id} item={item} />;
 }
@@ -63,6 +71,7 @@ function ProductView({ item }: { item: MenuItem }) {
   const isGourmet = item.mode === "gourmet";
   const category = isGourmet ? getCategoryForProduct(item) : null;
   const byWeight = item.price.includes("/ kg");
+  const notes = productNotes(item);
 
   const related = useMemo(() => {
     const pool = items.filter((i) => i.id !== item.id && (isGourmet ? isShopItem(i) : i.mode === item.mode));
@@ -270,6 +279,24 @@ function ProductView({ item }: { item: MenuItem }) {
                 </li>
               </ul>
             </details>
+            {notes && (
+              <details>
+                <summary>{t("Cómo se sirve y se conserva", "How to serve and store it")}</summary>
+                <p>{es ? notes.serveEs : notes.serveEn}</p>
+                <p>{es ? notes.keepEs : notes.keepEn}</p>
+              </details>
+            )}
+            {item.freeCuttingService && (
+              <details>
+                <summary>{t("Qué incluye el servicio de corte", "What the carving service includes")}</summary>
+                <p>
+                  {t(
+                    "Cortamos el jamón a cuchillo y lo envasamos al vacío gratis. Te lo entregamos en sobres listos para servir, con los tacos y el hueso aprovechable. También puedes llevarte la pieza entera sin empezar.",
+                    "We hand-carve the ham and vacuum pack it free of charge. You get it in ready-to-serve packs, with the trimmings and the usable bone. You can also take the whole uncut piece.",
+                  )}
+                </p>
+              </details>
+            )}
             <details>
               <summary>{t("Recogida y envío", "Pickup and delivery")}</summary>
               <p>
@@ -278,6 +305,15 @@ function ProductView({ item }: { item: MenuItem }) {
               <p>{es ? settings.contact.shippingNoticeEs : settings.contact.shippingNoticeEn}</p>
             </details>
           </div>
+          {notes && notes.links.length > 0 && (
+            <ul className="cg-pdp__links">
+              {notes.links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="cg-inline-link">{es ? l.es : l.en}</Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
 

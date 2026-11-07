@@ -94,7 +94,9 @@ export function Footer() {
           <p className="cg-footer__heading">{t("Información", "Information")}</p>
           <ul>
             <li><AnchorLink to="nosotros">{t("Sobre nosotros", "About us")}</AnchorLink></li>
-            <li><AnchorLink to="servicio-corte">{t("Servicio de corte", "Carving service")}</AnchorLink></li>
+            <li><Link href="/servicio-corte-jamon">{t("Servicio de corte", "Carving service")}</Link></li>
+            <li><Link href="/lotes-navidad">{t("Lotes de Navidad", "Christmas hampers")}</Link></li>
+            <li><Link href="/guia/5-jotas-vs-joselito">{t("5 Jotas o Joselito", "5 Jotas or Joselito")}</Link></li>
             <li><AnchorLink to="como-encargar">{t("Cómo encargar", "How to order")}</AnchorLink></li>
             <li><Link href="/bakery-cafe">{t("Carta Bakery & Café", "Bakery & Café menu")}</Link></li>
             <li><Link href="/guia/jamon-iberico">{t("Guía del jamón ibérico", "Iberian ham guide")}</Link></li>
