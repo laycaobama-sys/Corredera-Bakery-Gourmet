@@ -396,7 +396,7 @@ export async function buildLlmsTxt(): Promise<string> {
     `> ${BRAND_NAME}, también conocida como Corredera Madrid (correderamadrid.com), es un comercio de alimentación en ${s.contact.addressLine}, entre Gran Vía y Malasaña. No son las calles Corredera Alta y Corredera Baja de San Pablo, aunque está junto a ellas.`,
     "",
     "## Datos clave",
-    `- Qué es: tienda gourmet con carnicería y frutería, y Corredera Bakery & Café en el mismo local. Razón social: ${s.legal.companyName}.`,
+    `- Qué es: tienda gourmet con carnicería y frutería, y Corredera Bakery & Café en el mismo local. Razón social: ${s.legal.companyName.replace(/\.$/, "")}.`,
     `- Dirección: ${s.contact.addressLine}. Metro cercano: Callao, Gran Vía y Tribunal.`,
     `- Teléfono: ${s.contact.landlineDisplay}. WhatsApp: ${s.contact.whatsappDisplay}. Email: ${s.contact.contactEmail}.`,
     "- Jamones: 5 Jotas, Joselito, Dehesa de Extremadura, Guijuelo y cebo de campo, además de paletas.",

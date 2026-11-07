@@ -89,11 +89,11 @@ if (rendered) {
   const keys = urls.filter((u) => !u.includes("/producto/"));
   const targets = renderAll ? urls : [...keys, ...products.filter((_, i) => i % 12 === 0)];
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: "es-ES" });
-  await mapLimit(targets, 4, async (url) => {
+  await mapLimit(targets, 2, async (url) => {
     const page = await context.newPage();
     try {
       await page.goto(url, { waitUntil: "load", timeout: 45000 });
-      await page.waitForFunction(() => !document.querySelector(".seo-snapshot"), null, { timeout: 15000 });
+      await page.waitForFunction(() => !document.querySelector(".seo-snapshot"), null, { timeout: 30000 });
       await page.waitForTimeout(300);
       const dom = await page.evaluate(() => ({
         title: document.title,
