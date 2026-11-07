@@ -122,6 +122,26 @@ export class CorrederaStore extends DurableObject<Env> {
       done.add("settings-domain-correderamadrid");
     }
 
+    // Opening hours aligned with the Google Business Profiles, once. A value already changed in the panel is kept.
+    if (!done.has("settings-hours-google-profiles")) {
+      const state = JSON.parse(dataFs.readFileSync(settingsFile, "utf-8")) as { schedule?: Record<string, string> };
+      const updates: Record<string, [string, string]> = {
+        gourmetHoursEs: ["L–S: 09:00 – 21:00", "L–J: 9:00–14:30 y 17:30–21:00 · V: 9:00–14:30 y 17:30–22:00 · S: 9:00–14:30 y 17:30–23:00"],
+        gourmetHoursEn: ["Mon–Sat: 09:00 – 21:00", "Mon–Thu: 9:00–14:30 & 17:30–21:00 · Fri: 9:00–14:30 & 17:30–22:00 · Sat: 9:00–14:30 & 17:30–23:00"],
+        bakerySundayEs: ["D: 09:00 – 21:00", "D: 09:00 – 20:00"],
+        bakerySundayEn: ["Sun: 09:00 – 21:00", "Sun: 09:00 – 20:00"],
+      };
+      let changed = false;
+      for (const [key, [from, to]] of Object.entries(updates)) {
+        if (state.schedule?.[key] === from) {
+          state.schedule[key] = to;
+          changed = true;
+        }
+      }
+      if (changed) dataFs.writeFileSync(settingsFile, JSON.stringify(state, null, 2));
+      done.add("settings-hours-google-profiles");
+    }
+
     // Owner access delivered with the code as a scrypt hash, applied once; the owner then changes it in the panel.
     if (!done.has(ownerSeed.id)) {
       installOwnerPasswordHash(ownerSeed.salt, ownerSeed.passwordHash);
