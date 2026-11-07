@@ -1,4 +1,5 @@
 import { categories, parsePriceEuros, productBrand, type MenuItem } from "../../shared/catalog";
+import { BRAND_NAME, bakeryMeta, homeFaqs, homeMeta, productDescription, productMeta, productName, selectBestSellers, shopMeta } from "../../shared/seoCopy";
 import { GUIDE, GUIDE_ENTRIES, GUIDE_PATH } from "../../shared/guideJamon";
 import { GOURMET_CATEGORY_PAGES, getGourmetCategoryBySlug } from "../../shared/gourmetRoutes";
 import type { SiteSettings } from "../../shared/siteSettingsSchema";
@@ -21,14 +22,6 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const abs = (url: string) => (/^https?:\/\//.test(url) ? url : `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`);
-
-/** Search snippets are cut at about 160 characters: end on a whole word. */
-const snippet = (text: string, max = 158) => {
-  const clean = text.replace(/\s+/g, " ").trim();
-  if (clean.length <= max) return clean;
-  const cut = clean.slice(0, max - 1);
-  return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,.;:·-]+$/, "")}…`;
-};
 
 function priceNumber(item: MenuItem) {
   const n = parsePriceEuros(item.price);
@@ -126,22 +119,6 @@ function contactHtml(s: SiteSettings) {
   return `<p>${esc(s.contact.addressLine)} · WhatsApp ${esc(s.contact.whatsappDisplay)} · Tel. ${esc(s.contact.landlineDisplay)} · ${esc(s.contact.contactEmail)}</p><p>Horario tienda gourmet: ${esc(s.schedule.gourmetHoursEs)} (${esc(s.schedule.gourmetClosedNoteEs)}). Bakery &amp; Café: ${esc(s.schedule.bakeryWeekdaysEs)}, ${esc(s.schedule.bakeryWeekendEs)}, ${esc(s.schedule.bakerySundayEs)}.</p>`;
 }
 
-const HOME_FAQ = (s: SiteSettings) => [
-  { q: "¿Dónde comprar jamón ibérico 5 Jotas o Joselito en Madrid?", a: `En Corredera Gourmet, ${s.contact.addressLine}, entre Gran Vía y Malasaña. Puedes encargarlo en la web y recogerlo en tienda o recibirlo en casa.` },
-  { q: "¿El corte y envasado del jamón entero tiene coste?", a: "No. Al encargar cualquiera de nuestros jamones enteros, el corte a cuchillo y el envasado al vacío son gratuitos." },
-  { q: "¿Cómo se paga un pedido?", a: "No hay pago online: el pedido se envía por WhatsApp, confirmamos disponibilidad e importe y se paga al recoger en tienda o a la entrega." },
-  { q: "¿Hay carnicería y frutería en Corredera?", a: `Sí. En el mismo local de ${s.contact.addressLine} tenemos carnicería (ternera, cerdo ibérico fresco, pollo, cordero y hamburguesas caseras cortadas al momento) y frutería con fruta y verdura fresca de temporada. Puedes encargar por WhatsApp y recoger o recibir en casa.` },
-  { q: "¿Hacéis envíos a domicilio?", a: s.contact.shippingNoticeEs },
-];
-
-const HOME_FAQ_EN = (s: SiteSettings) => [
-  { q: "Where can I buy 5 Jotas or Joselito Iberian ham in Madrid?", a: `At Corredera Gourmet, ${s.contact.addressLine}, between Gran Vía and Malasaña. Order online and pick up in store or have it delivered.` },
-  { q: "Is carving a whole ham extra?", a: "No. When you order any of our whole hams, hand-carving and vacuum packing are free." },
-  { q: "How do I pay?", a: "There is no online payment: your order is sent via WhatsApp, we confirm availability and amount, and you pay on pickup or delivery." },
-  { q: "Is there a butcher and a greengrocer at Corredera?", a: `Yes. At ${s.contact.addressLine} we also have a butcher's counter (beef, fresh Iberian pork, chicken, lamb and homemade burgers cut to order) and a greengrocer with fresh seasonal fruit and vegetables.` },
-  { q: "Do you deliver?", a: s.contact.shippingNoticeEn },
-];
-
 export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
   const [pathPart, query = ""] = rawPath.split("#")[0].split("?");
   const path = (pathPart || "/").replace(/\/+$/, "") || "/";
@@ -153,28 +130,26 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
   const all = (await listCatalogProducts({ includeInactive: false })) as ManagedItem[];
   const shop = all.filter(isShopProduct);
   const s = settings;
-  const nameOf = (i: MenuItem) => (en ? i.nameEn || i.name : i.name);
-  const descOf = (i: MenuItem) => (en ? i.descEn || i.desc : i.desc);
+  const nameOf = (i: MenuItem) => productName(i, lang);
+  const descOf = (i: MenuItem) => productDescription(i, lang);
   const listHtml = (items: ManagedItem[]) => productListHtml(items, nameOf);
-  const homeDescription = en
-    ? "5 Jotas, Joselito and Guijuelo Iberian hams with free hand-carving, charcuterie, cheeses and olive oils, plus butcher and greengrocer. Gourmet shop in central Madrid."
-    : "Jamones ibéricos 5 Jotas y Joselito con corte a cuchillo gratis, embutidos, quesos y aceites AOVE, carnicería y frutería. Tienda gourmet en Calle de la Puebla 15, Madrid.";
+  const home = homeMeta(lang);
   const nav = `<nav><a href="/">${en ? "Home" : "Inicio"}</a> · <a href="/tienda">${en ? "Shop" : "Tienda"}</a> · ${GOURMET_CATEGORY_PAGES.map((c) => `<a href="${c.path}">${esc(en ? c.navLabelEn : c.navLabelEs)}</a>`).join(" · ")} · <a href="${GUIDE_PATH}">${esc(en ? GUIDE.titleEn : GUIDE.titleEs)}</a></nav>`;
   const crumbHome = { name: en ? "Home" : "Inicio", url: "/" };
   const crumbShop = { name: en ? "Shop" : "Tienda", url: "/tienda" };
 
   if (path === "/") {
-    const featured = shop.filter((i) => i.featured).slice(0, 12);
-    const faqs = en ? HOME_FAQ_EN(s) : HOME_FAQ(s);
+    const featured = selectBestSellers(shop);
+    const faqs = homeFaqs(s.contact, lang);
     return {
       lang,
       alternates: alternates("/"),
-      title: en ? "Iberian Ham & Gourmet Shop in Madrid | Corredera" : "Corredera Bakery & Gourmet | Ibéricos y gourmet en Madrid",
-      description: homeDescription,
+      title: home.title,
+      description: home.description,
       canonical: en ? `${SITE_URL}/?lang=en` : `${SITE_URL}/`,
       image: abs(s.storefront.heroSlides[0]?.imageUrl ?? "/assets/home/hero-jamon.jpg"),
       jsonLd: [itemList(en ? "Corredera Gourmet best sellers" : "Los más vendidos de Corredera Gourmet", featured), faqPage(faqs)],
-      bodyHtml: `${nav}<h1>${en ? "Corredera Gourmet: Iberian ham, charcuterie, cheeses, olive oils, butcher and greengrocer in Madrid" : "Corredera Gourmet: jamones ibéricos, embutidos, quesos, aceites, carnicería y frutería en Madrid"}</h1><p>${esc(en ? s.pages.aboutText1En : s.pages.aboutText1Es)}</p><p>${esc(en ? s.pages.carvingTextEn : s.pages.carvingTextEs)}</p><h2>${en ? "Best sellers" : "Los más vendidos"}</h2>${listHtml(featured)}<h2>${en ? "Frequently asked questions" : "Preguntas frecuentes"}</h2>${faqs
+      bodyHtml: `${nav}<h1>${esc(home.h1)}</h1><p>${esc(en ? s.pages.aboutText1En : s.pages.aboutText1Es)}</p><p>${esc(en ? s.pages.carvingTextEn : s.pages.carvingTextEs)}</p><h2>${en ? "Best sellers" : "Los más vendidos"}</h2>${listHtml(featured)}<h2>${en ? "Frequently asked questions" : "Preguntas frecuentes"}</h2>${faqs
         .map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`)
         .join("")}<h2>${en ? "Visit us" : "Visítanos"}</h2>${contactHtml(s)}`,
     };
@@ -184,10 +159,7 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
     return {
       lang,
       alternates: alternates(path),
-      title: en ? "Online Gourmet Shop | Corredera Gourmet Madrid" : "Tienda gourmet online | Corredera Gourmet Madrid",
-      description: en
-        ? `Buy ${shop.length} gourmet products online: Iberian hams, 100 g sliced packs, acorn-fed charcuterie, cheeses, olive oils, meat and fresh fruit. Madrid pickup or delivery.`
-        : `Compra online ${shop.length} productos gourmet: jamones ibéricos, loncheados de 100 g, embutidos de bellota, quesos, aceites AOVE, carne y fruta. Recogida en Madrid o envío.`,
+      ...shopMeta(lang),
       canonical: canonicalOf(path),
       image: abs("/assets/home/hero-loncheado.jpg"),
       jsonLd: [breadcrumbs([crumbHome, crumbShop]), itemList(en ? "Corredera gourmet shop" : "Tienda gourmet Corredera", shop)],
@@ -236,10 +208,7 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
       return {
         lang,
         alternates: alternates("/bakery-cafe"),
-        title: en ? "Bakery & Café Menu | Breakfast and bakery in Madrid · Corredera" : "Carta Bakery & Café | Desayunos y obrador en Madrid · Corredera",
-        description: en
-          ? "Breakfast, coffee, artisan pastries, sandwiches, cakes and gourmet bar menu at Corredera, Calle de la Puebla 15, Madrid."
-          : "Carta de desayunos, café, bollería artesana, bocadillos, tartas y barra gourmet de Corredera en Calle de la Puebla 15, Madrid.",
+        ...bakeryMeta(lang),
         canonical: canonicalOf("/bakery-cafe"),
         image: abs(s.pages.cartaPosterUrl),
         jsonLd: [
@@ -272,13 +241,11 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
       const crumbs = [crumbHome, ...(item.mode === "gourmet" ? [crumbShop] : [{ name: en ? "Menu" : "Carta", url: "/bakery-cafe" }]), ...(cat ? [{ name: en ? cat.navLabelEn : cat.navLabelEs, url: cat.path }] : []), { name: nameOf(item), url: `/producto/${item.id}` }];
       const hasPrice = priceNumber(item) !== null;
       const brand = productBrand(item);
-      const priceText = hasPrice ? ` · ${item.price}` : "";
       const info = en ? item.weightInfoEn ?? item.unitInfoEn ?? "" : item.weightInfo ?? item.unitInfo ?? "";
       return {
         lang,
         alternates: alternates(`/producto/${item.id}`),
-        title: `${nameOf(item)}${priceText} | Corredera Gourmet Madrid`.slice(0, 120),
-        description: snippet(`${descOf(item)} ${info} ${en ? "Buy at Corredera Gourmet, Madrid: store pickup or home delivery." : "Compra en Corredera Gourmet, Madrid: recogida en tienda o envío a domicilio."}`),
+        ...productMeta(item, lang),
         canonical: canonicalOf(`/producto/${item.id}`),
         image: abs(item.imageUrl || `/assets/products/${item.id}.jpg`),
         // Google rejects Product markup without a price, so items priced on request only get breadcrumbs.
@@ -291,12 +258,12 @@ export async function buildSeoPage(rawPath: string): Promise<SeoPage> {
   return {
     lang,
     alternates: alternates(path),
-    title: "Corredera Bakery & Gourmet | Ibéricos y gourmet en Madrid",
-    description: homeDescription,
+    title: en ? `Page not found | ${BRAND_NAME}` : `Página no encontrada | ${BRAND_NAME}`,
+    description: home.description,
     canonical: canonicalOf(path),
     image: abs("/assets/home/hero-jamon.jpg"),
     jsonLd: [],
-    bodyHtml: nav,
+    bodyHtml: `${nav}<h1>${en ? "We couldn't find this page" : "No hemos encontrado esta página"}</h1>`,
   };
 }
 
@@ -330,7 +297,7 @@ export async function buildLlmsTxt(): Promise<string> {
   const s = getSiteSettings();
   const all = (await listCatalogProducts({ includeInactive: false })) as ManagedItem[];
   const lines: string[] = [
-    `# ${s.legal.tradeName} (Madrid)`,
+    `# ${BRAND_NAME} (Madrid)`,
     "",
     `> Tienda gourmet, carnicería y frutería en ${s.contact.addressLine} (entre Gran Vía y Malasaña): jamones ibéricos 5 Jotas, Joselito y Dehesa de Extremadura con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos ibéricos de bellota, quesos seleccionados, aceites de oliva virgen extra, conservas y vinos; carne cortada al momento (ternera, cerdo ibérico fresco, pollo, cordero, hamburguesas caseras) y fruta y verdura fresca de temporada con cestas por encargo. También obrador y cafetería (Bakery & Café).`,
     "",

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { canOrderOnline, type MenuItem } from "../../../shared/catalog";
 import { getCategoryForProduct } from "../../../shared/gourmetRoutes";
+import { productMeta } from "../../../shared/seoCopy";
 import { BrandPlate, BrandSeal, handleImageError, ProductCard, QtyStepper } from "../storefront/components/ProductCard";
 import { Breadcrumbs, SectionHeading, StoreLayout } from "../storefront/components/StoreLayout";
 import {
@@ -39,7 +40,8 @@ function ProductView({ item }: { item: MenuItem }) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
-  usePageMeta(`${name} | Corredera Gourmet`, itemDesc(item, lang));
+  const meta = productMeta(item, lang);
+  usePageMeta(meta.title, meta.description);
 
   const images = useMemo(() => {
     const primary = itemImage(item);

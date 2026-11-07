@@ -17,7 +17,8 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
-import { FEATURED_IDS, type MenuItem } from "../../../shared/catalog";
+import type { MenuItem } from "../../../shared/catalog";
+import { homeFaqs, homeMeta, selectBestSellers } from "../../../shared/seoCopy";
 import type { HeroSlide } from "../../../shared/siteSettingsSchema";
 import { AnchorLink, SmartLink } from "../storefront/components/AnchorLink";
 import { ProductCard } from "../storefront/components/ProductCard";
@@ -83,6 +84,7 @@ function Hero() {
   }));
   return (
     <section className="cg-hero" aria-roledescription="carousel" aria-label={t("Destacados", "Highlights")}>
+      <h1 className="cg-container cg-home-h1">{homeMeta(lang).h1}</h1>
       <div className="cg-container cg-hero__grid">
         <div className="cg-hero__slider" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
           {SLIDES.map((slide, i) => (
@@ -95,14 +97,10 @@ function Hero() {
               aria-hidden={i !== current}
               inert={i !== current}
             >
-              <img src={slide.imageUrl} srcSet={heroSrcSet(slide.imageUrl)} sizes="(max-width: 1024px) 100vw, 70vw" alt="" className="cg-hero__img" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : "auto"} decoding="async" />
+              <img src={slide.imageUrl} srcSet={heroSrcSet(slide.imageUrl)} sizes="(max-width: 1024px) 100vw, 70vw" alt={lang === "en" ? slide.titleEn : slide.titleEs} className="cg-hero__img" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : "auto"} decoding="async" />
               {slide.videoUrl && <HeroVideo slide={slide} active={i === current} />}
               <div className="cg-hero__caption">
-                {i === 0 ? (
-                  <h1 className="cg-hero__title">{lang === "en" ? slide.titleEn : slide.titleEs}</h1>
-                ) : (
-                  <p className="cg-hero__title">{lang === "en" ? slide.titleEn : slide.titleEs}</p>
-                )}
+                <p className="cg-hero__title">{lang === "en" ? slide.titleEn : slide.titleEs}</p>
                 <p className="cg-hero__text">{lang === "en" ? slide.textEn : slide.textEs}</p>
                 <SmartLink href={slide.href} className="cg-btn cg-btn--primary">
                   {lang === "en" ? slide.ctaEn : slide.ctaEs}
@@ -129,7 +127,7 @@ function Hero() {
           {tiles.map((tile) => {
             const inner = (
               <>
-                <img src={tile.image} alt="" loading="lazy" decoding="async" />
+                <img src={tile.image} alt={tile.title} loading="lazy" decoding="async" />
                 <span className="cg-tile__body">
                   <span className="cg-tile__title">{tile.title}</span>
                   <span className="cg-tile__text">{tile.text}</span>
@@ -203,14 +201,7 @@ function BestSellers() {
   const visible = useMemo(() => {
     if (tab === "destacados") {
       // The owner picks best sellers with the star in the admin panel; the curated list is the fallback.
-      const rank = (id: string) => {
-        const i = (FEATURED_IDS as readonly string[]).indexOf(id);
-        return i === -1 ? Number.MAX_SAFE_INTEGER : i;
-      };
-      const starred = shopItems.filter((i) => i.featured).sort((a, b) => rank(a.id) - rank(b.id));
-      if (starred.length > 0) return starred.slice(0, 8);
-      const byId = new Map(shopItems.map((i) => [i.id, i]));
-      return FEATURED_IDS.map((id) => byId.get(id)).filter((i): i is MenuItem => Boolean(i)).slice(0, 8);
+      return selectBestSellers(shopItems);
     }
     return shopItems.filter((i) => i.category === tab).slice(0, 8);
   }, [tab, shopItems]);
@@ -334,7 +325,7 @@ function CarvingService() {
   ];
   return (
     <section id="servicio-corte" className="cg-feature" aria-labelledby="servicio-corte-title">
-      <img src={settings.pages.carvingImageUrl} srcSet={heroSrcSet(settings.pages.carvingImageUrl)} sizes="100vw" alt="" className="cg-feature__bg" loading="lazy" decoding="async" />
+      <img src={settings.pages.carvingImageUrl} srcSet={heroSrcSet(settings.pages.carvingImageUrl)} sizes="100vw" alt={t("Corte de jamón ibérico a cuchillo", "Hand-carving Iberian ham")} className="cg-feature__bg" loading="lazy" decoding="async" />
       <div className="cg-container cg-feature__inner">
         <div className="cg-feature__card">
           <p className="cg-eyebrow cg-eyebrow--light">{t("Servicio exclusivo", "Exclusive service")}</p>
@@ -394,7 +385,7 @@ function Departments() {
             .filter((d) => d.slug !== "carniceria" && d.slug !== "fruteria")
             .map((d, i) => (
             <Link key={d.slug} href={d.href} className={`cg-dept${i === 0 ? " cg-dept--wide" : ""}`}>
-              <img src={d.image} alt="" loading="lazy" decoding="async" />
+              <img src={d.image} alt={lang === "en" ? d.en : d.es} loading="lazy" decoding="async" />
               <span className="cg-dept__label">
                 <span className="cg-dept__title">{lang === "en" ? d.en : d.es}</span>
                 <span className="cg-dept__desc">{lang === "en" ? d.descEn : d.descEs}</span>
@@ -459,7 +450,7 @@ function FreshMarket() {
           {shops.map((s) => (
             <article key={s.slug} className="cg-market__card">
               <Link href={s.href} className="cg-market__media" tabIndex={-1} aria-hidden="true">
-                <img src={images.get(s.slug)} alt="" loading="lazy" decoding="async" width={1000} height={800} />
+                <img src={images.get(s.slug)} alt={s.title} loading="lazy" decoding="async" width={1000} height={800} />
               </Link>
               <div className="cg-market__body">
                 <h3>
@@ -494,7 +485,7 @@ function SeasonalCampaign() {
     <section className="cg-section cg-section--tight" aria-label={es ? c.badgeEs : c.badgeEn}>
       <div className="cg-container">
         <div className="cg-campaign">
-          <img src={c.imageUrl} alt="" loading="lazy" />
+          <img src={c.imageUrl} alt={es ? c.titleEs : c.titleEn} loading="lazy" />
           <div>
             <p className="cg-eyebrow">{es ? c.badgeEs : c.badgeEn}</p>
             <h2>{es ? c.titleEs : c.titleEn}</h2>
@@ -594,7 +585,7 @@ function BakeryTeaser() {
             {highlights.map((item) => (
               <li key={item.id}>
                 <Link href={`/producto/${item.id}`} className="cg-bakery__item">
-                  <img src={itemImage(item)} alt="" width={56} height={56} loading="lazy" decoding="async" />
+                  <img src={itemImage(item)} alt={lang === "en" ? item.nameEn : item.name} width={56} height={56} loading="lazy" decoding="async" />
                   <span>{lang === "en" ? item.nameEn : item.name.replace(/^Promoción\s+/i, "")}</span>
                 </Link>
                 <strong>{item.price}</strong>
@@ -662,33 +653,7 @@ function Visit() {
 function Faq() {
   const { settings, lang } = useStore();
   const t = useT();
-  const faqs = [
-    {
-      q: t("¿El corte y envasado del jamón entero tiene coste?", "Does carving and packing a whole ham cost extra?"),
-      a: t(
-        "No. Al encargar cualquiera de nuestros jamones enteros, el corte a cuchillo y el envasado al vacío son gratuitos. También puedes llevarte la pieza entera sin empezar.",
-        "No. When you order any of our whole hams, hand-carving and vacuum packing are free. You can also take the whole uncut piece.",
-      ),
-    },
-    {
-      q: t("¿Cómo pago mi pedido?", "How do I pay for my order?"),
-      a: t(
-        "No hay pago online. Enviamos tu pedido por WhatsApp, te confirmamos disponibilidad e importe y pagas al recoger en tienda o a la entrega.",
-        "There is no online payment. Your order is sent via WhatsApp, we confirm availability and amount, and you pay on pickup or delivery.",
-      ),
-    },
-    {
-      q: t("¿Hacéis envíos a domicilio?", "Do you deliver?"),
-      a: lang === "en" ? settings.contact.shippingNoticeEn : settings.contact.shippingNoticeEs,
-    },
-    {
-      q: t("¿Cómo funcionan los productos al peso?", "How do items sold by weight work?"),
-      a: t(
-        "Embutidos y quesos al corte se venden por kilo. Indícanos la cantidad aproximada y te confirmaremos el peso exacto y el importe final antes de preparar el pedido.",
-        "Charcuterie and cheeses cut to order are sold per kilo. Tell us the approximate amount and we will confirm the exact weight and final price before preparing your order.",
-      ),
-    },
-  ];
+  const faqs = homeFaqs(settings.contact, lang);
   return (
     <section className="cg-section" aria-labelledby="faq-title">
       <div className="cg-container cg-container--narrow">
@@ -707,17 +672,9 @@ function Faq() {
 }
 
 export default function Home() {
-  const t = useT();
-  usePageMeta(
-    t(
-      "Corredera Gourmet | Jamones ibéricos, embutidos, quesos y aceites en Madrid",
-      "Corredera Gourmet | Iberian hams, charcuterie, cheeses and olive oils in Madrid",
-    ),
-    t(
-      "Tienda gourmet en Calle de la Puebla 15, Madrid: jamones 5 Jotas y Joselito con corte a cuchillo y envasado al vacío gratis, loncheados de 100 g, embutidos de bellota, quesos y aceites AOVE. Recogida o envío a domicilio.",
-      "Gourmet shop at Calle de la Puebla 15, Madrid: 5 Jotas and Joselito hams with free hand-carving and vacuum packing, 100 g sliced packs, acorn-fed charcuterie, cheeses and EVOO. Pickup or home delivery.",
-    ),
-  );
+  const { lang } = useStore();
+  const meta = homeMeta(lang);
+  usePageMeta(meta.title, meta.description);
 
   return (
     <StoreLayout trust={false}>

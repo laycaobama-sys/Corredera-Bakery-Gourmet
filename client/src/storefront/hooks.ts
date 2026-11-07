@@ -7,7 +7,7 @@ export function useT() {
   return (es: string, en: string) => (lang === "en" ? en : es);
 }
 
-const DEFAULT_TITLE = "Corredera Gourmet | Jamones ibéricos, embutidos, quesos y aceites en Madrid";
+const DEFAULT_TITLE = "Jamón Ibérico en Madrid · 5 Jotas y Joselito | Corredera Gourmet";
 
 /** Sets document title, description and canonical for client-side routes. */
 export function usePageMeta(title: string, description?: string) {

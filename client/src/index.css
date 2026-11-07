@@ -1147,6 +1147,23 @@ summary:focus-visible,
   bottom: 72px;
   max-width: 540px;
   color: #fff;
+  opacity: 0;
+}
+
+.cg-hero__slide.is-active .cg-hero__caption {
+  opacity: 1;
+  transition: opacity 0.5s ease 0.45s;
+}
+
+.cg-home-h1 {
+  font-family: var(--cg-serif);
+  font-size: clamp(19px, 2.1vw, 28px);
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--cg-burgundy-900);
+  padding-top: 16px;
+  padding-bottom: 14px;
 }
 
 .cg-hero__title {

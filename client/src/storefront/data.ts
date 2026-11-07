@@ -7,6 +7,7 @@ import {
   type MenuItem,
 } from "../../../shared/catalog";
 import { PRODUCT_HOVER_PHOTOS } from "../../../shared/productHoverPhotos";
+import { productDescription } from "../../../shared/seoCopy";
 
 /** Take-home gourmet families shown in the online shop (the tasting-bar items live in the in-store menu). */
 export const SHOP_CATEGORY_IDS = [
@@ -147,8 +148,7 @@ export function itemName(item: MenuItem, lang: Lang) {
 }
 
 export function itemDesc(item: MenuItem, lang: Lang) {
-  const raw = lang === "en" ? item.descEn || item.desc : item.desc;
-  return raw.replace(/^(Más vendido\.|Best seller\.)\s*/i, "");
+  return productDescription(item, lang);
 }
 
 export function itemBadge(item: MenuItem, lang: Lang) {

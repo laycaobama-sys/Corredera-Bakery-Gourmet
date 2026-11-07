@@ -2,6 +2,7 @@ import { Info, MessageCircle, Plus } from "lucide-react";
 import { useMemo } from "react";
 import { BREAKFAST_POSTER_DATA, canOrderOnline, formatPrice, type Category, type MenuItem } from "../../../shared/catalog";
 import { Link } from "wouter";
+import { bakeryMeta } from "../../../shared/seoCopy";
 import { scrollToId } from "../storefront/components/AnchorLink";
 import { ProductImage } from "../storefront/components/ProductCard";
 import { Breadcrumbs, StoreLayout } from "../storefront/components/StoreLayout";
@@ -51,13 +52,8 @@ export default function CartaPage() {
   const t = useT();
   const es = lang === "es";
 
-  usePageMeta(
-    t("Carta Bakery & Café | Desayunos y obrador en Madrid · Corredera", "Bakery & Café menu | Breakfast and bakery in Madrid · Corredera"),
-    t(
-      "Carta de desayunos, café, bollería artesana, bocadillos, tartas y barra gourmet de Corredera en Calle de la Puebla 15, Madrid.",
-      "Breakfast, coffee, artisan pastries, sandwiches, cakes and gourmet bar menu at Corredera, Calle de la Puebla 15, Madrid.",
-    ),
-  );
+  const meta = bakeryMeta(lang);
+  usePageMeta(meta.title, meta.description);
 
   const groups = useMemo(
     () => GROUPS.map((g) => ({ ...g, items: items.filter(g.match) })).filter((g) => g.items.length > 0),
